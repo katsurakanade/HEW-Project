@@ -1,14 +1,9 @@
 #include <d3dx9.h>
 #include <math.h>
+#include "main.h"
 #include "mydirect3d.h"
 #include "texture.h"
 
-typedef struct Vertex2D_tag
-{
-    D3DXVECTOR4 position;
-	D3DCOLOR color;
-	D3DXVECTOR2 texcoord;
-} Vertex2D;
 #define FVF_VERTEX2D (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)
 
 static D3DCOLOR g_Color = 0xffffffff;

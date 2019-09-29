@@ -24,3 +24,14 @@
 //ウィンドウハンドルのGetter
 HWND GetHWND();
 double frand();
+
+typedef struct Vertex2D_tag
+{
+	// 頂点座標（座標変換済み頂点）
+	D3DXVECTOR4 position;
+	// 頂点カラー(32Bit ARGB指定)
+	D3DCOLOR	color;
+	// テクスチャ座標
+	D3DXVECTOR2 texcoord;
+
+} Vertex2D;

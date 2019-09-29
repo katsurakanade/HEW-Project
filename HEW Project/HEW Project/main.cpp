@@ -5,6 +5,7 @@
 #include "texture.h"
 #include "sprite.h"
 #include "sound.h"
+#include "scene.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -14,24 +15,11 @@
 #pragma comment(lib, "d3dx9.lib")
 #pragma comment(lib, "dinput8.lib")
 
-// ２Dポリゴン頂点構造体
-typedef struct Vertex2D_tag
-{
-	// 頂点座標（座標変換済み頂点）
-    D3DXVECTOR4 position;
-	// 頂点カラー(32Bit ARGB指定)
-    D3DCOLOR	color;  
-	// テクスチャ座標
-    D3DXVECTOR2 texcoord; 
-
-} Vertex2D;
-
 // ２Dポリゴン頂点フォーマット
 #define FVF_VERTEX2D (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1) 
 
 // ウィンドウハンドル
 static HWND g_hWnd;                           
-
 
 // ウィンドウプロシージャ(コールバック関数)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -44,7 +32,6 @@ static void Finalize(void);
 static void Update(void);
 // ゲームの描画関数
 static void Draw(void);
-
 
 /*------------------------------------------------------------------------------
 メイン
@@ -202,6 +189,8 @@ bool Initialize(HINSTANCE hInst)
 
 	Texture_Load(g_hWnd);
 
+	Scene_Initialize(SCENE_INDEX_TITLE);
+
 	return true;
 }
 
@@ -226,6 +215,8 @@ void Update(void)
 	//ゲームパッド更新
 	GamePad_Update();
 	
+	Scene_Update();
+	
 }
 
 // ゲームの描画関数
@@ -239,13 +230,15 @@ void Draw(void)
 	// 描画バッチ命令の開始
 	pD3DDevice->BeginScene();
 
+	Scene_Draw();
+
 	// 描画バッチ命令の終了
 	pD3DDevice->EndScene();
 
 	// バックバッファをフリップ（タイミングはD3DPRESENT_PARAMETERSの設定による）
 	pD3DDevice->Present(NULL, NULL, NULL, NULL);
 
-
+	Scene_Check();
 }
 
 //ウィンドウハンドルのゲッター
