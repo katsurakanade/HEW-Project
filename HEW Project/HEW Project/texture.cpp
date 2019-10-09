@@ -16,7 +16,10 @@ static const TextureFile g_TextureFiles[] = {
 	
 	// テスト用
     { "asset/texture/yukidaruma.tga", 256, 256 },
-	
+	// メニュースタート
+	{ "asset/texture/start.png", 128, 64 },
+	// メニュー終わり
+	{ "asset/texture/exit.png", 128, 64 },
 };
 
 static const int TEXTURE_FILE_COUNT = sizeof(g_TextureFiles) / sizeof(g_TextureFiles[0]);

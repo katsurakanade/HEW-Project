@@ -23,6 +23,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="myDirect3D.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sound.cpp" />
@@ -35,6 +36,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="myDirect3D.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sound.h" />

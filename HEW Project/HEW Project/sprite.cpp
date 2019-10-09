@@ -147,3 +147,23 @@ void Sprite_Draw(TextureIndex texture_index, float dx, float dy, int tx, int ty,
 	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertexes, sizeof(Vertex2D));
 }
 
+void Sprice_Draw_Menu(LPDIRECT3DTEXTURE9  texture_index, float dx, float dy,int tw,int th) {
+
+	LPDIRECT3DDEVICE9 pDevice = GetD3DDevice();
+	if (!pDevice) return;
+
+	float w = tw;
+	float h = th;
+
+	Vertex2D vertexes[] = {
+		{ D3DXVECTOR4(dx - 0.5f, dy - 0.5f, 0.0f, 1.0f), g_Color, D3DXVECTOR2(0.0f, 0.0f) },
+		{ D3DXVECTOR4(dx + w - 0.5f, dy - 0.5f, 0.0f, 1.0f), g_Color, D3DXVECTOR2(1.0f, 0.0f) },
+		{ D3DXVECTOR4(dx - 0.5f, dy + h - 0.5f, 0.0f, 1.0f), g_Color, D3DXVECTOR2(0.0f, 1.0f) },
+		{ D3DXVECTOR4(dx + w - 0.5f, dy + h - 0.5f, 0.0f, 1.0f), g_Color, D3DXVECTOR2(1.0f, 1.0f) },
+	};
+
+	pDevice->SetFVF(FVF_VERTEX2D);
+	pDevice->SetTexture(0, texture_index);
+
+	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertexes, sizeof(Vertex2D));
+}

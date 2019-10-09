@@ -4,10 +4,10 @@
 #include <d3dx9.h>
 
 // スクリーン(クライアント領域)の幅
-#define SCREEN_WIDTH  (1280)
+#define SCREEN_WIDTH  1280
 
  // スクリーン(クライアント領域)の高さ
-#define SCREEN_HEIGHT  (720)             
+#define SCREEN_HEIGHT  720
 
 // ウインドウクラスの名前
 #define CLASS_NAME     "GameWindow"

@@ -4,6 +4,11 @@
 #include "main.h"
 #include "texture.h"
 
+/*
+ゲームオブジェクト：　	
+ゲーム内使うオブジェクトのベース、基本ほかクラスの継承用
+*/
+
 class GameObject {
 
 private:
@@ -22,6 +27,7 @@ private:
 
 public:
 
+	// コンストラクタ (テクスチャ)
 	GameObject(TextureIndex texture);
 
 	// 座標
