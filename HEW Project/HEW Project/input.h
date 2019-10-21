@@ -20,6 +20,12 @@
 #define BUTTON_R		0x00000800l	// Ｒボタン(.rgbButtons[7]&0x80)
 #define BUTTON_START	0x00001000l	// ＳＴＡＲＴボタン(.rgbButtons[8]&0x80)
 #define BUTTON_M		0x00002000l	// Ｍボタン(.rgbButtons[9]&0x80)
+
+// Joycon
+#define BUTTON_JC_Y  131072L
+#define BUTTON_JC_X  262144L
+#define BUTTON_JC_B  524288L
+#define BUTTON_JC_A  1048576L
 #define GAMEPADMAX		4			// 同時に接続するジョイパッドの最大数をセット
 
 
@@ -38,3 +44,7 @@ void GamePad_Update(void);
 
 BOOL GamePad_IsPress(int padNo, DWORD button);
 BOOL GamePad_IsTrigger(int padNo, DWORD button);
+
+LONG GetAcc();
+bool GetIrzFlag();
+void SetIrzFlag(bool target);

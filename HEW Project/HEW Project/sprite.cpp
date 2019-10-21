@@ -6,8 +6,9 @@
 
 #define FVF_VERTEX2D (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)
 
-static D3DCOLOR g_Color = 0xffffffff;
+static D3DCOLOR g_Color = D3DCOLOR_RGBA(255, 0, 0, 255) + D3DCOLOR_RGBA(0, 255, 0, 255);
 // static D3DCOLOR g_Color = D3DCOLOR_RGBA(255, 255, 255, 255);
+
 
 void Sprite_SetColor(D3DCOLOR color)
 {

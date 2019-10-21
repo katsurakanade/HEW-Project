@@ -25,6 +25,8 @@ static DWORD				g_padState[GAMEPADMAX];	// パッド情報（複数対応）
 static DWORD				g_padTrigger[GAMEPADMAX];
 static int					g_padCount = 0;			// 検出したパッドの数
 
+static LONG Accdata;
+static bool flag = false;
 
 bool initialize(HINSTANCE hInstance)
 {
@@ -181,6 +183,10 @@ bool GamePad_Initialize(HINSTANCE hInstance, HWND hWnd)
 		diprg.diph.dwObj = DIJOFS_Y;
 		g_pGamePad[i]->SetProperty(DIPROP_RANGE, &diprg.diph);
 
+		// RZ軸の範囲を設定(JoyCon)
+		diprg.diph.dwObj = DIJOFS_RZ;
+		g_pGamePad[i]->SetProperty(DIPROP_RANGE, &diprg.diph);
+
 		// 各軸ごとに、無効のゾーン値を設定する。
 		// 無効ゾーンとは、中央からの微少なジョイスティックの動きを無視する範囲のこと。
 		// 指定する値は、10000に対する相対値(2000なら20パーセント)。
@@ -194,6 +200,10 @@ bool GamePad_Initialize(HINSTANCE hInstance, HWND hWnd)
 		g_pGamePad[i]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 		//Y軸の無効ゾーンを設定
 		dipdw.diph.dwObj = DIJOFS_Y;
+		g_pGamePad[i]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+
+		// RZ軸の無効ゾーンを設定(JoyCon)
+		dipdw.diph.dwObj = DIJOFS_RZ;
 		g_pGamePad[i]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
 		//ジョイスティック入力制御開始
@@ -251,6 +261,7 @@ void GamePad_Update(void)
 		if (dijs.lX < 0)					g_padState[i] |= BUTTON_LEFT;
 		//* x-axis (right)
 		if (dijs.lX > 0)					g_padState[i] |= BUTTON_RIGHT;
+
 		//* Ａボタン
 		if (dijs.rgbButtons[0] & 0x80)	g_padState[i] |= BUTTON_A;
 		//* Ｂボタン
@@ -271,7 +282,21 @@ void GamePad_Update(void)
 		if (dijs.rgbButtons[8] & 0x80)	g_padState[i] |= BUTTON_START;
 		//* Ｍボタン
 		if (dijs.rgbButtons[9] & 0x80)	g_padState[i] |= BUTTON_M;
+		
+		// JoyCon
 
+		if (dijs.rgbButtons[16] & 0x80)	g_padState[i] |= BUTTON_JC_Y;
+
+		if (dijs.rgbButtons[17] & 0x80)	g_padState[i] |= BUTTON_JC_X;
+
+		if (dijs.rgbButtons[18] & 0x80)	g_padState[i] |= BUTTON_JC_B;
+
+		if (dijs.rgbButtons[19] & 0x80)	g_padState[i] |= BUTTON_JC_A;
+
+		if (dijs.lRz >= 1000.0) {
+			flag = true;
+		}
+		
 		// Trigger設定
 		g_padTrigger[i] = ((lastPadState ^ g_padState[i])	// 前回と違っていて
 			& g_padState[i]);					// しかも今ONのやつ
@@ -287,4 +312,16 @@ BOOL GamePad_IsPress(int padNo, DWORD button)
 BOOL GamePad_IsTrigger(int padNo, DWORD button)
 {
 	return (button & g_padTrigger[padNo]);
+}
+
+LONG GetAcc(){
+	return Accdata;
+}
+
+bool GetIrzFlag() {
+	return flag;
+}
+
+void SetIrzFlag(bool target) {
+	flag = target;
 }
