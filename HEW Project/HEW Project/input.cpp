@@ -23,8 +23,10 @@ static BYTE					g_aKeyStateRelease[NUM_KEY_MAX];
 static LPDIRECTINPUTDEVICE8	g_pGamePad[GAMEPADMAX] = { NULL, NULL, NULL, NULL };// パッドデバイス
 static DWORD				g_padState[GAMEPADMAX];	// パッド情報（複数対応）
 static DWORD				g_padTrigger[GAMEPADMAX];
+static DWORD				g_padAcc[GAMEPADMAX];
 static int					g_padCount = 0;			// 検出したパッドの数
 
+static LONG test;
 
 bool initialize(HINSTANCE hInstance)
 {
@@ -181,6 +183,10 @@ bool GamePad_Initialize(HINSTANCE hInstance, HWND hWnd)
 		diprg.diph.dwObj = DIJOFS_Y;
 		g_pGamePad[i]->SetProperty(DIPROP_RANGE, &diprg.diph);
 
+		// Rz軸の範囲を設定
+		diprg.diph.dwObj = DIJOFS_RZ;
+		g_pGamePad[i]->SetProperty(DIPROP_RANGE, &diprg.diph);
+
 		// 各軸ごとに、無効のゾーン値を設定する。
 		// 無効ゾーンとは、中央からの微少なジョイスティックの動きを無視する範囲のこと。
 		// 指定する値は、10000に対する相対値(2000なら20パーセント)。
@@ -194,6 +200,10 @@ bool GamePad_Initialize(HINSTANCE hInstance, HWND hWnd)
 		g_pGamePad[i]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 		//Y軸の無効ゾーンを設定
 		dipdw.diph.dwObj = DIJOFS_Y;
+		g_pGamePad[i]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+
+		// Rz軸の無効ゾーンを設定
+		dipdw.diph.dwObj = DIJOFS_RZ;
 		g_pGamePad[i]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
 		//ジョイスティック入力制御開始
@@ -244,6 +254,7 @@ void GamePad_Update(void)
 
 		// ３２の各ビットに意味を持たせ、ボタン押下に応じてビットをオンにする
 		//* y-axis (forward)
+		/*
 		if (dijs.lY < 0)					g_padState[i] |= BUTTON_UP;
 		//* y-axis (backward)
 		if (dijs.lY > 0)					g_padState[i] |= BUTTON_DOWN;
@@ -271,12 +282,51 @@ void GamePad_Update(void)
 		if (dijs.rgbButtons[8] & 0x80)	g_padState[i] |= BUTTON_START;
 		//* Ｍボタン
 		if (dijs.rgbButtons[9] & 0x80)	g_padState[i] |= BUTTON_M;
+		*/
+
+		// JoyCon
+
+		if (dijs.lY > 0) g_padState[i] |= JOYCON_RIGHTSTICK_UP;
+		if (dijs.lY < 0) g_padState[i] |= JOYCON_RIGHTSTICK_DOWN;
+		if (dijs.lX > 0) g_padState[i] |= JOYCON_RIGHTSTICK_RIGHT;
+		if (dijs.lX < 0) g_padState[i] |= JOYCON_RIGHTSTICK_LEFT;
+
+		if (dijs.lRy > 32767 + 2000) g_padState[i] |= JOYCON_LEFTSTICK_UP;
+		if (dijs.lRy < 32767 - 2000) g_padState[i] |= JOYCON_LEFTSTICK_DOWN;
+		if (dijs.lRx < 32767 + 2000) g_padState[i] |= JOYCON_LEFTSTICK_LEFT;
+		if (dijs.lRx > 32767 - 2000) g_padState[i] |= JOYCON_LEFTSTICK_RIGHT;
+
+		if (dijs.rgbButtons[0] & 0x80)	g_padState[i] |= JOYCON_DOWN;
+		if (dijs.rgbButtons[1] & 0x80)	g_padState[i] |= JOYCON_UP;
+		if (dijs.rgbButtons[2] & 0x80)	g_padState[i] |= JOYCON_RIGHT;
+		if (dijs.rgbButtons[3] & 0x80)	g_padState[i] |= JOYCON_LEFT;
+		if (dijs.rgbButtons[4] & 0x80)	g_padState[i] |= JOYCON_SR_LEFT;
+		if (dijs.rgbButtons[5] & 0x80)	g_padState[i] |= JOYCON_SL_LEFT;
+		if (dijs.rgbButtons[6] & 0x80)	g_padState[i] |= JOYCON_L;
+		if (dijs.rgbButtons[7] & 0x80)	g_padState[i] |= JOYCON_ZL;
+		if (dijs.rgbButtons[8] & 0x80)	g_padState[i] |= JOYCON_MIN;
+		if (dijs.rgbButtons[11] & 0x80)	g_padState[i] |= JOYCON_L3;
+		if (dijs.rgbButtons[13] & 0x80)	g_padState[i] |= JOYCON_SCREENSHOT;
+		if (dijs.rgbButtons[16] & 0x80)	g_padState[i] |= JOYCON_Y;
+		if (dijs.rgbButtons[17] & 0x80)	g_padState[i] |= JOYCON_X;
+		if (dijs.rgbButtons[18] & 0x80)	g_padState[i] |= JOYCON_B;
+		if (dijs.rgbButtons[19] & 0x80)	g_padState[i] |= JOYCON_A;
+		if (dijs.rgbButtons[20] & 0x80)	g_padState[i] |= JOYCON_SR_RIGHT;
+		if (dijs.rgbButtons[21] & 0x80)	g_padState[i] |= JOYCON_SL_RIGHT;
+		if (dijs.rgbButtons[22] & 0x80)	g_padState[i] |= JOYCON_R;
+		if (dijs.rgbButtons[23] & 0x80)	g_padState[i] |= JOYCON_ZR;
+		if (dijs.rgbButtons[25] & 0x80)	g_padState[i] |= JOYCON_PLUS;
+		if (dijs.rgbButtons[26] & 0x80)	g_padState[i] |= JOYCON_R3;
+		if (dijs.rgbButtons[28] & 0x80)	g_padState[i] |= JOYCON_HOME;
+
+		g_padAcc[i] = dijs.lRz;
 
 		// Trigger設定
 		g_padTrigger[i] = ((lastPadState ^ g_padState[i])	// 前回と違っていて
 			& g_padState[i]);					// しかも今ONのやつ
 
 	}
+
 }
 
 BOOL GamePad_IsPress(int padNo, DWORD button)
@@ -287,4 +337,8 @@ BOOL GamePad_IsPress(int padNo, DWORD button)
 BOOL GamePad_IsTrigger(int padNo, DWORD button)
 {
 	return (button & g_padTrigger[padNo]);
+}
+
+LONG GetJoyConAcc(int number) {
+	return g_padAcc[number];
 }

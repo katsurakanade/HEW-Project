@@ -18,18 +18,18 @@ Menu::~Menu()
 int Menu::UpdateSelectMenu() {
 
 	if (select_now < Arrow - 1) {
-		if (Keyboard_IsTrigger(DIK_DOWNARROW)) {
+		if (Keyboard_IsTrigger(DIK_DOWNARROW) || GamePad_IsTrigger(0,JOYCON_DOWN)) {
 			select_now++;
 		}
 	}
 
 	else if (select_now> 0) {
-		if (Keyboard_IsTrigger(DIK_UPARROW)) {
+		if (Keyboard_IsTrigger(DIK_UPARROW) || GamePad_IsTrigger(0, JOYCON_UP)) {
 			select_now--;
 		}
 	}
 
-	if (Keyboard_IsPress(DIK_RETURN)) {
+	if (Keyboard_IsPress(DIK_RETURN) || GamePad_IsTrigger(0, JOYCON_A)) {
 		return  select_now;
 	}
 
