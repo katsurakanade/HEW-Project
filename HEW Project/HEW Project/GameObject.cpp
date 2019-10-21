@@ -12,7 +12,6 @@ GameObject::GameObject(TextureIndex texture) {
 	pos.y = 0.0f;
 }
 
-
 void GameObject::Draw() {
 
 	if (this != NULL) {

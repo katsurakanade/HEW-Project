@@ -1,38 +1,38 @@
 #include "title.h"
 #include "scene.h"
 #include "input.h"
-#include "sprite.h"
+#include "GameObject.h"
+#include "Menu.h"
+#include "texture.h"
 
-static int x;
-static int y;
+LPDIRECT3DTEXTURE9 *Menu_TextureArray = new LPDIRECT3DTEXTURE9[3];
+static Menu  *main = new Menu(2);
 
 void Init_Title() {
 
-	x = 0;
-	y = 0;
+	Menu_TextureArray[0] = Texture_GetTexture(TEXTURE_INDEX_MENUSTART);
+	Menu_TextureArray[1] = Texture_GetTexture(TEXTURE_INDEX_MENUEXIT);
 
 }
 
 void Uninit_Title() {
 
+
 }
 
 void Update_Title() {
 
-	if (Keyboard_IsPress(DIK_SPACE) ) {
+	if (main->UpdateSelectMenu() == 0) {
 		Scene_Change(SCENE_INDEX_GAME);
 	}
 
-	if (GetIrzFlag()) {
-		x += 10;
-		SetIrzFlag(false);
+	else if (main->UpdateSelectMenu() == 1) {
+		exit(1);
 	}
-
-	x -= 1.0f;
 
 }
 
 void Draw_Title() {
 
-	Sprite_Draw(TEXTURE_INDEX_YUKIDARUMA, x, y);
+	main->Draw(Menu_TextureArray, 500, 400, 150, 256, 128);
 }
