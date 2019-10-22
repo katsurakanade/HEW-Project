@@ -1,39 +1,33 @@
+/*
+Copyright <2019> <Kanade Katsura>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
+to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
+and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #include "input.h"
 
-#define	NUM_KEY_MAX			(256)
-
-// game pad用設定値
-#define DEADZONE		2500			// 各軸の25%を無効ゾーンとする
-#define RANGE_MAX		1000			// 有効範囲の最大値
-#define RANGE_MIN		-1000			// 有効範囲の最小値
-
-static bool initialize(HINSTANCE hInstance);
-static void finalize(void);
+static bool Initialize(HINSTANCE hInstance);
+static void Finalize(void);
 
 LPDIRECTINPUT8			g_pInput = NULL;
+Keyboard keyboard;
+JoyCon joycon[JOYCON_MAX];
 
-//キーボード
-static LPDIRECTINPUTDEVICE8	g_pDevKeyboard = NULL;
-static BYTE					g_aKeyState[NUM_KEY_MAX];
-static BYTE					g_aKeyStateTrigger[NUM_KEY_MAX];
-static BYTE					g_aKeyStateRelease[NUM_KEY_MAX];
-
-//ゲームパッド
-static LPDIRECTINPUTDEVICE8	g_pGamePad[GAMEPADMAX] = { NULL, NULL, NULL, NULL };// パッドデバイス
-static DWORD				g_padState[GAMEPADMAX];	// パッド情報（複数対応）
-static DWORD				g_padTrigger[GAMEPADMAX];
-static DWORD				g_padAcc[GAMEPADMAX];
-static int					g_padCount = 0;			// 検出したパッドの数
-
-static LONG test;
+static int					g_padCount = 0;										
 
 bool initialize(HINSTANCE hInstance)
 {
+
 	if(g_pInput == NULL) {
-
 		if(FAILED(DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&g_pInput, NULL))) {
-
 			return false;
 		}
 	}
@@ -49,126 +43,124 @@ void finalize(void)
 	}
 }
 
-bool Keyboard_Initialize(HINSTANCE hInstance, HWND hWnd)
+BOOL CALLBACK SearchGamePadCallback(LPDIDEVICEINSTANCE lpddi, LPVOID)
 {
-	if( !initialize(hInstance) ) {
+	HRESULT result;
 
-		MessageBox(hWnd, "DirectInputオブジェクトが作れねぇ！", "警告！", MB_ICONWARNING);
-		return false;
-	}
+	result = g_pInput->CreateDevice(lpddi->guidInstance, &joycon[g_padCount++].Device, NULL);
 
-	if(FAILED(g_pInput->CreateDevice(GUID_SysKeyboard, &g_pDevKeyboard, NULL)))
+	return DIENUM_CONTINUE;
+}
+
+bool Keyboard::Initialize(HINSTANCE hInstance, HWND hWnd)
+{
+
+	try
 	{
-		MessageBox(hWnd, "キーボードがねぇ！", "警告！", MB_ICONWARNING);
-		return false;
+		if (!initialize(hInstance)) {
+			throw "DirectInput Object Not Found ";
+			return false;
+		}
+		if (FAILED(g_pInput->CreateDevice(GUID_SysKeyboard, &this->DevKeyboard, NULL)))
+		{
+			throw "Keyboard NotFound";
+			return false;
+		}
+		if (FAILED(this->DevKeyboard->SetDataFormat(&c_dfDIKeyboard)))
+		{
+			throw "Keyboard DataFormat Setting Failed";
+			return false;
+		}
+		if (FAILED(this->DevKeyboard->SetCooperativeLevel(hWnd, (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE))))
+		{
+			throw "Keyboard CooperativeLevel Setting Failed";
+			return false;
+		}
+	}
+	catch (char *error)
+	{
+		MessageBox(hWnd, error, "WARNING！", MB_ICONWARNING);
 	}
 
-	if(FAILED(g_pDevKeyboard->SetDataFormat(&c_dfDIKeyboard)))
-	{
-		MessageBox(hWnd, "キーボードのデータフォーマットを設定できませんでした。", "警告！", MB_ICONWARNING);
-		return false;
-	}
-	//													 DISCL_BACKGROUND | DISCL_EXCLUSIVE	
-	if(FAILED(g_pDevKeyboard->SetCooperativeLevel(hWnd, (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE))))
-	{
-		MessageBox(hWnd, "キーボードの協調モードを設定できませんでした。", "警告！", MB_ICONWARNING);
-		return false;
-	}
-
-	g_pDevKeyboard->Acquire();
+	this->DevKeyboard->Acquire();
 
 	return true;
 }
 
-void Keyboard_Finalize(void)
+void Keyboard::Finalize(void)
 {
-	if(g_pDevKeyboard != NULL)
+	if(DevKeyboard != NULL)
 	{
-		g_pDevKeyboard->Unacquire();
-
-		g_pDevKeyboard->Release();
-		g_pDevKeyboard = NULL;
+		DevKeyboard->Unacquire();
+		DevKeyboard->Release();
+		DevKeyboard = NULL;
 	}
 
 	finalize();
 }
 
-void Keyboard_Update(void)
+void Keyboard::Update(void)
 {
 	BYTE aKeyState[NUM_KEY_MAX];
 
-	if(SUCCEEDED(g_pDevKeyboard->GetDeviceState(sizeof(aKeyState), aKeyState)))
+	if(SUCCEEDED(DevKeyboard->GetDeviceState(sizeof(aKeyState), aKeyState)))
 	{
 		for(int nCnKey = 0; nCnKey < NUM_KEY_MAX; nCnKey++)
 		{
-			g_aKeyStateTrigger[nCnKey] = (g_aKeyState[nCnKey] ^ aKeyState[nCnKey]) & aKeyState[nCnKey];
-			g_aKeyStateRelease[nCnKey] = (g_aKeyState[nCnKey] ^ aKeyState[nCnKey]) & g_aKeyState[nCnKey];
+			KeyStateTrigger[nCnKey] = (KeyState[nCnKey] ^ aKeyState[nCnKey]) & aKeyState[nCnKey];
+			KeyStateRelease[nCnKey] = (KeyState[nCnKey] ^ aKeyState[nCnKey]) & KeyState[nCnKey];
 
-			g_aKeyState[nCnKey] = aKeyState[nCnKey];
+			KeyState[nCnKey] = aKeyState[nCnKey];
 		}
 	}
 	else
 	{
-		g_pDevKeyboard->Acquire();
+		DevKeyboard->Acquire();
 	}
 }
 
-bool Keyboard_IsPress(int nKey)
+bool Keyboard::IsPress(int nKey)
 {
-	return (g_aKeyState[nKey] & 0x80) ? true : false;
+	return (KeyState[nKey] & 0x80) ? true : false;
 }
 
-bool Keyboard_IsTrigger(int nKey)
+bool Keyboard::IsTrigger(int nKey)
 {
-	return (g_aKeyStateTrigger[nKey] & 0x80) ? true: false;
+	return (KeyStateTrigger[nKey] & 0x80) ? true: false;
 }
 
-bool Keyboard_IsRelease(int nKey)
+bool Keyboard::IsRelease(int nKey)
 {
-	return (g_aKeyStateRelease[nKey] & 0x80) ? true: false;
+	return (KeyStateRelease[nKey] & 0x80) ? true: false;
 }
 
-//---------------------------------------- コールバック関数
-BOOL CALLBACK SearchGamePadCallback(LPDIDEVICEINSTANCE lpddi, LPVOID)
+bool JoyCon::Initialize(HINSTANCE hInstance, HWND hWnd)
 {
-	HRESULT result;
 
-	result = g_pInput->CreateDevice(lpddi->guidInstance, &g_pGamePad[g_padCount++], NULL);
-	return DIENUM_CONTINUE;	// 次のデバイスを列挙
-}
-
-bool GamePad_Initialize(HINSTANCE hInstance, HWND hWnd)
-{
 	if (!initialize(hInstance)) {
 
-		MessageBox(hWnd, "DirectInputオブジェクトが作れねぇ！", "警告！", MB_ICONWARNING);
+		MessageBox(hWnd, "DirectInput Object Not Found ", "WARNING！", MB_ICONWARNING);
 		return false;
 	}
 
 	HRESULT		result;
-	int			i;
 
-	g_padCount = 0;
 	// ジョイパッドを探す
 	g_pInput->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)SearchGamePadCallback, NULL, DIEDFL_ATTACHEDONLY);
 	// セットしたコールバック関数が、パッドを発見した数だけ呼ばれる。
 
-	for (i = 0; i<g_padCount; i++) 
-	{
-		// ジョイスティック用のデータ・フォーマットを設定
-		result = g_pGamePad[i]->SetDataFormat(&c_dfDIJoystick);
+	// ジョイスティック用のデータ・フォーマットを設定
+	result = Device->SetDataFormat(&c_dfDIJoystick);
+
+	for (int i = 0; i < JOYCON_MAX; i++) {
+	
 		if (FAILED(result))
 			return false; // データフォーマットの設定に失敗
 
-		// モードを設定（フォアグラウンド＆非排他モード）
-		//		result = pGamePad[i]->SetCooperativeLevel(hWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-		//		if ( FAILED(result) )
-		//			return false; // モードの設定に失敗
-
-		// 軸の値の範囲を設定
-		// X軸、Y軸のそれぞれについて、オブジェクトが報告可能な値の範囲をセットする。
-		// (max-min)は、最大10,000(?)。(max-min)/2が中央値になる。
-		// 差を大きくすれば、アナログ値の細かな動きを捕らえられる。(パッドの性能による)
+			// 軸の値の範囲を設定
+			// X軸、Y軸のそれぞれについて、オブジェクトが報告可能な値の範囲をセットする。
+			// (max-min)は、最大10,000(?)。(max-min)/2が中央値になる。
+			// 差を大きくすれば、アナログ値の細かな動きを捕らえられる。(パッドの性能による)
 		DIPROPRANGE				diprg;
 		ZeroMemory(&diprg, sizeof(diprg));
 		diprg.diph.dwSize = sizeof(diprg);
@@ -178,14 +170,14 @@ bool GamePad_Initialize(HINSTANCE hInstance, HWND hWnd)
 		diprg.lMax = RANGE_MAX;
 		// X軸の範囲を設定
 		diprg.diph.dwObj = DIJOFS_X;
-		g_pGamePad[i]->SetProperty(DIPROP_RANGE, &diprg.diph);
+		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
 		// Y軸の範囲を設定
 		diprg.diph.dwObj = DIJOFS_Y;
-		g_pGamePad[i]->SetProperty(DIPROP_RANGE, &diprg.diph);
+		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
 
 		// Rz軸の範囲を設定
 		diprg.diph.dwObj = DIJOFS_RZ;
-		g_pGamePad[i]->SetProperty(DIPROP_RANGE, &diprg.diph);
+		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
 
 		// 各軸ごとに、無効のゾーン値を設定する。
 		// 無効ゾーンとは、中央からの微少なジョイスティックの動きを無視する範囲のこと。
@@ -197,148 +189,121 @@ bool GamePad_Initialize(HINSTANCE hInstance, HWND hWnd)
 		dipdw.dwData = DEADZONE;
 		//X軸の無効ゾーンを設定
 		dipdw.diph.dwObj = DIJOFS_X;
-		g_pGamePad[i]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 		//Y軸の無効ゾーンを設定
 		dipdw.diph.dwObj = DIJOFS_Y;
-		g_pGamePad[i]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
 		// Rz軸の無効ゾーンを設定
 		dipdw.diph.dwObj = DIJOFS_RZ;
-		g_pGamePad[i]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
 		//ジョイスティック入力制御開始
-		g_pGamePad[i]->Acquire();
+		joycon[i].Device->Acquire();
 	}
 
 	return true;
 }
 
-void GamePad_Finalize(void)
+void JoyCon::Finalize()
 {
-	for (int i = 0; i<GAMEPADMAX; i++) {
-		if (g_pGamePad[i])
-		{
-			g_pGamePad[i]->Unacquire();
-			g_pGamePad[i]->Release();
-		}
+
+	if (Device)
+	{
+		Device->Unacquire();
+		Device->Release();
 	}
 
 	finalize();
 }
 
-void GamePad_Update(void)
+void JoyCon::Update()
 {
 	HRESULT			result;
 	DIJOYSTATE2		dijs;
-	int				i;
 
-	for (i = 0; i<g_padCount; i++)
-	{
 		DWORD lastPadState;
-		lastPadState = g_padState[i];
-		g_padState[i] = 0x00000000l;	// 初期化
+		lastPadState = State;
+		State = 0x00000000l;
 
-		result = g_pGamePad[i]->Poll();	// ジョイスティックにポールをかける
+		result = Device->Poll();	// ジョイスティックにポールをかける
+
 		if (FAILED(result)) {
-			result = g_pGamePad[i]->Acquire();
+			result = Device->Acquire();
 			while (result == DIERR_INPUTLOST)
-				result = g_pGamePad[i]->Acquire();
+				result = Device->Acquire();
 		}
 
-		result = g_pGamePad[i]->GetDeviceState(sizeof(DIJOYSTATE), &dijs);	// デバイス状態を読み取る
+		result = Device->GetDeviceState(sizeof(DIJOYSTATE), &dijs);	// デバイス状態を読み取る
 		if (result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED) {
-			result = g_pGamePad[i]->Acquire();
+			result = Device->Acquire();
 			while (result == DIERR_INPUTLOST)
-				result = g_pGamePad[i]->Acquire();
+				result = Device->Acquire();
 		}
-
-		// ３２の各ビットに意味を持たせ、ボタン押下に応じてビットをオンにする
-		//* y-axis (forward)
-		/*
-		if (dijs.lY < 0)					g_padState[i] |= BUTTON_UP;
-		//* y-axis (backward)
-		if (dijs.lY > 0)					g_padState[i] |= BUTTON_DOWN;
-		//* x-axis (left)
-		if (dijs.lX < 0)					g_padState[i] |= BUTTON_LEFT;
-		//* x-axis (right)
-		if (dijs.lX > 0)					g_padState[i] |= BUTTON_RIGHT;
-		//* Ａボタン
-		if (dijs.rgbButtons[0] & 0x80)	g_padState[i] |= BUTTON_A;
-		//* Ｂボタン
-		if (dijs.rgbButtons[1] & 0x80)	g_padState[i] |= BUTTON_B;
-		//* Ｃボタン
-		if (dijs.rgbButtons[2] & 0x80)	g_padState[i] |= BUTTON_C;
-		//* Ｘボタン
-		if (dijs.rgbButtons[3] & 0x80)	g_padState[i] |= BUTTON_X;
-		//* Ｙボタン
-		if (dijs.rgbButtons[4] & 0x80)	g_padState[i] |= BUTTON_Y;
-		//* Ｚボタン
-		if (dijs.rgbButtons[5] & 0x80)	g_padState[i] |= BUTTON_Z;
-		//* Ｌボタン
-		if (dijs.rgbButtons[6] & 0x80)	g_padState[i] |= BUTTON_L;
-		//* Ｒボタン
-		if (dijs.rgbButtons[7] & 0x80)	g_padState[i] |= BUTTON_R;
-		//* ＳＴＡＲＴボタン
-		if (dijs.rgbButtons[8] & 0x80)	g_padState[i] |= BUTTON_START;
-		//* Ｍボタン
-		if (dijs.rgbButtons[9] & 0x80)	g_padState[i] |= BUTTON_M;
-		*/
 
 		// JoyCon
 
-		if (dijs.lY > 0) g_padState[i] |= JOYCON_RIGHTSTICK_UP;
-		if (dijs.lY < 0) g_padState[i] |= JOYCON_RIGHTSTICK_DOWN;
-		if (dijs.lX > 0) g_padState[i] |= JOYCON_RIGHTSTICK_RIGHT;
-		if (dijs.lX < 0) g_padState[i] |= JOYCON_RIGHTSTICK_LEFT;
+		if (dijs.lY > 0) State |= JOYCON_RIGHTSTICK_UP;
+		if (dijs.lY < 0) State |= JOYCON_RIGHTSTICK_DOWN;
+		if (dijs.lX > 0) State |= JOYCON_RIGHTSTICK_RIGHT;
+		if (dijs.lX < 0) State |= JOYCON_RIGHTSTICK_LEFT;
 
-		if (dijs.lRy > 32767 + 2000) g_padState[i] |= JOYCON_LEFTSTICK_UP;
-		if (dijs.lRy < 32767 - 2000) g_padState[i] |= JOYCON_LEFTSTICK_DOWN;
-		if (dijs.lRx < 32767 + 2000) g_padState[i] |= JOYCON_LEFTSTICK_LEFT;
-		if (dijs.lRx > 32767 - 2000) g_padState[i] |= JOYCON_LEFTSTICK_RIGHT;
+		if (dijs.lRy > 32767 + 2000)State |= JOYCON_LEFTSTICK_UP;
+		if (dijs.lRy < 32767 - 2000) State |= JOYCON_LEFTSTICK_DOWN;
+		if (dijs.lRx < 32767 + 2000) State |= JOYCON_LEFTSTICK_LEFT;
+		if (dijs.lRx > 32767 - 2000) State |= JOYCON_LEFTSTICK_RIGHT;
 
-		if (dijs.rgbButtons[0] & 0x80)	g_padState[i] |= JOYCON_DOWN;
-		if (dijs.rgbButtons[1] & 0x80)	g_padState[i] |= JOYCON_UP;
-		if (dijs.rgbButtons[2] & 0x80)	g_padState[i] |= JOYCON_RIGHT;
-		if (dijs.rgbButtons[3] & 0x80)	g_padState[i] |= JOYCON_LEFT;
-		if (dijs.rgbButtons[4] & 0x80)	g_padState[i] |= JOYCON_SR_LEFT;
-		if (dijs.rgbButtons[5] & 0x80)	g_padState[i] |= JOYCON_SL_LEFT;
-		if (dijs.rgbButtons[6] & 0x80)	g_padState[i] |= JOYCON_L;
-		if (dijs.rgbButtons[7] & 0x80)	g_padState[i] |= JOYCON_ZL;
-		if (dijs.rgbButtons[8] & 0x80)	g_padState[i] |= JOYCON_MIN;
-		if (dijs.rgbButtons[11] & 0x80)	g_padState[i] |= JOYCON_L3;
-		if (dijs.rgbButtons[13] & 0x80)	g_padState[i] |= JOYCON_SCREENSHOT;
-		if (dijs.rgbButtons[16] & 0x80)	g_padState[i] |= JOYCON_Y;
-		if (dijs.rgbButtons[17] & 0x80)	g_padState[i] |= JOYCON_X;
-		if (dijs.rgbButtons[18] & 0x80)	g_padState[i] |= JOYCON_B;
-		if (dijs.rgbButtons[19] & 0x80)	g_padState[i] |= JOYCON_A;
-		if (dijs.rgbButtons[20] & 0x80)	g_padState[i] |= JOYCON_SR_RIGHT;
-		if (dijs.rgbButtons[21] & 0x80)	g_padState[i] |= JOYCON_SL_RIGHT;
-		if (dijs.rgbButtons[22] & 0x80)	g_padState[i] |= JOYCON_R;
-		if (dijs.rgbButtons[23] & 0x80)	g_padState[i] |= JOYCON_ZR;
-		if (dijs.rgbButtons[25] & 0x80)	g_padState[i] |= JOYCON_PLUS;
-		if (dijs.rgbButtons[26] & 0x80)	g_padState[i] |= JOYCON_R3;
-		if (dijs.rgbButtons[28] & 0x80)	g_padState[i] |= JOYCON_HOME;
+		if (dijs.rgbButtons[0] & 0x80)	State |= JOYCON_DOWN;
+		if (dijs.rgbButtons[1] & 0x80)	State |= JOYCON_UP;
+		if (dijs.rgbButtons[2] & 0x80)	State |= JOYCON_RIGHT;
+		if (dijs.rgbButtons[3] & 0x80)	State |= JOYCON_LEFT;
+		if (dijs.rgbButtons[4] & 0x80)State |= JOYCON_SR_LEFT;
+		if (dijs.rgbButtons[5] & 0x80)	State |= JOYCON_SL_LEFT;
+		if (dijs.rgbButtons[6] & 0x80) State |= JOYCON_L;
+		if (dijs.rgbButtons[7] & 0x80)	State |= JOYCON_ZL;
+		if (dijs.rgbButtons[8] & 0x80)	State |= JOYCON_MIN;
+		if (dijs.rgbButtons[11] & 0x80) State |= JOYCON_L3;
+		if (dijs.rgbButtons[13] & 0x80)	State |= JOYCON_SCREENSHOT;
+		if (dijs.rgbButtons[16] & 0x80)	State |= JOYCON_Y;
+		if (dijs.rgbButtons[17] & 0x80)	State |= JOYCON_X;
+		if (dijs.rgbButtons[18] & 0x80)	State |= JOYCON_B;
+		if (dijs.rgbButtons[19] & 0x80)	State |= JOYCON_A;
+		if (dijs.rgbButtons[20] & 0x80)	State |= JOYCON_SR_RIGHT;
+		if (dijs.rgbButtons[21] & 0x80)	State |= JOYCON_SL_RIGHT;
+		if (dijs.rgbButtons[22] & 0x80)	State |= JOYCON_R;
+		if (dijs.rgbButtons[23] & 0x80)	State |= JOYCON_ZR;
+		if (dijs.rgbButtons[25] & 0x80)	State |= JOYCON_PLUS;
+		if (dijs.rgbButtons[26] & 0x80)	State |= JOYCON_R3;
+		if (dijs.rgbButtons[28] & 0x80)	State |= JOYCON_HOME;
 
-		g_padAcc[i] = dijs.lRz;
+		SetAccelerometer(dijs.lRz);
 
 		// Trigger設定
-		g_padTrigger[i] = ((lastPadState ^ g_padState[i])	// 前回と違っていて
-			& g_padState[i]);					// しかも今ONのやつ
-
-	}
+		Trigger = ((lastPadState ^ State)	// 前回と違っていて
+			& State);					// しかも今ONのやつ
+	
 
 }
 
-BOOL GamePad_IsPress(int padNo, DWORD button)
+void JoyCon::SetAccelerometer(DWORD data) {
+	Accelerometer = data;
+}
+
+DWORD JoyCon::GetAccelerometer() {
+	return Accelerometer;
+}
+
+DWORD JoyCon::GetTrigger() {
+	return Trigger;
+}
+
+BOOL JoyCon::IsPress(DWORD button)
 {
-	return (button & g_padState[padNo]);
+	return (button & State);
 }
 
-BOOL GamePad_IsTrigger(int padNo, DWORD button)
+BOOL JoyCon::IsTrigger(DWORD button)
 {
-	return (button & g_padTrigger[padNo]);
+	return (button & Trigger);
 }
 
-LONG GetJoyConAcc(int number) {
-	return g_padAcc[number];
-}
