@@ -18,18 +18,18 @@ Menu::~Menu()
 int Menu::UpdateSelectMenu() {
 
 	if (select_now < Arrow - 1) {
-		if (keyboard.IsTrigger(DIK_DOWNARROW) || joycon[0].IsTrigger(JOYCON_RIGHT) || joycon[1].IsTrigger(JOYCON_DOWN)) {
+		if (Keyboard_IsTrigger(DIK_DOWNARROW)) {
 			select_now++;
 		}
 	}
 
 	else if (select_now> 0) {
-		if (keyboard.IsTrigger(DIK_UPARROW) || joycon[0].IsTrigger(JOYCON_DOWN) || joycon[1].IsTrigger(JOYCON_UP)) {
+		if (Keyboard_IsTrigger(DIK_UPARROW)) {
 			select_now--;
 		}
 	}
 
-	if (keyboard.IsPress(DIK_RETURN) || joycon[0].IsTrigger(JOYCON_A)) {
+	if (Keyboard_IsPress(DIK_RETURN)) {
 		return  select_now;
 	}
 
