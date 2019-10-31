@@ -3,9 +3,12 @@
 #include <time.h>
 #include "input.h"
 #include "texture.h"
-#include "sprite.h"
 #include "sound.h"
 #include "scene.h"
+#include "IMGUI/imgui.h"
+#include "IMGUI/imgui_impl_dx9.h"
+#include "IMGUI/imgui_impl_win32.h"
+#include "DxLib.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -43,15 +46,19 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 	// ウィンドウクラス構造体の設定
-	WNDCLASS wc = {};
+	WNDCLASSEX wc = {};
 	wc.lpfnWndProc = WndProc;                          // ウィンドウプロシージャの指定
 	wc.lpszClassName = CLASS_NAME;                     // クラス名の設定
 	wc.hInstance = hInstance;                          // インスタンスハンドルの指定
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);          // マウスカーソルを指定
 	wc.hbrBackground = (HBRUSH)(COLOR_BACKGROUND + 1); // ウインドウのクライアント領域の背景色を設定
+	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wc.lpszMenuName = 0;
 
 	// クラス登録
-	RegisterClass(&wc);
+	RegisterClassEx(&wc);
 
 	// ウィンドウスタイル
 	DWORD window_style = WS_OVERLAPPEDWINDOW & ~(WS_MAXIMIZEBOX | WS_THICKFRAME);
@@ -113,21 +120,30 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		}
 		else {
 
-			
+			ClearDrawScreen();
+
 			// 1フレームの時間計算
 			float timeInOneFps = 1000.0f / FPS_LOCK; 
 			DWORD timeBegin = GetTickCount();
 			
+			//ImGui_ImplDX9_NewFrame();
+			//ImGui_ImplWin32_NewFrame();
+			//ImGui::NewFrame();
+
 			// ゲームの更新
 			Update();
+
 			// ゲームの描画
 			Draw();
 
 			// FPSロック
+			
 			DWORD timeTotal = GetTickCount() - timeBegin;
 			if (timeTotal < timeInOneFps)
 				Sleep(DWORD(timeInOneFps - timeTotal));
 
+			ScreenCopy();
+			
 		}
 	}
 
@@ -137,17 +153,18 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	return (int)msg.wParam;
 }
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 // ウィンドウプロシージャ(コールバック関数)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam)) {
+		return true;
+	}
+
 	switch (uMsg) {
-		/*
-	case WM_KEYDOWN:
-		if (wParam == VK_ESCAPE) {
-			SendMessage(hWnd, WM_CLOSE, 0, 0); // WM_CLOSEメッセージの送信
-		}
-		break;
-		*/
+		
 	case WM_CLOSE:
 //		if (MessageBox(hWnd, "本当に終了してよろしいですか？", "確認", MB_OKCANCEL | MB_DEFBUTTON2) == IDOK) {
 			DestroyWindow(hWnd); // 指定のウィンドウにWM_DESTROYメッセージを送る
@@ -167,7 +184,7 @@ bool Initialize(HINSTANCE hInst)
 {
 	//シードの初期化
 	srand((unsigned int)time(NULL));
-
+	
 	// ゲームの初期化(Direct3Dの初期化)
 	if (!D3D_Initialize(g_hWnd)){
 		// ゲームの初期化に失敗した
@@ -186,7 +203,31 @@ bool Initialize(HINSTANCE hInst)
 		return false;
 	}
 
-	Texture_Load(g_hWnd);
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO io = ImGui::GetIO();
+
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(g_hWnd);
+	ImGui_ImplDX9_Init(GetD3DDevice());
+
+	ChangeWindowMode(TRUE);
+	SetUserWindow(g_hWnd);
+
+	if (Live2D_SetCubism4CoreDLLPath("C:/Users/katsu/source/repos/katsurakanade/HEW-Project/HEW Project/HEW Project/Live2DCubismCore.dll") == -1) {
+		return -1;
+	}
+
+	SetUseDirect3D9Ex(FALSE);
+
+	SetWaitVSyncFlag(TRUE);
+
+	if (DxLib_Init() == -1) {
+		return -1;
+	}
+	
+	SetDrawScreen(DX_SCREEN_BACK);
+
 
 	Scene_Initialize(SCENE_INDEX_TITLE);
 
@@ -198,7 +239,14 @@ void Finalize(void)
 
 	UninitSound();
 
-	Texture_Release();
+	//Texture_Release();
+
+	ImGui_ImplDX9_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
+	DxLib_End();
+	
 
 	// ゲームの終了処理(Direct3Dの終了処理)
 	D3D_Finalize();
@@ -215,12 +263,15 @@ void Update(void)
 	GamePad_Update();
 	
 	Scene_Update();
+
+
 	
 }
 
 // ゲームの描画関数
 void Draw(void)
 {
+	/*
 	LPDIRECT3DDEVICE9 pD3DDevice = GetD3DDevice();
 
 	// 画面のクリア
@@ -229,13 +280,28 @@ void Draw(void)
 	// 描画バッチ命令の開始
 	pD3DDevice->BeginScene();
 
-	Scene_Draw();
+	ImGui::Render();
+
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+
+	ImGui::EndFrame();
 
 	// 描画バッチ命令の終了
 	pD3DDevice->EndScene();
 
 	// バックバッファをフリップ（タイミングはD3DPRESENT_PARAMETERSの設定による）
 	pD3DDevice->Present(NULL, NULL, NULL, NULL);
+	*/
+
+	/*
+	ImGui::Render();
+
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+
+	ImGui::EndFrame();
+	*/
+
+	Scene_Draw();
 
 	Scene_Check();
 }
@@ -245,7 +311,8 @@ HWND GetHWND(){
 	return g_hWnd;
 }
 
-
 double frand() {
 	return (double)rand() / RAND_MAX;
 }
+
+
