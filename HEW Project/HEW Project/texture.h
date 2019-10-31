@@ -1,18 +1,34 @@
 #pragma once
-
 #include <d3d9.h>
+#include "DxLib.h"
+#include <vector>
 
-typedef enum 
-{
-    TEXTURE_INDEX_YUKIDARUMA,
-	TEXTURE_INDEX_MENUSTART,
-	TEXTURE_INDEX_MENUEXIT,
+using namespace std;
 
-    TEXTURE_INDEX_MAX
-}TextureIndex;
+typedef enum {
 
-int Texture_Load(HWND hWnd); //èâä˙âª
-void Texture_Release(void); //èIóπèàóù
-LPDIRECT3DTEXTURE9 Texture_GetTexture(TextureIndex index);
-int Texture_GetWidth(TextureIndex index);
-int Texture_GetHeight(TextureIndex index);
+	TEXTURE_INDEX_START,
+
+	TEXTURE_INDEX_MAX
+
+}TEXTURE_KEY;
+
+class Texture {
+
+private:
+
+	int handle;
+
+public:
+
+
+	void Load(const char * name);
+
+	void Draw(int x, int y);
+
+	void Draw(int x, int y, int width, int height,bool use_alpha);
+
+
+};
+
+extern vector <const char *>TexturePassDict;

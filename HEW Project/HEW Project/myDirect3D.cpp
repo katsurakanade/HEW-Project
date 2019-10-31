@@ -1,11 +1,11 @@
 
 #include "myDirect3D.h"
 #include "main.h"
-
+#include "IMGUI/imgui.h"
+#include "IMGUI/imgui_impl_dx9.h"
 
 static LPDIRECT3D9 g_pD3D = NULL;             // Direct3Dインターフェース
 static LPDIRECT3DDEVICE9 g_pD3DDevice = NULL; // Direct3Dデバイス
-
 
 // ゲームの初期化関数
 bool D3D_Initialize(HWND hWnd)
@@ -26,12 +26,12 @@ bool D3D_Initialize(HWND hWnd)
 	d3dpp.BackBufferHeight = SCREEN_HEIGHT;               // バックバッファの縦幅
 	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;              // バックバッファのフォーマット指定
 	d3dpp.BackBufferCount = 1;                           // バックバッファの数
-	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;       // スワップエフェクト（スワップ方法）の設定		
+	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;       // スワップエフェクト（スワップ方法）の設定
 	d3dpp.Windowed = TRUE;                        // ウィンドウモード or フルスクリーン
 	d3dpp.EnableAutoDepthStencil = TRUE;                        // 深度バッファ・ステンシルバッファの使用				
 	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;                  // 深度バッファ・ステンシルバッファのフォーマット指定
 	d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;     // フルスクリーン時のリフレッシュレートの指定
-	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT; // リフレッシュレートとPresent処理の関係
+	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE; // リフレッシュレートとPresent処理の関
 
 	// Direct3Dデバイスの取得
 	if (FAILED(g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, GetHWND(), D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &g_pD3DDevice))) {
@@ -83,7 +83,9 @@ bool D3D_Initialize(HWND hWnd)
 
 
 	// アルファブレンドの設定
-	g_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	g_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
+	g_pD3DDevice->SetRenderState(D3DRS_ZENABLE, false);
+	g_pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, false);
 	g_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	g_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
@@ -100,6 +102,7 @@ bool D3D_Initialize(HWND hWnd)
 
 	// 頂点カラーとテクスチャのブレンド設定
 	//	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+
 
 	return true;
 }
@@ -125,3 +128,4 @@ void D3D_Finalize(void)
 LPDIRECT3DDEVICE9 GetD3DDevice(){
 	return g_pD3DDevice;
 }
+

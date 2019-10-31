@@ -2,86 +2,25 @@
 //#include "debugPrintf.h"
 #include "mydirect3d.h"
 #include "texture.h"
+#include "DxLib.h"
+#include <algorithm>
 
-#define TEXTURE_FILENAME_MAX (64)
-
-typedef struct TextureFile_tag
-{
-	char filename[TEXTURE_FILENAME_MAX];
-	int width;
-	int height;
-} TextureFile;
-
-static const TextureFile g_TextureFiles[] = {
-	
-	// テスト用
-    { "asset/texture/yukidaruma.tga", 256, 256 },
-	// メニュースタート
-	{ "asset/texture/start.png", 128, 64 },
-	// メニュー終わり
-	{ "asset/texture/exit.png", 128, 64 },
+vector <const char *>TexturePassDict = {
+	"C:/Users/katsu/source/repos/katsurakanade/HEW-Project/HEW Project/HEW Project/asset/texture/start.png",
 };
 
-static const int TEXTURE_FILE_COUNT = sizeof(g_TextureFiles) / sizeof(g_TextureFiles[0]);
+void Texture::Load(const char * name) {
 
-static_assert(TEXTURE_INDEX_MAX == TEXTURE_FILE_COUNT, "TEXTURE_INDEX_MAX != TEXTURE_FILE_COUNT");
-
-static LPDIRECT3DTEXTURE9 g_pTextures[TEXTURE_FILE_COUNT] = {};
-
-int Texture_Load(HWND hWnd)
-{   
-    LPDIRECT3DDEVICE9 pDevice = GetD3DDevice();
-	if( !pDevice ) {
-		return TEXTURE_FILE_COUNT;
-	}
-
-	int failed_count = 0;
-
-	for( int i = 0; i < TEXTURE_FILE_COUNT; i++ ) {
-		
-		if( FAILED(D3DXCreateTextureFromFile(pDevice, g_TextureFiles[i].filename, &g_pTextures[i])) ) {
-			MessageBox(hWnd, "テクスチャの読み込みに失敗", "警告！", MB_ICONWARNING);
-			failed_count++;
-		}
-	}
-
-	return failed_count;
+	handle = LoadGraph(name);
 }
 
-void Texture_Release(void)
-{
-	for( int i = 0; i < TEXTURE_FILE_COUNT; i++ ) {
-		
-		if( g_pTextures[i] ) {
-			g_pTextures[i]->Release();
-			g_pTextures[i] = NULL;
-		}
-	}
+void Texture::Draw(int x,int y) {
+
+	DrawGraph(x, y, this->handle, true);
 }
 
-LPDIRECT3DTEXTURE9 Texture_GetTexture(TextureIndex index)
-{
-    if( index < 0 || index >= TEXTURE_INDEX_MAX ) {
-        return NULL;
-    }
+void Texture::Draw(int x, int y, int width, int height, bool use_alpha) {
 
-	return g_pTextures[index];
+	DrawExtendGraph(x, y, width, height, this->handle ,use_alpha);
 }
 
-int Texture_GetWidth(TextureIndex index)
-{
-    if( index < 0 || index >= TEXTURE_INDEX_MAX ) {
-        return NULL;
-    }
-
-	return g_TextureFiles[index].width;
-}
-
-int Texture_GetHeight(TextureIndex index)
-{
-    if( index < 0 || index >= TEXTURE_INDEX_MAX ) {
-        return NULL;
-    }
-
-	return g_TextureFiles[index].height;
-}

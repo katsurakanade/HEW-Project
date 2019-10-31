@@ -1,5 +1,5 @@
 /*
-Copyright <2019> <Kanade Katsura>
+Copyright <2019> <katsurakanade>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
@@ -21,75 +21,59 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 
 using namespace std;
 
+// キー最大値
 #define	NUM_KEY_MAX			(256)
 
-// game pad用設定値
-#define DEADZONE		2500			// 各軸の25%を無効ゾーンとする
-#define RANGE_MAX		1000			// 有効範囲の最大値
-#define RANGE_MIN		-1000			// 有効範囲の最小値
-
+// JoyCon 最大値
 #define JOYCON_MAX 2
 
-/*
-JoyConインターフェース
-JoyConDriver + vJoy  で使ってください
-JoyConDriver設定：Combine JoyCons
-*/
+// JoyConインデックス
+#define LEFT_JOYCON 0
+#define RIGHT_JOYCON 1
 
-// JoyCon左 
-#define JOYCON_LEFTSTICK_DOWN 1024L  // 10
-#define JOYCON_LEFTSTICK_UP 4096L  // 11
-#define JOYCON_LEFTSTICK_RIGHT 32768L  // 15
-#define JOYCON_LEFTSTICK_LEFT 65536l  // 16
+// Joyconスティック
+#define JOYCON_STICK_DOWN 0x00004000l  
+#define JOYCON_STICK_UP 0x00008000l  
+#define JOYCON_STICK_RIGHT 0x00016000l  
+#define JOYCON_STICK_LEFT 0x00032000l 
 
-#define JOYCON_DOWN 0x00000001l  // 1
-#define JOYCON_UP 0x00000002l // 2
-#define JOYCON_RIGHT 0x00000004l // 3
-#define JOYCON_LEFT 0x00000008l // 4
-#define JOYCON_SR_LEFT 0x00000010l //5
-#define JOYCON_SL_LEFT 0x00000020l //6
-#define JOYCON_L 0x00000040l // 7
-#define JOYCON_ZL 0x00000080l // 8
-#define JOYCON_MIN 0x000000100l // 9
-#define JOYCON_L3  0x00000800l // 12
-#define JOYCON_SCREENSHOT 0x00002000l // 14
+// JoyCon左
+#define JOYCON_DOWN 0x00000001l  
+#define JOYCON_UP 0x00000002l 
+#define JOYCON_RIGHT 0x00000004l 
+#define JOYCON_LEFT 0x00000008l 
+#define JOYCON_SR_LEFT 0x00000010l 
+#define JOYCON_SL_LEFT 0x00000020l 
+#define JOYCON_L 0x00000040l 
+#define JOYCON_ZL 0x00000080l 
+#define JOYCON_MIN 0x000000100l
+#define JOYCON_L3  0x00000800l 
+#define JOYCON_SCREENSHOT 0x00002000l 
 
 // JoyCon右
-
-#define JOYCON_RIGHTSTICK_DOWN 33554432L  // 25
-#define JOYCON_RIGHTSTICK_UP 268435456l  // 2
-#define JOYCON_RIGHTSTICK_RIGHT 1073741824l  // 3
-#define JOYCON_RIGHTSTICK_LEFT 2147483648l  // 4
-
-#define JOYCON_Y 131072L // 17
-#define JOYCON_X 262144L // 18
-#define JOYCON_B 524288L // 19
-#define JOYCON_A 1048576L // 20
-#define JOYCON_SR_RIGHT 2097152L // 21
-#define JOYCON_SL_RIGHT 4194304L // 22
-#define JOYCON_R  8388608L // 23
-#define JOYCON_ZR  16777216L //  24
-#define JOYCON_PLUS 67108864L // 26
-#define JOYCON_R3 134217728L // 27
-#define JOYCON_HOME   536870912L // 29
-
-//bool GamePad_Initialize(HINSTANCE hInstance, HWND hWnd);
-//void GamePad_Finalize(void);
-//void GamePad_Update(void);
-
-//BOOL GamePad_IsPress(int padNo, DWORD button);
-//BOOL GamePad_IsTrigger(int padNo, DWORD button);
+#define JOYCON_Y 0x00000001l 
+#define JOYCON_X 0x00000002l 
+#define JOYCON_B 0x00000004l  
+#define JOYCON_A 0x00000008l 
+#define JOYCON_SR_RIGHT 0x000000010l  
+#define JOYCON_SL_RIGHT 0x000000020l  
+#define JOYCON_R  0x000000040l 
+#define JOYCON_ZR  0x000000080l 
+#define JOYCON_PLUS 0x000000200l
+#define JOYCON_R3 0x000000400l 
+#define JOYCON_HOME   0x0000001000l 
 
 class Keyboard {
 
 private:
 
+	// デバイス
 	LPDIRECTINPUTDEVICE8 DevKeyboard = NULL;
-
+	// キー状態
 	BYTE	 KeyState[NUM_KEY_MAX];
-
+	// キー状態（Trigger）
 	BYTE	 KeyStateTrigger[NUM_KEY_MAX];
-
+	// キー状態（Release）
 	BYTE	 KeyStateRelease[NUM_KEY_MAX];
 
 public:
@@ -111,11 +95,18 @@ class JoyCon {
 
 private:
 
+	// 加速度
 	DWORD	 Accelerometer;
-
+	// ジャイロ(x,y,z)
+	DWORD Gyro[3];
+	// ボタン状態
 	DWORD State;
-
+	// ボタン状態（Trigger）
 	DWORD Trigger;
+
+	DWORD Old_State = NULL;
+
+	float Same_Timer;
 
 public:
 
@@ -133,10 +124,28 @@ public:
 
 	DWORD GetTrigger();
 
+	// 加速度設定
 	void SetAccelerometer(DWORD data);
+	// ジャイロ設定
+	void SetGyro(DWORD x,DWORD y,DWORD z);
 
-	DWORD GetAccelerometer();
+	// GetジャイロX
+	int GetGyro_X();
+	// GetジャイロY
+	int GetGyro_Y();
+	// GetジャイロZ
+	int GetGyro_Z();
+	// Get加速度
+	int GetAccelerometer();
+
+	float GetSameTimer();
+
+	LONG GetOldState();
+
+	bool Action_Judge[3] = {false,false,false};
 };
 
+// キーボード
 extern Keyboard keyboard;
+// JoyCon
 extern JoyCon joycon[JOYCON_MAX];

@@ -1,5 +1,5 @@
 /*
-Copyright <2019> <Kanade Katsura>
+Copyright <2019> <katsurakanade>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
 to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
@@ -13,6 +13,12 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 */
 
 #include "input.h"
+#include "main.h"
+
+// JoyCon用リミット
+#define DEADZONE			50
+#define RANGE_MAX		2000			
+#define RANGE_MIN		-2000
 
 static bool Initialize(HINSTANCE hInstance);
 static void Finalize(void);
@@ -21,6 +27,7 @@ LPDIRECTINPUT8			g_pInput = NULL;
 Keyboard keyboard;
 JoyCon joycon[JOYCON_MAX];
 
+// Joycon数
 static int					g_padCount = 0;										
 
 bool initialize(HINSTANCE hInstance)
@@ -54,7 +61,6 @@ BOOL CALLBACK SearchGamePadCallback(LPDIDEVICEINSTANCE lpddi, LPVOID)
 
 bool Keyboard::Initialize(HINSTANCE hInstance, HWND hWnd)
 {
-
 	try
 	{
 		if (!initialize(hInstance)) {
@@ -145,22 +151,15 @@ bool JoyCon::Initialize(HINSTANCE hInstance, HWND hWnd)
 
 	HRESULT		result;
 
-	// ジョイパッドを探す
 	g_pInput->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)SearchGamePadCallback, NULL, DIEDFL_ATTACHEDONLY);
-	// セットしたコールバック関数が、パッドを発見した数だけ呼ばれる。
 
-	// ジョイスティック用のデータ・フォーマットを設定
 	result = Device->SetDataFormat(&c_dfDIJoystick);
 
 	for (int i = 0; i < JOYCON_MAX; i++) {
 	
 		if (FAILED(result))
-			return false; // データフォーマットの設定に失敗
+			return false; 
 
-			// 軸の値の範囲を設定
-			// X軸、Y軸のそれぞれについて、オブジェクトが報告可能な値の範囲をセットする。
-			// (max-min)は、最大10,000(?)。(max-min)/2が中央値になる。
-			// 差を大きくすれば、アナログ値の細かな動きを捕らえられる。(パッドの性能による)
 		DIPROPRANGE				diprg;
 		ZeroMemory(&diprg, sizeof(diprg));
 		diprg.diph.dwSize = sizeof(diprg);
@@ -168,6 +167,7 @@ bool JoyCon::Initialize(HINSTANCE hInstance, HWND hWnd)
 		diprg.diph.dwHow = DIPH_BYOFFSET;
 		diprg.lMin = RANGE_MIN;
 		diprg.lMax = RANGE_MAX;
+
 		// X軸の範囲を設定
 		diprg.diph.dwObj = DIJOFS_X;
 		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
@@ -179,9 +179,14 @@ bool JoyCon::Initialize(HINSTANCE hInstance, HWND hWnd)
 		diprg.diph.dwObj = DIJOFS_RZ;
 		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
 
-		// 各軸ごとに、無効のゾーン値を設定する。
-		// 無効ゾーンとは、中央からの微少なジョイスティックの動きを無視する範囲のこと。
-		// 指定する値は、10000に対する相対値(2000なら20パーセント)。
+		// Slider1の範囲を設定
+		diprg.diph.dwObj = DIJOFS_SLIDER(0);
+		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
+
+		// Slider2の範囲を設定
+		diprg.diph.dwObj = DIJOFS_SLIDER(1);
+		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
+
 		DIPROPDWORD				dipdw;
 		dipdw.diph.dwSize = sizeof(DIPROPDWORD);
 		dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
@@ -198,7 +203,14 @@ bool JoyCon::Initialize(HINSTANCE hInstance, HWND hWnd)
 		dipdw.diph.dwObj = DIJOFS_RZ;
 		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-		//ジョイスティック入力制御開始
+		// Slider1の無効ゾーンを設定
+		dipdw.diph.dwObj = DIJOFS_SLIDER(0);
+		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+
+		// Slider2の無効ゾーンを設定
+		dipdw.diph.dwObj = DIJOFS_SLIDER(1);
+		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+
 		joycon[i].Device->Acquire();
 	}
 
@@ -226,7 +238,7 @@ void JoyCon::Update()
 		lastPadState = State;
 		State = 0x00000000l;
 
-		result = Device->Poll();	// ジョイスティックにポールをかける
+		result = Device->Poll();
 
 		if (FAILED(result)) {
 			result = Device->Acquire();
@@ -234,7 +246,7 @@ void JoyCon::Update()
 				result = Device->Acquire();
 		}
 
-		result = Device->GetDeviceState(sizeof(DIJOYSTATE), &dijs);	// デバイス状態を読み取る
+		result = Device->GetDeviceState(sizeof(DIJOYSTATE), &dijs);	
 		if (result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED) {
 			result = Device->Acquire();
 			while (result == DIERR_INPUTLOST)
@@ -242,17 +254,11 @@ void JoyCon::Update()
 		}
 
 		// JoyCon
-
-		if (dijs.lY > 0) State |= JOYCON_RIGHTSTICK_UP;
-		if (dijs.lY < 0) State |= JOYCON_RIGHTSTICK_DOWN;
-		if (dijs.lX > 0) State |= JOYCON_RIGHTSTICK_RIGHT;
-		if (dijs.lX < 0) State |= JOYCON_RIGHTSTICK_LEFT;
-
-		if (dijs.lRy > 32767 + 2000)State |= JOYCON_LEFTSTICK_UP;
-		if (dijs.lRy < 32767 - 2000) State |= JOYCON_LEFTSTICK_DOWN;
-		if (dijs.lRx < 32767 + 2000) State |= JOYCON_LEFTSTICK_LEFT;
-		if (dijs.lRx > 32767 - 2000) State |= JOYCON_LEFTSTICK_RIGHT;
-
+		if (dijs.lY > 0) State |= JOYCON_STICK_UP;
+		if (dijs.lY < 0) State |= JOYCON_STICK_DOWN;
+		if (dijs.lX < 0) State |= JOYCON_STICK_LEFT;
+		if (dijs.lX > 0) State |= JOYCON_STICK_RIGHT;
+		
 		if (dijs.rgbButtons[0] & 0x80)	State |= JOYCON_DOWN;
 		if (dijs.rgbButtons[1] & 0x80)	State |= JOYCON_UP;
 		if (dijs.rgbButtons[2] & 0x80)	State |= JOYCON_RIGHT;
@@ -276,21 +282,61 @@ void JoyCon::Update()
 		if (dijs.rgbButtons[26] & 0x80)	State |= JOYCON_R3;
 		if (dijs.rgbButtons[28] & 0x80)	State |= JOYCON_HOME;
 
+		// 加速度設定
 		SetAccelerometer(dijs.lRz);
+		// ジャイロ設定
+		SetGyro(dijs.lRz, dijs.rglSlider[0], dijs.rglSlider[1]);
+		 // Trigger設定
+		Trigger = ((lastPadState ^ State)	& State);
 
-		// Trigger設定
-		Trigger = ((lastPadState ^ State)	// 前回と違っていて
-			& State);					// しかも今ONのやつ
-	
+		//同時押し設定
 
+		if (Old_State != 0) {
+			Same_Timer += SECONDS;
+		}
+
+		else if (Old_State == 0) {
+			Old_State = State;
+		}
+
+		if (Same_Timer > 0.1f) {
+			Old_State = 0;
+			Same_Timer = 0.0f;
+		}
 }
 
 void JoyCon::SetAccelerometer(DWORD data) {
 	Accelerometer = data;
 }
 
-DWORD JoyCon::GetAccelerometer() {
+void JoyCon::SetGyro(DWORD x, DWORD y, DWORD z) {
+	Gyro[0] = x;
+	Gyro[1] = y;
+	Gyro[2] = z;
+}
+
+int JoyCon::GetGyro_X() {
+	return (int)Gyro[0];
+}
+
+int JoyCon::GetGyro_Y() {
+	return (int)Gyro[1];
+}
+
+int JoyCon::GetGyro_Z() {
+	return (int)Gyro[2];
+}
+
+int JoyCon::GetAccelerometer() {
 	return Accelerometer;
+}
+
+float JoyCon::GetSameTimer() {
+	return Same_Timer;
+}
+
+LONG JoyCon::GetOldState() {
+	return (LONG)Old_State;
 }
 
 DWORD JoyCon::GetTrigger() {
