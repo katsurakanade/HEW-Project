@@ -190,14 +190,12 @@ bool Initialize(HINSTANCE hInst)
 		return false;
 	}
 	// DirectInputの初期化（キーボード）
-	if (!keyboard.Initialize(hInst, g_hWnd)){
+	if (!Keyboard_Initialize(hInst, g_hWnd)){
 		return false;
 	}
 	// DirectInputの初期化（ゲームパッド）
-	for (int i = 0; i < JOYCON_MAX;i++) {
-		if (!joycon[i].Initialize(hInst, g_hWnd)) {
-			return false;
-		}
+	if (!GamePad_Initialize(hInst, g_hWnd)){
+		return false;
 	}
 
 	if (!InitSound(g_hWnd)) {
@@ -258,12 +256,10 @@ void Update(void)
 {
 
 	//キーボード更新
-	keyboard.Update();
+	Keyboard_Update();
 
 	//ゲームパッド更新
-	for (int i = 0; i < JOYCON_MAX; i++) {
-		joycon[i].Update();
-	}
+	GamePad_Update();
 	
 	Scene_Update();
 
