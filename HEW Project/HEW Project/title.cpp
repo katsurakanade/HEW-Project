@@ -3,12 +3,12 @@
 #include "title.h"
 #include "scene.h"
 #include "input.h"
-#include "texture.h"
 #include "IMGUI/imgui.h"
 #include  "main.h"
 #include "DxLib.h"
-#include "texture.h"
-
+#include "Live2D.h"
+#include "GameObject.h"
+#include "Menu.h"
 
 using namespace std;
 
@@ -25,33 +25,43 @@ static bool SameFlag;
 
 std::vector<int>  Array;
 
-Texture a;
+Live2D Hiyori;
 
-int model;
+Menu TitleMenu(2);
 
 void Init_Title() {
 
-	a.Load(TexturePassDict[TEXTURE_INDEX_START]);
+	Hiyori.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_HIYORI]);
 
+	Hiyori.Zoom.x = 3.0f;
+	Hiyori.Zoom.y = 3.0f;
+	Hiyori.Pos.x = -400.0f;
+	Hiyori.Pos.y = -500.0f;
+	
+	TitleMenu.Pos.x = 700.0f;
+	TitleMenu.Pos.y = 100.0f;
+	TitleMenu.FontSize = 64.0f;
 
-	model = Live2D_LoadModel("C:/Users/katsu/Desktop/CubismSdkForNative-4-beta.1/Samples/Res/Haru/Haru.model3.json");
-
-	Live2D_Model_SetTranslate(model, -300, 0);
-	Live2D_Model_SetExtendRate(model, 1, 1);
+	TitleMenu.SelectText.push_back("スタート");
+	TitleMenu.SelectText.push_back("終了");
 }
 
 void Uninit_Title() {
-	Live2D_DeleteModel(model);
+
+	Hiyori.~Live2D();
+
 }
 
 void Update_Title() {
 
-	if (Live2D_Model_IsMotionFinished(model)) {
-		Live2D_Model_StartMotion(model, "Idle", GetRand(8));
+	Hiyori.SetMontionIndex(GetRand(8));
+
+	TitleMenu.Update();
+
+	if (TitleMenu.GetSelectNow() == 0 &&  keyboard.IsTrigger(DIK_RETURN)) {
+		Scene_Change(SCENE_INDEX_GAME);
 	}
-
-	Live2D_Model_Update(model, SECONDS);
-
+	
 	/*
 	 x += (joycon[0].GetGyro_X() / 20);
      y += (joycon[0].GetGyro_Y() / 20);
@@ -114,13 +124,9 @@ void Update_Title() {
 
 void Draw_Title() {
 
-	//main->Draw(Menu_TextureArray, 500 + x, 400 + y, 150, 256, 128);	
+	Hiyori.Draw();
 
-	a.Draw(0,0,200,80,false);
+	TitleMenu.Draw();
 
-	Live2D_RenderBegin();
-
-	Live2D_Model_Draw(model);
-
-	Live2D_RenderEnd();
+	DrawFormatString(700, 500, (255,255,255), "%d", TitleMenu.GetSelectNow());
 }

@@ -30,9 +30,6 @@
     <ClCompile Include="myDirect3D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="texture.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="sound.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -63,6 +60,15 @@
     <ClCompile Include="IMGUI\imgui_impl_win32.cpp">
       <Filter>ソース ファイル\IMGUI</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Live2D.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h">
@@ -72,9 +78,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="myDirect3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="texture.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="sound.h">
@@ -112,6 +115,15 @@
     </ClInclude>
     <ClInclude Include="IMGUI\imgui_impl_win32.h">
       <Filter>ヘッダー ファイル\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Live2D.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
