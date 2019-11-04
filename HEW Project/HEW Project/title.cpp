@@ -34,7 +34,7 @@ void Init_Title() {
 	a.Load(TexturePassDict[TEXTURE_INDEX_START]);
 
 
-	model = Live2D_LoadModel("C:/Users/katsu/Desktop/CubismSdkForNative-4-beta.1/Samples/Res/Haru/Haru.model3.json");
+	model = Live2D_LoadModel("C:/Users/Noa/source/repos/katsurakanade/HEW-Project/HEW Project/HEW Project/asset/Live2D/Natori/Natori.model3.json");
 
 	Live2D_Model_SetTranslate(model, -300, 0);
 	Live2D_Model_SetExtendRate(model, 1, 1);

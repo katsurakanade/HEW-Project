@@ -14,7 +14,7 @@ void Uninit_Game() {
 
 void Update_Game() {
 
-	if (Keyboard_IsTrigger(DIK_R)) {
+	if (keyboard.IsTrigger(DIK_R)) {
 		Scene_Change(SCENE_INDEX_TITLE);
 	}
 

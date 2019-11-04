@@ -7,6 +7,7 @@
 
 vector <const char *>TexturePassDict = {
 	"C:/Users/katsu/source/repos/katsurakanade/HEW-Project/HEW Project/HEW Project/asset/texture/start.png",
+
 };
 
 void Texture::Load(const char * name) {

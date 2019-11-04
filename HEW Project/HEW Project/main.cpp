@@ -190,6 +190,10 @@ bool Initialize(HINSTANCE hInst)
 		// ゲームの初期化に失敗した
 		return false;
 	}
+	
+	keyboard.Initialize(hInst,g_hWnd);
+
+	/*
 	// DirectInputの初期化（キーボード）
 	if (!Keyboard_Initialize(hInst, g_hWnd)){
 		return false;
@@ -198,6 +202,7 @@ bool Initialize(HINSTANCE hInst)
 	if (!GamePad_Initialize(hInst, g_hWnd)){
 		return false;
 	}
+	*/
 
 	if (!InitSound(g_hWnd)) {
 		return false;
@@ -214,7 +219,7 @@ bool Initialize(HINSTANCE hInst)
 	ChangeWindowMode(TRUE);
 	SetUserWindow(g_hWnd);
 
-	if (Live2D_SetCubism4CoreDLLPath("C:/Users/katsu/source/repos/katsurakanade/HEW-Project/HEW Project/HEW Project/Live2DCubismCore.dll") == -1) {
+	if (Live2D_SetCubism4CoreDLLPath("C:/Users/Noa/source/repos/katsurakanade/HEW-Project/HEW Project/HEW Project/Live2DCubismCore.dll") == -1) {
 		return -1;
 	}
 
@@ -256,12 +261,16 @@ void Finalize(void)
 void Update(void)
 {
 
+	keyboard.Update();
+
+	/*
 	//キーボード更新
 	Keyboard_Update();
 
 	//ゲームパッド更新
 	GamePad_Update();
-	
+	*/
+
 	Scene_Update();
 
 
