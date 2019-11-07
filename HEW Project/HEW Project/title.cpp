@@ -35,10 +35,13 @@ ActionUI Action;
 
 GameObject Success;
 
+GameObject test;
+
 void Init_Title() {
 
 	Hiyori.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_HIYORI]);
 	Success.LoadTexture(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
+	test.LoadTexture(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
 
 	Hiyori.Zoom.x = 3.0f;
 	Hiyori.Zoom.y = 3.0f;
@@ -142,23 +145,24 @@ void Update_Title() {
 			LoadGraph(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
 		}
 	}
+
 }
 
 void Draw_Title() {
 
-		Hiyori.Draw();
+	Hiyori.Draw();
 
-		Action.Draw();
+	Action.Draw();
 
-		TitleMenu.Draw();
+	TitleMenu.Draw();
 
-		if (Action.GetFinishFlag()) {
-			Success.Draw(0, 0, 256, 256, TRUE);
-		}
+	if (Action.GetFinishFlag()) {
+		Success.Draw(0, 0, 256, 256, TRUE);
+	}
 
-		//DrawString(0, 0, "Now Loading", (255, 255, 255));
-		//DrawFormatString(0, 100, GetColor(255, 255, 255), "îÒìØä˙ì«Ç›çûÇ›ÇÃêî %d", GetASyncLoadNum());
+	//DrawString(0, 0, "Now Loading", (255, 255, 255));
+	//DrawFormatString(0, 100, GetColor(255, 255, 255), "îÒìØä˙ì«Ç›çûÇ›ÇÃêî %d", GetASyncLoadNum());
 
-	
 
+	//test.Draw(0, 0);
 }
