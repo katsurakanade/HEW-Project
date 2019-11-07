@@ -1,6 +1,7 @@
 #include "scene.h"
 #include "title.h"
 #include "game.h"
+#include "DxLib.h"
 
 static SCENE_INDEX g_SceneIndex;
 static SCENE_INDEX g_SceneNextIndex;

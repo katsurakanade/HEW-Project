@@ -1,6 +1,6 @@
 #include "game.h"
 #include "input.h"
-#include "texture.h"
+#include "GameObject.h"
 #include "scene.h"
 
 void Init_Game() {
@@ -21,5 +21,7 @@ void Update_Game() {
 }
 
 void Draw_Game() {
+
+	
 
 }

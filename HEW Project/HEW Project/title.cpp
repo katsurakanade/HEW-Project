@@ -1,14 +1,16 @@
+// 21000 タイトル画面
+
 #include <algorithm>
 #include <vector>
 #include "title.h"
 #include "scene.h"
 #include "input.h"
-#include "texture.h"
-#include "IMGUI/imgui.h"
 #include  "main.h"
 #include "DxLib.h"
-#include "texture.h"
-
+#include "Live2D.h"
+#include "GameObject.h"
+#include "Menu.h"
+#include "ActionUI.h"
 
 using namespace std;
 
@@ -25,33 +27,64 @@ static bool SameFlag;
 
 std::vector<int>  Array;
 
-Texture a;
+Live2D Hiyori;
 
-int model;
+Menu TitleMenu(3);
+
+ActionUI Action;
+
+GameObject Success;
+
+GameObject test;
 
 void Init_Title() {
 
-	a.Load(TexturePassDict[TEXTURE_INDEX_START]);
+	Hiyori.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_HIYORI]);
+	Success.LoadTexture(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
+	test.LoadTexture(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
 
+	Hiyori.Zoom.x = 3.0f;
+	Hiyori.Zoom.y = 3.0f;
+	Hiyori.Pos.x = -400.0f;
+	Hiyori.Pos.y = -500.0f;
+	
+	TitleMenu.Pos.x = 700.0f;
+	TitleMenu.Pos.y = 100.0f;
+	TitleMenu.FontSize = 64.0f;
 
-	model = Live2D_LoadModel("C:/Users/katsu/Desktop/CubismSdkForNative-4-beta.1/Samples/Res/Haru/Haru.model3.json");
+	TitleMenu.SelectText.push_back("スタート");
+	TitleMenu.SelectText.push_back("チュートリアル");
+	TitleMenu.SelectText.push_back("終了");
 
-	Live2D_Model_SetTranslate(model, -300, 0);
-	Live2D_Model_SetExtendRate(model, 1, 1);
+	Action.Pos.x = 500;
+	Action.Pos.y = 600;
+	Action.Interval.x = 150;
+	Action.Interval.y = 0;
+
 }
 
 void Uninit_Title() {
-	Live2D_DeleteModel(model);
+
+	Hiyori.~Live2D();
+
 }
 
 void Update_Title() {
 
-	if (Live2D_Model_IsMotionFinished(model)) {
-		Live2D_Model_StartMotion(model, "Idle", GetRand(8));
+	Hiyori.SetMontionIndex(GetRand(8));
+
+	TitleMenu.Update();
+
+	Action.Update();
+
+	if (TitleMenu.GetSelectNow() == 0 &&  keyboard.IsTrigger(DIK_RETURN)) {
+		Scene_Change(SCENE_INDEX_GAME);
 	}
 
-	Live2D_Model_Update(model, SECONDS);
-
+	if (TitleMenu.GetSelectNow() == 2 && keyboard.IsTrigger(DIK_RETURN)) {
+		exit(1);
+	}
+	
 	/*
 	 x += (joycon[0].GetGyro_X() / 20);
      y += (joycon[0].GetGyro_Y() / 20);
@@ -80,24 +113,7 @@ void Update_Title() {
 	}
 	*/
 
-	// Debug Window
 	/*
-	ImGui::Begin("Debug Window");
-	ImGui::SetWindowSize(ImVec2(300.0f, 400.0f), 0);
-	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f), 0);
-	ImGui::Text("LeftGyro : %d", joycon[0].GetGyro_X());
-	ImGui::Text("RightGyro: %d", joycon[1].GetGyro_X());
-	ImGui::Text("Count : %d", acount);
-	ImGui::Text("CountB : %d", bcount);
-	ImGui::Text("LEFT Old State : %d", joycon[0].GetOldState());
-	ImGui::Text("RIGHT Old State : %d", joycon[1].GetOldState());
-	ImGui::Checkbox("Up", &joycon[0].Action_Judge[0]);
-	ImGui::Checkbox("Down", &joycon[0].Action_Judge[1]);
-	ImGui::Checkbox("Up2", &joycon[0].Action_Judge[2]);
-	ImGui::Checkbox("Same", &SameFlag);
-	ImGui::End();
-	*/
-
 	if (joycon[0].GetOldState() == JOYCON_L && joycon[1].GetOldState() == JOYCON_R) {
 		SameFlag = true;
 	}
@@ -105,22 +121,48 @@ void Update_Title() {
 	if (joycon[0].IsTrigger(JOYCON_SCREENSHOT)) {
 		SameFlag = false;
 	}
+	*/
 
 	if (keyboard.IsTrigger(DIK_Z)) {
 		Scene_Change(SCENE_INDEX_GAME);
+	}
+
+	if (keyboard.IsTrigger(DIK_L)) {
+		Action.SetStateSwitch(true);
+		Action.Reset_Vector();
+	}
+
+	if (keyboard.IsTrigger(DIK_1)) {
+		Action.SetState(0);
+	}
+
+	if (keyboard.IsTrigger(DIK_2)) {
+		Action.SetState(1);
+	}
+	
+	if (keyboard.IsTrigger(DIK_G)) {
+		for (int i = 0; i < 50; i++) {
+			LoadGraph(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
+		}
 	}
 
 }
 
 void Draw_Title() {
 
-	//main->Draw(Menu_TextureArray, 500 + x, 400 + y, 150, 256, 128);	
+	Hiyori.Draw();
 
-	a.Draw(0,0,200,80,false);
+	Action.Draw();
 
-	Live2D_RenderBegin();
+	TitleMenu.Draw();
 
-	Live2D_Model_Draw(model);
+	if (Action.GetFinishFlag()) {
+		Success.Draw(0, 0, 256, 256, TRUE);
+	}
 
-	Live2D_RenderEnd();
+	//DrawString(0, 0, "Now Loading", (255, 255, 255));
+	//DrawFormatString(0, 100, GetColor(255, 255, 255), "非同期読み込みの数 %d", GetASyncLoadNum());
+
+
+	//test.Draw(0, 0);
 }
