@@ -13,22 +13,21 @@ typedef enum {
 
 }TEXTURE_KEY;
 
-
-class Texture {
+class GameObject {
 
 private:
 
-	int handle;
-
 public:
 
+	int handle;
 
-	void Load(const char * name);
+	void LoadTexture(const char * name);
 
 	void Draw(int x, int y);
 
 	void Draw(int x, int y, int width, int height,bool use_alpha);
 
+	int GetHandle();
 
 };
 

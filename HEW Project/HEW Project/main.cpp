@@ -2,7 +2,6 @@
 #include "myDirect3D.h"
 #include <time.h>
 #include "input.h"
-#include "texture.h"
 #include "sound.h"
 #include "scene.h"
 #include "IMGUI/imgui.h"

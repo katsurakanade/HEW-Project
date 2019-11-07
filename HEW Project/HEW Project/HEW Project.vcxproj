@@ -27,11 +27,13 @@
     <ClCompile Include="IMGUI\imgui_impl_win32.cpp" />
     <ClCompile Include="IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="Live2D.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="myDirect3D.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sound.cpp" />
-    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="title.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -45,11 +47,13 @@
     <ClInclude Include="IMGUI\imstb_textedit.h" />
     <ClInclude Include="IMGUI\imstb_truetype.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="Live2D.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="myDirect3D.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sound.h" />
-    <ClInclude Include="texture.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="title.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
