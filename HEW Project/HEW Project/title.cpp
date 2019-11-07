@@ -1,14 +1,16 @@
+// 21000 タイトル画面
+
 #include <algorithm>
 #include <vector>
 #include "title.h"
 #include "scene.h"
 #include "input.h"
-#include "IMGUI/imgui.h"
 #include  "main.h"
 #include "DxLib.h"
 #include "Live2D.h"
 #include "GameObject.h"
 #include "Menu.h"
+#include "ActionUI.h"
 
 using namespace std;
 
@@ -27,11 +29,16 @@ std::vector<int>  Array;
 
 Live2D Hiyori;
 
-Menu TitleMenu(2);
+Menu TitleMenu(3);
+
+ActionUI Action;
+
+GameObject Success;
 
 void Init_Title() {
 
 	Hiyori.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_HIYORI]);
+	Success.LoadTexture(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
 
 	Hiyori.Zoom.x = 3.0f;
 	Hiyori.Zoom.y = 3.0f;
@@ -43,7 +50,14 @@ void Init_Title() {
 	TitleMenu.FontSize = 64.0f;
 
 	TitleMenu.SelectText.push_back("スタート");
+	TitleMenu.SelectText.push_back("チュートリアル");
 	TitleMenu.SelectText.push_back("終了");
+
+	Action.Pos.x = 500;
+	Action.Pos.y = 600;
+	Action.Interval.x = 150;
+	Action.Interval.y = 0;
+
 }
 
 void Uninit_Title() {
@@ -58,8 +72,14 @@ void Update_Title() {
 
 	TitleMenu.Update();
 
+	Action.Update();
+
 	if (TitleMenu.GetSelectNow() == 0 &&  keyboard.IsTrigger(DIK_RETURN)) {
 		Scene_Change(SCENE_INDEX_GAME);
+	}
+
+	if (TitleMenu.GetSelectNow() == 2 && keyboard.IsTrigger(DIK_RETURN)) {
+		exit(1);
 	}
 	
 	/*
@@ -90,24 +110,7 @@ void Update_Title() {
 	}
 	*/
 
-	// Debug Window
 	/*
-	ImGui::Begin("Debug Window");
-	ImGui::SetWindowSize(ImVec2(300.0f, 400.0f), 0);
-	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f), 0);
-	ImGui::Text("LeftGyro : %d", joycon[0].GetGyro_X());
-	ImGui::Text("RightGyro: %d", joycon[1].GetGyro_X());
-	ImGui::Text("Count : %d", acount);
-	ImGui::Text("CountB : %d", bcount);
-	ImGui::Text("LEFT Old State : %d", joycon[0].GetOldState());
-	ImGui::Text("RIGHT Old State : %d", joycon[1].GetOldState());
-	ImGui::Checkbox("Up", &joycon[0].Action_Judge[0]);
-	ImGui::Checkbox("Down", &joycon[0].Action_Judge[1]);
-	ImGui::Checkbox("Up2", &joycon[0].Action_Judge[2]);
-	ImGui::Checkbox("Same", &SameFlag);
-	ImGui::End();
-	*/
-
 	if (joycon[0].GetOldState() == JOYCON_L && joycon[1].GetOldState() == JOYCON_R) {
 		SameFlag = true;
 	}
@@ -115,18 +118,47 @@ void Update_Title() {
 	if (joycon[0].IsTrigger(JOYCON_SCREENSHOT)) {
 		SameFlag = false;
 	}
+	*/
 
 	if (keyboard.IsTrigger(DIK_Z)) {
 		Scene_Change(SCENE_INDEX_GAME);
 	}
 
+	if (keyboard.IsTrigger(DIK_L)) {
+		Action.SetStateSwitch(true);
+		Action.Reset_Vector();
+	}
+
+	if (keyboard.IsTrigger(DIK_1)) {
+		Action.SetState(0);
+	}
+
+	if (keyboard.IsTrigger(DIK_2)) {
+		Action.SetState(1);
+	}
+	
+	if (keyboard.IsTrigger(DIK_G)) {
+		for (int i = 0; i < 50; i++) {
+			LoadGraph(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
+		}
+	}
 }
 
 void Draw_Title() {
 
-	Hiyori.Draw();
+		Hiyori.Draw();
 
-	TitleMenu.Draw();
+		Action.Draw();
 
-	DrawFormatString(700, 500, (255,255,255), "%d", TitleMenu.GetSelectNow());
+		TitleMenu.Draw();
+
+		if (Action.GetFinishFlag()) {
+			Success.Draw(0, 0, 256, 256, TRUE);
+		}
+
+		//DrawString(0, 0, "Now Loading", (255, 255, 255));
+		//DrawFormatString(0, 100, GetColor(255, 255, 255), "非同期読み込みの数 %d", GetASyncLoadNum());
+
+	
+
 }
