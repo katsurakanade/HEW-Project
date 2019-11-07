@@ -11,19 +11,9 @@
 #include "GameObject.h"
 #include "Menu.h"
 #include "ActionUI.h"
+#include "GameData.h"
 
 using namespace std;
-
-int x;
-int y;
-
-static bool ShowDemoWindow = true;
-
-static int acount ;
-
-static int bcount;
-
-static bool SameFlag;
 
 std::vector<int>  Array;
 
@@ -35,12 +25,21 @@ ActionUI Action;
 
 GameObject Success;
 
+GameObject Failed;
+
 GameObject test;
+
+GameData gamedata;
+
+static int acount;
+
+static int bcount;
 
 void Init_Title() {
 
 	Hiyori.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_HIYORI]);
 	Success.LoadTexture(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
+	Failed.LoadTexture(TexturePassDict[TEXTURE_INDEX_ACTION_FAILED]);
 	test.LoadTexture(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
 
 	Hiyori.Zoom.x = 3.0f;
@@ -77,6 +76,8 @@ void Update_Title() {
 
 	Action.Update();
 
+	gamedata.UpdateSpeed();
+
 	if (TitleMenu.GetSelectNow() == 0 &&  keyboard.IsTrigger(DIK_RETURN)) {
 		Scene_Change(SCENE_INDEX_GAME);
 	}
@@ -84,34 +85,43 @@ void Update_Title() {
 	if (TitleMenu.GetSelectNow() == 2 && keyboard.IsTrigger(DIK_RETURN)) {
 		exit(1);
 	}
-	
-	/*
-	 x += (joycon[0].GetGyro_X() / 20);
-     y += (joycon[0].GetGyro_Y() / 20);
 	 
-	 if (joycon[0].GetGyro_Y() > 150) {
-		 joycon[0].Action_Judge[0] = true;
-		 Array.push_back(joycon[0].GetGyro_Y());
+	 if (joycon[1].GetGyro_Y() > 150) {
+		 joycon[1].Action_Judge[0] = true;
+		 Array.push_back(joycon[1].GetGyro_Y());
 	 }
 
-	 if (joycon[0].Action_Judge[0] && joycon[0].GetGyro_Y() < -200) {
-		 joycon[0].Action_Judge[1] = true;
+	 if (joycon[1].Action_Judge[0] && joycon[1].GetGyro_Y() < -200) {
+		 joycon[1].Action_Judge[1] = true;
 	 }
 
-	 if (joycon[0].Action_Judge[0] && joycon[0].Action_Judge[1] && joycon[0].GetGyro_Y() > 150) {
-		 joycon[0].Action_Judge[2] = true;
+	 if (joycon[1].Action_Judge[0] && joycon[1].Action_Judge[1] && joycon[1].GetGyro_Y() > 150) {
+		 joycon[1].Action_Judge[2] = true;
 	 }
 
-	 if ((joycon[0].Action_Judge[0] && joycon[0].Action_Judge[1] && joycon[0].Action_Judge[2]) ){
+	 if ((joycon[1].Action_Judge[0] && joycon[1].Action_Judge[1] && joycon[1].Action_Judge[2]) ){
 		 for (int i = 0; i < 3; i++) {
-			 joycon[0].Action_Judge[i] = false;
+			 joycon[1].Action_Judge[i] = false;
 		 }
-		 vector<int>::iterator iter = max_element(Array.begin(),Array.end());
-		 bcount = *iter;
-		 acount += bcount;
-		 Array.clear();
+		vector<int>::iterator iter = max_element(Array.begin(),Array.end());
+		acount = *iter;
+		bcount += acount;
+
+		if (bcount > 1000) {
+			gamedata.AddRunningDistance(gamedata.GetRunningSpeed());
+			bcount = 0;
+		}
+
+		gamedata.SetRunningSpeed(405);
+
+		Array.clear();
 	}
-	*/
+	
+	 if (gamedata.GetRunningSpeed() > 0) {
+		 gamedata.AddRunningSpeed(-15);
+	 }
+
+		gamedata.AddRunningDistance(gamedata.GetRunningSpeed());
 
 	/*
 	if (joycon[0].GetOldState() == JOYCON_L && joycon[1].GetOldState() == JOYCON_R) {
@@ -127,24 +137,6 @@ void Update_Title() {
 		Scene_Change(SCENE_INDEX_GAME);
 	}
 
-	if (keyboard.IsTrigger(DIK_L)) {
-		Action.SetStateSwitch(true);
-		Action.Reset_Vector();
-	}
-
-	if (keyboard.IsTrigger(DIK_1)) {
-		Action.SetState(0);
-	}
-
-	if (keyboard.IsTrigger(DIK_2)) {
-		Action.SetState(1);
-	}
-	
-	if (keyboard.IsTrigger(DIK_G)) {
-		for (int i = 0; i < 50; i++) {
-			LoadGraph(TexturePassDict[TEXTURE_INDEX_ACTION_SUCCESS]);
-		}
-	}
 
 }
 
@@ -157,12 +149,23 @@ void Draw_Title() {
 	TitleMenu.Draw();
 
 	if (Action.GetFinishFlag()) {
-		Success.Draw(0, 0, 256, 256, TRUE);
+		if (Action.GetProgress() == 4) {
+			Success.Draw(0, 0, 256, 256, TRUE);
+		}
+		else {
+			Failed.Draw(0, 0, 256, 256, TRUE);
+		}
 	}
 
-	//DrawString(0, 0, "Now Loading", (255, 255, 255));
-	//DrawFormatString(0, 100, GetColor(255, 255, 255), "”ñ“¯Šú“Ç‚Ýž‚Ý‚Ì” %d", GetASyncLoadNum());
+	SetFontSize(28);
+	DrawFormatString(700, 400, (255, 255, 255), "Speed : %d", gamedata.GetRunningSpeed());
+	DrawFormatString(700, 450, (255, 255, 255), "Distance : %d", gamedata.GetRunningMeter());
+	DrawFormatString(700, 500, (255, 255, 255), "Hp : %d", gamedata.Gethp());
 
+	//DrawFormatString(700, 550, (255, 255, 255), "%d", joycon[1].Action_Judge[0]);
+	//DrawFormatString(700, 600, (255, 255, 255), "%d", joycon[1].Action_Judge[1]);
+	//DrawFormatString(700, 650, (255, 255, 255), "%d", joycon[1].Action_Judge[2]);
+	//DrawFormatString(800, 650, (255, 255, 255), "%d", bcount);
 
 	//test.Draw(0, 0);
 }
