@@ -35,6 +35,8 @@ static void Update(void);
 // ゲームの描画関数
 static void Draw(void);
 
+int testhandle[50];
+
 /*------------------------------------------------------------------------------
 メイン
 ------------------------------------------------------------------------------*/
@@ -189,24 +191,24 @@ bool Initialize(HINSTANCE hInst)
 		// ゲームの初期化に失敗した
 		return false;
 	}
-	
-	keyboard.Initialize(hInst,g_hWnd);
-
-	/*
 	// DirectInputの初期化（キーボード）
-	if (!Keyboard_Initialize(hInst, g_hWnd)){
+	if (!keyboard.Initialize(hInst, g_hWnd)){
 		return false;
 	}
 	// DirectInputの初期化（ゲームパッド）
-	if (!GamePad_Initialize(hInst, g_hWnd)){
+	if (!joycon[0].Initialize(hInst, g_hWnd)){
 		return false;
 	}
-	*/
+
+	if (!joycon[1].Initialize(hInst, g_hWnd)) {
+		return false;
+	}
 
 	if (!InitSound(g_hWnd)) {
 		return false;
 	}
 
+	/*
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO io = ImGui::GetIO();
@@ -214,24 +216,32 @@ bool Initialize(HINSTANCE hInst)
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(g_hWnd);
 	ImGui_ImplDX9_Init(GetD3DDevice());
+	*/
 
 	ChangeWindowMode(TRUE);
 	SetUserWindow(g_hWnd);
-
-	if (Live2D_SetCubism4CoreDLLPath("C:/Users/Noa/source/repos/katsurakanade/HEW-Project/HEW Project/HEW Project/Live2DCubismCore.dll") == -1) {
-		return -1;
-	}
 
 	SetUseDirect3D9Ex(FALSE);
 
 	SetWaitVSyncFlag(TRUE);
 
+	if (Live2D_SetCubism4CoreDLLPath("Live2DCubismCore.dll") == -1) {
+		return -1;
+	}
+
 	if (DxLib_Init() == -1) {
 		return -1;
 	}
-	
-	SetDrawScreen(DX_SCREEN_BACK);
 
+	/*
+	SetUseASyncLoadFlag(TRUE);
+	for (int i = 0; i < 50; i++) {
+		testhandle [i]  = LoadGraph("asset/texture/start.png");
+	}
+	SetUseASyncLoadFlag(FALSE);
+	*/
+
+	SetDrawScreen(DX_SCREEN_BACK);
 
 	Scene_Initialize(SCENE_INDEX_TITLE);
 
@@ -245,9 +255,11 @@ void Finalize(void)
 
 	//Texture_Release();
 
+	/*
 	ImGui_ImplDX9_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+	*/
 
 	DxLib_End();
 	
@@ -260,20 +272,15 @@ void Finalize(void)
 void Update(void)
 {
 
+	//キーボード更新
 	keyboard.Update();
 
-	/*
-	//キーボード更新
-	Keyboard_Update();
-
 	//ゲームパッド更新
-	GamePad_Update();
-	*/
-
+	joycon[0].Update();
+	joycon[1].Update();
+	
 	Scene_Update();
 
-
-	
 }
 
 // ゲームの描画関数

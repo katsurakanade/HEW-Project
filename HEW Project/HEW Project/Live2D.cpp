@@ -1,9 +1,10 @@
+
 #include "Live2D.h"
 #include <vector>
 #include <algorithm>
 
 vector <const char *>Live2DModelPassDict = {
-	"C:/Users/katsu/Desktop/CubismSdkForNative-4-beta.1/Samples/Res/Hiyori/Hiyori.model3.json",
+	"asset/Live2D/Hiyori/Hiyori.model3.json"
 };
 
 Live2D::Live2D() {
@@ -22,12 +23,24 @@ Live2D::Live2D() {
 Live2D::~Live2D() {
 
 	Live2D_DeleteModel(handle);
+
 }
 
 void Live2D::LoadModel(const char * name) {
+	
+	try {
+		throw Live2D_LoadModel(name);
+	}
 
-	handle = Live2D_LoadModel(name);
-
+	catch(int data){
+		
+		if (data > 0) {
+			handle = data;
+		}
+		else {
+			MessageBox(GetHWND(), "Live2Dモデル読み込みエラー", "警告！", MB_ICONWARNING);
+		}
+	}
 }
 
 void Live2D::Draw() {
