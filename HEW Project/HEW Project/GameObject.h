@@ -3,10 +3,12 @@
 #include "DxLib.h"
 #include <vector>
 
+// アニメフレームリミット
 #define ANIME_CUT_LIMIT 36
 
 using namespace std;
 
+// テクスチャキー
 typedef enum {
 
 	TEXTURE_INDEX_START,
@@ -23,32 +25,66 @@ typedef enum {
 
 }TEXTURE_KEY;
 
+// 色彩データ
+typedef struct {
+
+	int hue = 0;
+	int saturation = 0;
+	int bright = 0;
+
+}Color_Data;
+
+// ゲームオブジェクト
 class GameObject {
 
 private:
 
 public:
 
-	int Anime_handle[ANIME_CUT_LIMIT];
-
+	// ハンドル（アニメなし）
 	int handle;
 
+	// ハンドル配列（アニメあり）
+	int Anime_handle[ANIME_CUT_LIMIT];
+
+	// 色彩データ
+	Color_Data Color;
+
+	// テクスチャロード (ファイルパス)
+	// (アニメなし)(Initで使う)
 	void LoadTexture(const char * name);
 
+	// テクスチャロード (ファイルパス,フレーム数,横フレーム数,縦フレーム数,横画像サイズ,縦画像サイズ)
+	// (アニメあり)(Initで使う)
 	void LoadTexture(const char * name,int allcut,int xcut,int ycut,int xsize,int ysize);
 
+	// 描画(x,y)
 	void Draw(int x, int y);
-
+	
+	// 描画(x,y,横,縦,アルファ使う)
 	void Draw(int x, int y, int width, int height,bool use_alpha);
 
+	// 部分描画(x,y,テクスチャx,テクスチャy,テクスチャxサイズ,テクスチャyサイズ,アルファ使う,反転処理使う)
 	void Draw(int x, int y, int tsx, int tsy, int tex, int tey, bool use_alpha, bool turn);
 
+	// アニメ描画(x,y,カット)
 	void Draw_Anime(int x,int y,int cut);
 
+	// カウスフィルター(重さ)
 	void Gauss_Filter(int param);
 
+	// HSBフィルター
+	void HSB_Fillter();
+
+	// HSB設定
+	void SetHSB(int hue, int saturation, int bright);
+
+	// Getハンドル
 	int GetHandle();
 
+	// Get色彩データ
+	Color_Data GetColorData();
 };
 
+// 画像パスベクトル
 extern vector <const char *>TexturePassDict;

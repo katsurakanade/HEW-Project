@@ -52,7 +52,7 @@ void ActionUI::Update() {
 				Action_vector.push_back(onetime[i]);
 			}
 			break;
-			
+			/*
 		case ACTION_STATE_PRESSBUTTON2:
 			GameObject onetimes[3];
 			for (int i = 0; i < 3; i++) {
@@ -60,9 +60,11 @@ void ActionUI::Update() {
 				Action_vector.push_back(onetimes[i]);
 			}
 			break;
-			
+			*/
+			/*
 		default:
 			break;
+			*/
 		}
 
 		State_Switch = false;

@@ -8,6 +8,7 @@
 #include "main.h"
 #include <string.h>
 
+// 画像パスベクトル
 vector <const char *>TexturePassDict = {
 	"asset/texture/start.png",
 	"asset/texture/Exit.png",
@@ -24,7 +25,6 @@ void GameObject::LoadTexture(const char * name) {
 
 	try {
 		throw LoadGraph(name);
-		SetUseASyncLoadFlag(FALSE);
 	}
 
 	catch (int data) {
@@ -81,6 +81,24 @@ void GameObject::Gauss_Filter(int param) {
 
 }
 
+
+void GameObject::HSB_Fillter() {
+
+	GraphFilter(this->handle, DX_GRAPH_FILTER_HSB, 0, this->Color.hue, this->Color.saturation, this->Color.bright);
+}
+
+void GameObject::SetHSB(int hue,int saturation,int bright) {
+
+	this->Color.hue = hue;
+	this->Color.saturation = saturation;
+	this->Color.bright = bright;
+}
+
+
 int GameObject::GetHandle() {
 	return handle;
+}
+
+Color_Data GameObject::GetColorData() {
+	return Color;
 }

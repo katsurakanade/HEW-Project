@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 
+// Live2Dƒ‚ƒfƒ‹ƒpƒX
 vector <const char *>Live2DModelPassDict = {
 	"asset/Live2D/Hiyori/Hiyori.model3.json"
 };
