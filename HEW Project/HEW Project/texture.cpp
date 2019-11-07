@@ -6,7 +6,7 @@
 #include <algorithm>
 
 vector <const char *>TexturePassDict = {
-	"C:/Users/katsu/source/repos/katsurakanade/HEW-Project/HEW Project/HEW Project/asset/texture/start.png",
+	"C:/syashin/back ground.jpg",
 };
 
 void Texture::Load(const char * name) {
