@@ -1,7 +1,16 @@
 #pragma once
 
-void Init_GameProgress();
-void Uninit_GameProgress();
-void Update_GameProgress();
-void Draw_GameProgress();
+class GameProgress
+{
+public:
 
+	GameProgress();
+
+	~GameProgress();
+
+	void Update();
+
+	void Draw();
+
+	int stime;		//スタートの時間
+};

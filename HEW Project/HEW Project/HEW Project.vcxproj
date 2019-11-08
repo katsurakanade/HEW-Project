@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="ActionUI.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="gameprogress.cpp" />
     <ClCompile Include="IMGUI\imgui.cpp" />
     <ClCompile Include="IMGUI\imgui_demo.cpp" />
     <ClCompile Include="IMGUI\imgui_draw.cpp" />
@@ -40,6 +41,7 @@
   <ItemGroup>
     <ClInclude Include="ActionUI.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="gameprogress.h" />
     <ClInclude Include="IMGUI\imconfig.h" />
     <ClInclude Include="IMGUI\imgui.h" />
     <ClInclude Include="IMGUI\imgui_impl_dx9.h" />
