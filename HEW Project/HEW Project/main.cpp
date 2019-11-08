@@ -35,8 +35,6 @@ static void Update(void);
 // ゲームの描画関数
 static void Draw(void);
 
-int testhandle[50];
-
 /*------------------------------------------------------------------------------
 メイン
 ------------------------------------------------------------------------------*/
@@ -138,13 +136,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			Draw();
 
 			// FPSロック
-			
 			DWORD timeTotal = GetTickCount() - timeBegin;
 			if (timeTotal < timeInOneFps)
 				Sleep(DWORD(timeInOneFps - timeTotal));
 
 			ScreenCopy();
-			
 		}
 	}
 
@@ -154,15 +150,17 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	return (int)msg.wParam;
 }
 
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+//extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // ウィンドウプロシージャ(コールバック関数)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 
+	/*
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam)) {
 		return true;
 	}
+	*/
 
 	switch (uMsg) {
 		
@@ -196,7 +194,6 @@ bool Initialize(HINSTANCE hInst)
 		return false;
 	}
 	// DirectInputの初期化（ゲームパッド）
-	/*
 	if (!joycon[0].Initialize(hInst, g_hWnd)){
 		return false;
 	}
@@ -204,8 +201,6 @@ bool Initialize(HINSTANCE hInst)
 	if (!joycon[1].Initialize(hInst, g_hWnd)) {
 		return false;
 	}
-	*/
-	
 
 	if (!InitSound(g_hWnd)) {
 		return false;
@@ -235,15 +230,7 @@ bool Initialize(HINSTANCE hInst)
 	if (DxLib_Init() == -1) {
 		return -1;
 	}
-
-	/*
-	SetUseASyncLoadFlag(TRUE);
-	for (int i = 0; i < 50; i++) {
-		testhandle [i]  = LoadGraph("asset/texture/start.png");
-	}
-	SetUseASyncLoadFlag(FALSE);
-	*/
-
+	
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	Scene_Initialize(SCENE_INDEX_TITLE);
@@ -279,8 +266,14 @@ void Update(void)
 	keyboard.Update();
 
 	//ゲームパッド更新
-	//joycon[0].Update();
-	//joycon[1].Update();
+
+	if (joycon[0].Device != nullptr) {
+		joycon[0].Update();
+	}
+
+	if (joycon[1].Device != nullptr) {
+		joycon[1].Update();
+	}
 	
 	Scene_Update();
 

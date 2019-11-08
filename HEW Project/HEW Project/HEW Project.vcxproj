@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClCompile Include="ActionUI.cpp" />
     <ClCompile Include="game.cpp" />
-    <ClCompile Include="gameprogress.cpp" />
+    <ClCompile Include="GameData.cpp" />
     <ClCompile Include="IMGUI\imgui.cpp" />
     <ClCompile Include="IMGUI\imgui_demo.cpp" />
     <ClCompile Include="IMGUI\imgui_draw.cpp" />
@@ -41,7 +41,7 @@
   <ItemGroup>
     <ClInclude Include="ActionUI.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="gameprogress.h" />
+    <ClInclude Include="GameData.h" />
     <ClInclude Include="IMGUI\imconfig.h" />
     <ClInclude Include="IMGUI\imgui.h" />
     <ClInclude Include="IMGUI\imgui_impl_dx9.h" />
@@ -125,11 +125,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\katsu\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;C:\Users\Noa\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\katsu\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\katsu\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;C:\Users\Noa\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\katsu\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

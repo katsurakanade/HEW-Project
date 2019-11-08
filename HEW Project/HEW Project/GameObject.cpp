@@ -19,6 +19,8 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/a.png",
 	"asset/texture/b.png",
 	"asset/texture/c.png",
+	"asset/texture/right.png",
+	"asset/texture/up.png",
 };
 
 void GameObject::LoadTexture(const char * name) {
