@@ -11,6 +11,7 @@
 #include "GameObject.h"
 #include "Menu.h"
 #include "ActionUI.h"
+#include "ActionSlot.h"
 #include "GameData.h"
 
 using namespace std;
@@ -22,6 +23,8 @@ Live2D Hiyori;
 Menu TitleMenu(3);
 
 ActionUI Action;
+
+ActionSlot actionslot;
 
 GameObject Success;
 
@@ -59,6 +62,10 @@ void Init_Title() {
 	Action.Pos.y = 600;
 	Action.Interval.x = 150;
 	Action.Interval.y = 0;
+
+	actionslot.Pos.x = 300;
+	actionslot.Pos.y = 300;
+	actionslot.Load();
 
 }
 
@@ -137,35 +144,42 @@ void Update_Title() {
 		Scene_Change(SCENE_INDEX_GAME);
 	}
 
-
+	actionslot.Update();
 }
 
 void Draw_Title() {
 
+	//Success.Draw(100, 100, FALSE);
+
 	Hiyori.Draw();
 
-	Action.Draw();
+	//Action.Draw();
 
 	TitleMenu.Draw();
 
 	if (Action.GetFinishFlag()) {
 		if (Action.GetProgress() == 4) {
-			Success.Draw(0, 0, 256, 256, TRUE);
+			Success.Draw(256, 256);
 		}
 		else {
-			Failed.Draw(0, 0, 256, 256, TRUE);
+			Failed.Draw(256, 256);
 		}
 	}
 
-	SetFontSize(28);
+	actionslot.Draw();
+
+	/*SetFontSize(28);
 	DrawFormatString(700, 400, (255, 255, 255), "Speed : %d", gamedata.GetRunningSpeed());
 	DrawFormatString(700, 450, (255, 255, 255), "Distance : %d", gamedata.GetRunningMeter());
-	DrawFormatString(700, 500, (255, 255, 255), "Hp : %d", gamedata.Gethp());
+	DrawFormatString(700, 500, (255, 255, 255), "Hp : %d", gamedata.Gethp());*/
 
 	//DrawFormatString(700, 550, (255, 255, 255), "%d", joycon[1].Action_Judge[0]);
 	//DrawFormatString(700, 600, (255, 255, 255), "%d", joycon[1].Action_Judge[1]);
 	//DrawFormatString(700, 650, (255, 255, 255), "%d", joycon[1].Action_Judge[2]);
 	//DrawFormatString(800, 650, (255, 255, 255), "%d", bcount);
+
+	DrawFormatString(700, 550, (255, 255, 255), "%d", actionslot.GetState());
+	DrawFormatString(700, 600, (255, 255, 255), "%d", actionslot.GetValue());
 
 	//test.Draw(0, 0);
 }

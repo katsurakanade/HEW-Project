@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionSlot.cpp" />
     <ClCompile Include="ActionUI.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameData.cpp" />
@@ -39,6 +40,7 @@
     <ClCompile Include="title.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActionSlot.h" />
     <ClInclude Include="ActionUI.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameData.h" />
