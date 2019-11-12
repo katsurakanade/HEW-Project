@@ -44,6 +44,8 @@ public:
 
 	~ActionUI();
 
+	void Init();
+
 	void Update();
 
 	void Draw();
@@ -62,5 +64,6 @@ public:
 
 	bool GetFinishFlag();
 
+	int GetActionAmount();
 };
 

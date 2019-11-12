@@ -10,7 +10,7 @@ static const int VALUE_GREAT = VALUE_MAX * 0.8;
 static const int VALUE_BAD = ((VALUE_MAX - VALUE_MIN) * 0.2) + VALUE_MIN;
 
 // í‚ÉŒ¸‚ç‚·
-static const int VALUE_DOWNSEC = 1;
+static const float VALUE_DOWNSEC = 0.1f;
 
 void ActionSlot::Load() {
 
@@ -22,7 +22,7 @@ void ActionSlot::Load() {
 void ActionSlot::Update() {
 	
 	if (Value > VALUE_MIN && Value < VALUE_MAX) {
-		Value += VALUE_DOWNSEC;
+		Value -= VALUE_DOWNSEC;
 	}
 
 	// Over ”»’è
@@ -43,23 +43,15 @@ void ActionSlot::Update() {
 	}
 
 	// ‰æ‘œ‰ñ“]
-	Fire.Object.Rotate = (DOT * Value);
-	Hand.Object.Rotate = (DOT * Value) * 0.3;
-
-	if (keyboard.IsPress(DIK_DOWNARROW)) {
-		Value--;
-	}
-
-	if (keyboard.IsPress(DIK_UPARROW)) {
-		Value++;
-	}
+	Fire.Object.Rotate = -(DOT * Value);
+	Hand.Object.Rotate = -(DOT * Value) * 0.3;
 
 }
 
 void ActionSlot::Draw() {
 
-	Fire.Draw(Pos.x, Pos.y);
-	Hand.Draw(Pos.x, Pos.y);
+	Fire.Draw((int)Pos.x, (int)Pos.y);
+	Hand.Draw((int)Pos.x, (int)Pos.y);
 
 }
 
@@ -78,11 +70,15 @@ ActionSlot::~ActionSlot()
 
 }
 
+void ActionSlot::AddValue(float value) {
+	Value += value;
+}
+
 int ActionSlot::GetState() {
 	return State;
 }
 
-int ActionSlot::GetValue() {
+float ActionSlot::GetValue() {
 	return Value;
 }
 

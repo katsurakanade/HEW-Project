@@ -11,10 +11,19 @@ using namespace std;
 vector <const char *> PRESSBUTTON_ABAC_PASS;
 vector <const char*>  LONG_JUMP_PASS;
 
-static GameObject onetime[4];
+static GameObject onetime[8];
 
 ActionUI::ActionUI()
 {
+
+}
+
+ActionUI::~ActionUI()
+{
+
+}
+
+void ActionUI::Init() {
 
 	State = 1;
 	State_Switch = true;
@@ -30,12 +39,6 @@ ActionUI::ActionUI()
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
-
-}
-
-ActionUI::~ActionUI()
-{
-
 }
 
 void ActionUI::Update() {
@@ -166,7 +169,7 @@ void ActionUI::Update() {
 		State_Switch_Timer += SECONDS;
 	}
 
-	if (State_Switch_Timer  >= 1.0f) {
+	if (State_Switch_Timer  >= 0.3f) {
 		progress = 0;
 		State_Switch = true;
 		State_Switch_Timer = 0.0f;
@@ -212,4 +215,8 @@ int ActionUI::GetProgress() {
 
 bool ActionUI::GetFinishFlag() {
 	return Finish_Flag;
+}
+
+int ActionUI::GetActionAmount() {
+	return Action_vector.size();
 }

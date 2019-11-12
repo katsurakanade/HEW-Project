@@ -21,7 +21,7 @@ private:
 	// 状態
 	int State;
 	// 値
-	int Value;
+	float Value;
 	// 聖火オブジェクト
 	GameObject Fire;
 	// 手オブジェクト
@@ -42,9 +42,11 @@ public:
 
 	~ActionSlot();
 
+	void AddValue(float value);
+
 	int GetState();
 
-	int GetValue();
+	float GetValue();
 
 	GameObject GetFire();
 

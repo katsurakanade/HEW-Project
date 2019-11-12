@@ -15,12 +15,16 @@ Menu::~Menu()
 
 void Menu::Update() {
 
-	if (keyboard.IsTrigger(DIK_DOWNARROW) && SelectNow < (SelectAmount - 1)) {
-		SelectNow++;
+	if (keyboard.IsTrigger(DIK_DOWNARROW) || joycon[LEFT_JOYCON].IsTrigger(JOYCON_DOWN)) {
+		if (SelectNow < (SelectAmount - 1)) {
+			SelectNow++;
+		}
 	}
 
-	else if (keyboard.IsTrigger(DIK_UPARROW) && SelectNow > 0) {
-		SelectNow--;
+	else if (keyboard.IsTrigger(DIK_UPARROW) || joycon[LEFT_JOYCON].IsTrigger(JOYCON_UP)) {
+		if (SelectNow > 0) {
+			SelectNow--;
+		}
 	}
 
 }
