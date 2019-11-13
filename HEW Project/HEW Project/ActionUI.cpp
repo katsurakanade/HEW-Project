@@ -39,11 +39,12 @@ void ActionUI::Init() {
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+
+
 }
 
 void ActionUI::Update() {
 
-	
 	if (State_Switch) {
 
 		switch (State)
@@ -108,7 +109,7 @@ void ActionUI::Update() {
 			switch (progress)
 			{
 			case 0:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT)) {
+				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[0].Gauss_Filter(500);
 				}
@@ -120,7 +121,7 @@ void ActionUI::Update() {
 				}
 				break;
 			case 1:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT)) {
+				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[1].Gauss_Filter(500);
 				}
@@ -132,7 +133,7 @@ void ActionUI::Update() {
 				}
 				break;
 			case 2:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT)) {
+				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[2].Gauss_Filter(500);
 				}
@@ -144,7 +145,7 @@ void ActionUI::Update() {
 				}
 				break;
 			case 3:
-				if (joycon[0].GetGyro_Y() > 300) {
+				if (joycon[0].GetGyro_Y() > 300 || keyboard.IsTrigger(DIK_UPARROW)) {
 					progress++;
 					Action_vector[3].Gauss_Filter(500);
 				}
@@ -182,7 +183,9 @@ void ActionUI::Update() {
 void ActionUI::Draw() {
 
 	for (int i = 0; i < Action_vector.size(); i++) {
-		Action_vector[i].Draw(Pos.x + (Interval.x * i ), Pos.y + (Interval.y * i));
+		Action_vector[i].Object.Pos.x = Pos.x + (Interval.x * i);
+		Action_vector[i].Object.Pos.y = Pos.y + (Interval.y * i);
+		Action_vector[i].Draw();
 	}
 
 	// if ex

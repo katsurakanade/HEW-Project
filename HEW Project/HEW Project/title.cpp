@@ -20,6 +20,8 @@ Live2D Hiyori;
 
 Menu TitleMenu(3);
 
+GameObject test;
+
 void Init_Title() {
 
 	Hiyori.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_HIYORI]);
@@ -37,6 +39,10 @@ void Init_Title() {
 	TitleMenu.SelectText.push_back("チュートリアル");
 	TitleMenu.SelectText.push_back("終了");
 
+	test.LoadTexture(TexturePassDict[TEXTURE_INDEX_AIROU]);
+	test.Object.Pos.x = 300;
+	test.Object.Pos.y = 500;
+
 }
 
 void Uninit_Title() {
@@ -50,6 +56,7 @@ void Update_Title() {
 	Hiyori.SetMontionIndex(GetRand(8));
 
 	TitleMenu.Update();
+
 
 	switch (TitleMenu.GetSelectNow())
 	{
@@ -69,7 +76,6 @@ void Update_Title() {
 		break;
 	}
 
-	 
 	if (keyboard.IsTrigger(DIK_Z)) {
 		Scene_Change(SCENE_INDEX_GAME);
 	}
@@ -82,4 +88,5 @@ void Draw_Title() {
 
 	TitleMenu.Draw();
 
+	test.Draw();
 }
