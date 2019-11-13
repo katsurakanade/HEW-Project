@@ -4,9 +4,6 @@
 #include "input.h"
 #include "sound.h"
 #include "scene.h"
-#include "IMGUI/imgui.h"
-#include "IMGUI/imgui_impl_dx9.h"
-#include "IMGUI/imgui_impl_win32.h"
 #include "DxLib.h"
 
 #define _USE_MATH_DEFINES
@@ -125,10 +122,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			float timeInOneFps = 1000.0f / FPS_LOCK; 
 			DWORD timeBegin = GetTickCount();
 			
-			//ImGui_ImplDX9_NewFrame();
-			//ImGui_ImplWin32_NewFrame();
-			//ImGui::NewFrame();
-
 			// ゲームの更新
 			Update();
 
@@ -155,12 +148,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 // ウィンドウプロシージャ(コールバック関数)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-
-	/*
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam)) {
-		return true;
-	}
-	*/
 
 	switch (uMsg) {
 		
@@ -206,16 +193,6 @@ bool Initialize(HINSTANCE hInst)
 		return false;
 	}
 
-	/*
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO io = ImGui::GetIO();
-
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(g_hWnd);
-	ImGui_ImplDX9_Init(GetD3DDevice());
-	*/
-
 	ChangeWindowMode(TRUE);
 	SetUserWindow(g_hWnd);
 
@@ -242,14 +219,6 @@ void Finalize(void)
 {
 
 	UninitSound();
-
-	//Texture_Release();
-
-	/*
-	ImGui_ImplDX9_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-	*/
 
 	DxLib_End();
 	
@@ -282,35 +251,6 @@ void Update(void)
 // ゲームの描画関数
 void Draw(void)
 {
-	/*
-	LPDIRECT3DDEVICE9 pD3DDevice = GetD3DDevice();
-
-	// 画面のクリア
-	pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 0, 255), 1.0f, 0);
-
-	// 描画バッチ命令の開始
-	pD3DDevice->BeginScene();
-
-	ImGui::Render();
-
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-
-	ImGui::EndFrame();
-
-	// 描画バッチ命令の終了
-	pD3DDevice->EndScene();
-
-	// バックバッファをフリップ（タイミングはD3DPRESENT_PARAMETERSの設定による）
-	pD3DDevice->Present(NULL, NULL, NULL, NULL);
-	*/
-
-	/*
-	ImGui::Render();
-
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-
-	ImGui::EndFrame();
-	*/
 
 	Scene_Draw();
 

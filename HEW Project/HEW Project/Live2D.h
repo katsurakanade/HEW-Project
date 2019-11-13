@@ -10,6 +10,7 @@ using namespace std;
 typedef enum {
 
 	LIVE2D_INDEX_HIYORI,
+	LIVE2D_INDEX_RICE,
 
 	LIVE2D_INDEX_MAX
 

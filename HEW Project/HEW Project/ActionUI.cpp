@@ -11,10 +11,19 @@ using namespace std;
 vector <const char *> PRESSBUTTON_ABAC_PASS;
 vector <const char*>  LONG_JUMP_PASS;
 
-static GameObject onetime[4];
+static GameObject onetime[8];
 
 ActionUI::ActionUI()
 {
+
+}
+
+ActionUI::~ActionUI()
+{
+
+}
+
+void ActionUI::Init() {
 
 	State = 1;
 	State_Switch = true;
@@ -31,16 +40,11 @@ ActionUI::ActionUI()
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
 
-}
-
-ActionUI::~ActionUI()
-{
 
 }
 
 void ActionUI::Update() {
 
-	
 	if (State_Switch) {
 
 		switch (State)
@@ -105,7 +109,7 @@ void ActionUI::Update() {
 			switch (progress)
 			{
 			case 0:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT)) {
+				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[0].Gauss_Filter(500);
 				}
@@ -117,7 +121,7 @@ void ActionUI::Update() {
 				}
 				break;
 			case 1:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT)) {
+				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[1].Gauss_Filter(500);
 				}
@@ -129,7 +133,7 @@ void ActionUI::Update() {
 				}
 				break;
 			case 2:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT)) {
+				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[2].Gauss_Filter(500);
 				}
@@ -141,7 +145,7 @@ void ActionUI::Update() {
 				}
 				break;
 			case 3:
-				if (joycon[0].GetGyro_Y() > 300) {
+				if (joycon[0].GetGyro_Y() > 300 || keyboard.IsTrigger(DIK_UPARROW)) {
 					progress++;
 					Action_vector[3].Gauss_Filter(500);
 				}
@@ -166,7 +170,7 @@ void ActionUI::Update() {
 		State_Switch_Timer += SECONDS;
 	}
 
-	if (State_Switch_Timer  >= 1.0f) {
+	if (State_Switch_Timer  >= 0.3f) {
 		progress = 0;
 		State_Switch = true;
 		State_Switch_Timer = 0.0f;
@@ -179,7 +183,9 @@ void ActionUI::Update() {
 void ActionUI::Draw() {
 
 	for (int i = 0; i < Action_vector.size(); i++) {
-		Action_vector[i].Draw(Pos.x + (Interval.x * i ), Pos.y + (Interval.y * i));
+		Action_vector[i].Object.Pos.x = Pos.x + (Interval.x * i);
+		Action_vector[i].Object.Pos.y = Pos.y + (Interval.y * i);
+		Action_vector[i].Draw();
 	}
 
 	// if ex
@@ -212,4 +218,8 @@ int ActionUI::GetProgress() {
 
 bool ActionUI::GetFinishFlag() {
 	return Finish_Flag;
+}
+
+int ActionUI::GetActionAmount() {
+	return Action_vector.size();
 }

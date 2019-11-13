@@ -4,8 +4,9 @@ class GameData
 {
 private:
 
+	//  ¹‰Î
 	int hp;
-
+ 
 	int Running_Distance;
 
 	int Running_Speed;
