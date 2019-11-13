@@ -7,7 +7,7 @@
 GameProgress gameprogress;
 
 void Init_Game() {
-	gameprogress.stime;
+	Init_GameProgress();
 }
 
 void Uninit_Game() {

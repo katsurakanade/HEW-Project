@@ -21,6 +21,10 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/c.png",
 	"asset/texture/right.png",
 	"asset/texture/up.png",
+	"asset/texture/progressbar.png",
+	"asset/texture/bar_frame.png",
+	"asset/texture/Batontouch_test.png",
+
 };
 
 void GameObject::LoadTexture(const char * name) {
