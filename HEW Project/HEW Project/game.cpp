@@ -7,6 +7,7 @@
 #include "ActionSlot.h"
 #include "ActionUI.h"
 #include "GameData.h"
+#include "Live2D.h"
 
 // Debug Mode
 #define DEBUG
@@ -35,6 +36,9 @@ ActionSlot Actionslot;
 // ゲームデータ
 GameData gamedata;
 
+Live2D Character;
+
+
 void Init_Game() {
 
 	// アクションUI初期化
@@ -45,18 +49,26 @@ void Init_Game() {
 	Action.Interval.y = 0;
 
 	// アクションゲージ初期化
+	Actionslot.Pos.x = 350;
+	Actionslot.Pos.y = 280;
 	Actionslot.Load();
-	Actionslot.Pos.x = 300;
-	Actionslot.Pos.y = 300;
 	
+	Character.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_RICE]);
+	Character.Zoom.x = 2.5f;
+	Character.Zoom.y = 2.5f;
+	Character.Pos.x = -400;
+	Character.Pos.y = 100;
 }
 
 void Uninit_Game() {
 
+	Character.~Live2D();
 
 }
 
 void Update_Game() {
+
+	Character.SetMontionIndex(GetRand(8));
 
 	// アクションUI更新
 	Action.Update();
@@ -82,6 +94,8 @@ void Draw_Game() {
 	Action.Draw();
 	// アクションゲージ描画
 	Actionslot.Draw();
+
+	Character.Draw();
 
 	// アクション完成判定
 	if (Action.GetFinishFlag()) {
@@ -143,5 +157,5 @@ void Debug_Panel() {
 
 	SetFontSize(24);
 	DrawFormatString(600, 200, GetColor(255, 255, 255), "走る距離 : %d", gamedata.GetRunningMeter());
-
+	DrawFormatString(600, 250, GetColor(255, 255, 255), "アクションゲージ : %f", Actionslot.GetValue());
 }

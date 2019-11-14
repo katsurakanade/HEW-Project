@@ -22,6 +22,10 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/c.png",
 	"asset/texture/right.png",
 	"asset/texture/up.png",
+	"asset/texture/progressbar.png",
+	"asset/texture/bar_frame.png",
+	"asset/texture/Batontouch_test.png",
+
 };
 
 GameObject::GameObject() {
@@ -65,24 +69,105 @@ void GameObject::LoadTexture(const char *name, int allcut, int xcut, int ycut, i
 	}
 }
 
-void GameObject::Draw(int x,int y) {
+void GameObject::Delay_Move(int arrow,float sec,int x,int y,int speed) {
 
-	DrawRotaGraph(x, y, this->Object.Scale, this->Object.Rotate, this->handle, true, false);
+	if (Delay_Flag[0]) {
+		Delay_Timer[0] += SECONDS;
+	}
+
+	if (Delay_Timer[0] >= sec) {
+
+		if (arrow == 0) {
+			Object.Pos.x += speed;
+		}
+
+		if (arrow == 1) {
+			Object.Pos.x -= speed;
+		}
+
+		if (arrow == 2) {
+			Object.Pos.y += speed;
+		}
+
+		if (arrow == 3) {
+			Object.Pos.y -= speed;
+		}
+
+	}
+
+	if (arrow == 0 && Object.Pos.x >= x) {
+		Delay_Timer[0] = 0.0f;
+		Delay_Flag[0] = false;
+	}
+
+	else if (arrow == 1 && Object.Pos.x <= x) {
+		Delay_Timer[0] = 0.0f;
+		Delay_Flag[0] = false;
+	}
+
+	else if (arrow == 2 && Object.Pos.y >= y) {
+		Delay_Timer[0] = 0.0f;
+		Delay_Flag[0] = false;
+	}
+
+	else if (arrow == 3 && Object.Pos.y <= y) {
+		Delay_Timer[0] = 0.0f;
+		Delay_Flag[0] = false;
+	}
 }
 
-void GameObject::Draw(int x, int y,  bool use_alpha) {
+void GameObject::Delay_Zoom(float sec,double scale,double speed) {
 
-	DrawRotaGraph(x, y, this->Object.Scale, this->Object.Rotate ,this->handle, use_alpha, false);
+	if (Delay_Flag[1]) {
+		Delay_Timer[1] += SECONDS;
+	}
+
+	if (Delay_Timer[1] >= sec) {
+		Object.Scale += speed;
+	}
+
+	if (Object.Scale >= scale) {
+		Delay_Timer[1] = 0.0f;
+		Delay_Flag[1] = false;
+	}
+
 }
 
-void GameObject::Draw(int x, int y,int tsx,int tsy,int tex,int tey,bool use_alpha,bool turn) {
+void GameObject::Delay_Rotate(float sec,double rotate,double speed) {
 
-	DrawRectGraph(x, y, tsx, tsy, tex, tey,this->handle, use_alpha, turn);
+	if (Delay_Flag[2]) {
+		Delay_Timer[2] += SECONDS;
+	}
+
+	if (Delay_Timer[2] >= sec) {
+		Object.Rotate += (DOT * speed);
+	}
+
+	if (Object.Rotate >= (DOT * rotate)) {
+		Delay_Timer[2] = 0.0f;
+		Delay_Flag[2] = false;
+	}
+
 }
 
-void GameObject::Draw_Anime(int x,int y,int cut) {
+void GameObject::Draw() {
 
-	DrawRotaGraph(x, y, this->Object.Scale, this->Object.Rotate, Anime_handle[cut], TRUE, false);
+	DrawRotaGraph(Object.Pos.x, Object.Pos.y, this->Object.Scale, this->Object.Rotate, this->handle, true, false);
+}
+
+void GameObject::Draw(bool use_alpha) {
+
+	DrawRotaGraph(Object.Pos.x, Object.Pos.y, this->Object.Scale, this->Object.Rotate ,this->handle, use_alpha, false);
+}
+
+void GameObject::Draw(int tsx,int tsy,int tex,int tey,bool use_alpha,bool turn) {
+
+	DrawRectGraph(Object.Pos.x,Object.Pos.y, tsx, tsy, tex, tey,this->handle, use_alpha, turn);
+}
+
+void GameObject::Draw_Anime(int cut) {
+
+	DrawRotaGraph(Object.Pos.x,Object.Pos.y, this->Object.Scale, this->Object.Rotate, Anime_handle[cut], TRUE, false);
 
 }
 
@@ -94,7 +179,13 @@ void GameObject::Gauss_Filter(int param) {
 
 void GameObject::HSB_Fillter() {
 
-	GraphFilter(this->handle, DX_GRAPH_FILTER_HSB, 0, this->Color.hue, this->Color.saturation, this->Color.bright);
+	GraphFilter(this->handle, DX_GRAPH_FILTER_HSB, 0, (int)this->Color.hue, (int)this->Color.saturation, (int)this->Color.bright);
+}
+
+void GameObject::SetDelayFlag(int index) {
+
+	Delay_Flag[index] = true;
+
 }
 
 void GameObject::SetHSB(int hue,int saturation,int bright) {
@@ -103,7 +194,6 @@ void GameObject::SetHSB(int hue,int saturation,int bright) {
 	this->Color.saturation = saturation;
 	this->Color.bright = bright;
 }
-
 
 int GameObject::GetHandle() {
 	return handle;

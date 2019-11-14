@@ -1,13 +1,13 @@
 #include "ActionSlot.h"
 
 // アクションゲージ最大値、最小値
-static const int VALUE_MAX = 90;
-static const int VALUE_MIN = -60;
+static const float VALUE_MAX = 90.0;
+static const float VALUE_MIN = -60.0;
 
 // アクションゲージ状態値
-static const int VALUE_OVER = VALUE_MAX  * 0.9;
-static const int VALUE_GREAT = VALUE_MAX * 0.8;
-static const int VALUE_BAD = ((VALUE_MAX - VALUE_MIN) * 0.2) + VALUE_MIN;
+static const float VALUE_OVER = VALUE_MAX  * 0.9;
+static const float VALUE_GREAT = VALUE_MAX * 0.8;
+static const float VALUE_BAD = ((VALUE_MAX - VALUE_MIN) * 0.2) + VALUE_MIN;
 
 // 常に減らす
 static const float VALUE_DOWNSEC = 0.1f;
@@ -17,6 +17,11 @@ void ActionSlot::Load() {
 	Fire.LoadTexture(TexturePassDict[TEXTURE_INDEX_AIROU]);
 	Hand.LoadTexture(TexturePassDict[TEXTURE_INDEX_AIROU]);
 
+	Fire.Object.Pos = Pos;
+	Hand.Object.Pos = Pos;
+
+	Fire.Object.Scale = 0.75f;
+	Hand.Object.Scale = 0.75f;
 }
 
 void ActionSlot::Update() {
@@ -50,8 +55,8 @@ void ActionSlot::Update() {
 
 void ActionSlot::Draw() {
 
-	Fire.Draw((int)Pos.x, (int)Pos.y);
-	Hand.Draw((int)Pos.x, (int)Pos.y);
+	Fire.Draw();
+	Hand.Draw();
 
 }
 
