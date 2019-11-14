@@ -19,8 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionSlot.cpp" />
     <ClCompile Include="ActionUI.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="GameData.cpp" />
     <ClCompile Include="IMGUI\imgui.cpp" />
     <ClCompile Include="IMGUI\imgui_demo.cpp" />
     <ClCompile Include="IMGUI\imgui_draw.cpp" />
@@ -38,8 +40,10 @@
     <ClCompile Include="title.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActionSlot.h" />
     <ClInclude Include="ActionUI.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="GameData.h" />
     <ClInclude Include="IMGUI\imconfig.h" />
     <ClInclude Include="IMGUI\imgui.h" />
     <ClInclude Include="IMGUI\imgui_impl_dx9.h" />

@@ -19,7 +19,17 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/a.png",
 	"asset/texture/b.png",
 	"asset/texture/c.png",
+	"asset/texture/right.png",
+	"asset/texture/up.png",
 };
+
+GameObject::GameObject() {
+
+}
+
+GameObject::~GameObject() {
+
+}
 
 void GameObject::LoadTexture(const char * name) {
 
@@ -56,12 +66,12 @@ void GameObject::LoadTexture(const char *name, int allcut, int xcut, int ycut, i
 
 void GameObject::Draw(int x,int y) {
 
-	DrawGraph(x, y, this->handle, true);
+	DrawRotaGraph(x, y, this->Object.Scale, this->Object.Rotate, this->handle, true, false);
 }
 
-void GameObject::Draw(int x, int y, int width, int height, bool use_alpha) {
+void GameObject::Draw(int x, int y,  bool use_alpha) {
 
-	DrawExtendGraph(x, y, width, height, this->handle ,use_alpha);
+	DrawRotaGraph(x, y, this->Object.Scale, this->Object.Rotate ,this->handle, use_alpha, false);
 }
 
 void GameObject::Draw(int x, int y,int tsx,int tsy,int tex,int tey,bool use_alpha,bool turn) {
@@ -71,7 +81,7 @@ void GameObject::Draw(int x, int y,int tsx,int tsy,int tex,int tey,bool use_alph
 
 void GameObject::Draw_Anime(int x,int y,int cut) {
 
-	DrawGraph(x, y, Anime_handle[cut],TRUE);
+	DrawRotaGraph(x, y, this->Object.Scale, this->Object.Rotate, Anime_handle[cut], TRUE, false);
 
 }
 
@@ -80,7 +90,6 @@ void GameObject::Gauss_Filter(int param) {
 	GraphFilter(this->handle, DX_GRAPH_FILTER_GAUSS, 16, param);
 
 }
-
 
 void GameObject::HSB_Fillter() {
 

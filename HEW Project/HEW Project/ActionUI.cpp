@@ -9,28 +9,12 @@
 using namespace std;
 
 vector <const char *> PRESSBUTTON_ABAC_PASS;
-vector <const char *> PRESSBUTTON_PASSS;
+vector <const char*>  LONG_JUMP_PASS;
+
+static GameObject onetime[8];
 
 ActionUI::ActionUI()
 {
-
-	State = 0;
-	State_Switch = true;
-	progress = 0;
-	Finish_Flag = false;
-
-	// PRESSBUTTON
-	//PRESSBUTTON_PASS.push_back(TexturePassDict[TEXTURE_INDEX_START]);
-	//PRESSBUTTON_PASS.push_back(TexturePassDict[TEXTURE_INDEX_END]);
-
-	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_A]);
-	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_B]);
-	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_A]);
-	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_C]);
-
-	PRESSBUTTON_PASSS.push_back(TexturePassDict[TEXTURE_INDEX_END]);
-	PRESSBUTTON_PASSS.push_back(TexturePassDict[TEXTURE_INDEX_START]);
-	PRESSBUTTON_PASSS.push_back(TexturePassDict[TEXTURE_INDEX_END]);
 
 }
 
@@ -39,82 +23,153 @@ ActionUI::~ActionUI()
 
 }
 
+void ActionUI::Init() {
+
+	State = 1;
+	State_Switch = true;
+	progress = 0;
+	Finish_Flag = false;
+
+	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_A]);
+	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_B]);
+	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_A]);
+	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_C]);
+
+	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
+	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
+	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
+	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+}
+
 void ActionUI::Update() {
 
+	
 	if (State_Switch) {
 
 		switch (State)
 		{
 		case ACTION_STATE_PRESSBUTTON_ABAC:
-			GameObject onetime[4];
 			for (int i = 0; i < 4; i++) {
 				onetime[i].LoadTexture(PRESSBUTTON_ABAC_PASS[i]);
 				Action_vector.push_back(onetime[i]);
 			}
 			break;
-			/*
-		case ACTION_STATE_PRESSBUTTON2:
-			GameObject onetimes[3];
-			for (int i = 0; i < 3; i++) {
-				onetimes[i].LoadTexture(PRESSBUTTON_PASSS[i]);
-				Action_vector.push_back(onetimes[i]);
+		case ACTION_STATE_LONGJUMP:
+			for (int i = 0; i < 4; i++) {
+				onetime[i].LoadTexture(LONG_JUMP_PASS[i]);
+				Action_vector.push_back(onetime[i]);
 			}
 			break;
-			*/
-			/*
 		default:
 			break;
-			*/
 		}
 
 		State_Switch = false;
 	}
 
-	switch (State)
-	{
-	case ACTION_STATE_PRESSBUTTON_ABAC:
-		switch (progress)
+	if (!Finish_Flag) {
+		switch (State)
 		{
-		case 0:
-			if (keyboard.IsTrigger(DIK_A)) {
-				progress++;
-				Action_vector[0].Gauss_Filter(500);
+		case ACTION_STATE_PRESSBUTTON_ABAC:
+			switch (progress)
+			{
+			case 0:
+				if (keyboard.IsTrigger(DIK_A)) {
+					progress++;
+					Action_vector[0].Gauss_Filter(500);
+				}
+				break;
+			case 1:
+				if (keyboard.IsTrigger(DIK_B)) {
+					progress++;
+					Action_vector[1].Gauss_Filter(500);
+				}
+				break;
+			case 2:
+				if (keyboard.IsTrigger(DIK_A)) {
+					progress++;
+					Action_vector[2].Gauss_Filter(500);
+				}
+				break;
+			case 3:
+				if (keyboard.IsTrigger(DIK_C)) {
+					progress++;
+					Action_vector[3].Gauss_Filter(500);
+				}
+				break;
+			case 4:
+				Finish_Flag = true;
+				break;
+			default:
+				break;
 			}
-			break;
-		case 1:
-			if (keyboard.IsTrigger(DIK_B)) {
-				progress++;
-				Action_vector[1].Gauss_Filter(500);
+
+		case ACTION_STATE_LONGJUMP:
+			switch (progress)
+			{
+			case 0:
+				if (joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					progress++;
+					Action_vector[0].Gauss_Filter(500);
+				}
+				else if (joycon[0].GetTrigger() != NULL && !joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					Finish_Flag = true;
+				}
+				else if (joycon[0].GetGyro_Y() > 300) {
+					Finish_Flag = true;
+				}
+				break;
+			case 1:
+				if (joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					progress++;
+					Action_vector[1].Gauss_Filter(500);
+				}
+				else if (joycon[0].GetTrigger() != NULL && !joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					Finish_Flag = true;
+				}
+				else if (joycon[0].GetGyro_Y() > 300) {
+					Finish_Flag = true;
+				}
+				break;
+			case 2:
+				if (joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					progress++;
+					Action_vector[2].Gauss_Filter(500);
+				}
+				else if (joycon[0].GetTrigger() != NULL && !joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					Finish_Flag = true;
+				}
+				else if (joycon[0].GetGyro_Y() > 300) {
+					Finish_Flag = true;
+				}
+				break;
+			case 3:
+				if (joycon[0].GetGyro_Y() > 300) {
+					progress++;
+					Action_vector[3].Gauss_Filter(500);
+				}
+				else if (joycon[0].GetTrigger() != NULL) {
+					Finish_Flag = true;
+				}
+				break;
+			case 4:
+				Finish_Flag = true;
+				break;
+			default:
+				break;
 			}
-			break;
-		case 2:
-			if (keyboard.IsTrigger(DIK_A)) {
-				progress++;
-				Action_vector[2].Gauss_Filter(500);
-			}
-			break;
-		case 3:
-			if (keyboard.IsTrigger(DIK_C)) {
-				progress++;
-				Action_vector[3].Gauss_Filter(500);
-			}
-			break;
-		case 4:
-			Finish_Flag = true;
 			break;
 		default:
 			break;
 		}
-		break;
-	default:
-		break;
 	}
+	
 
 	if (Finish_Flag) {
 		State_Switch_Timer += SECONDS;
 	}
 
-	if (State_Switch_Timer  >= 2.0f) {
+	if (State_Switch_Timer  >= 0.3f) {
 		progress = 0;
 		State_Switch = true;
 		State_Switch_Timer = 0.0f;
@@ -160,4 +215,8 @@ int ActionUI::GetProgress() {
 
 bool ActionUI::GetFinishFlag() {
 	return Finish_Flag;
+}
+
+int ActionUI::GetActionAmount() {
+	return Action_vector.size();
 }

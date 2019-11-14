@@ -20,6 +20,8 @@ typedef enum {
 	TEXTURE_INDEX_A,
 	TEXTURE_INDEX_B,
 	TEXTURE_INDEX_C,
+	TEXTURE_INDEX_RIGHT,
+	TEXTURE_INDEX_UP,
 
 	TEXTURE_INDEX_MAX
 
@@ -33,6 +35,13 @@ typedef struct {
 	int bright = 0;
 
 }Color_Data;
+
+typedef struct {
+
+	double Scale = 1.0;
+	double Rotate = 0;
+
+}Object_Data;
 
 // ゲームオブジェクト
 class GameObject {
@@ -50,6 +59,13 @@ public:
 	// 色彩データ
 	Color_Data Color;
 
+	// オブジェクトデータ
+	Object_Data Object;
+
+	GameObject();
+
+	~GameObject();
+
 	// テクスチャロード (ファイルパス)
 	// (アニメなし)(Initで使う)
 	void LoadTexture(const char * name);
@@ -58,11 +74,11 @@ public:
 	// (アニメあり)(Initで使う)
 	void LoadTexture(const char * name,int allcut,int xcut,int ycut,int xsize,int ysize);
 
-	// 描画(x,y)
+	// 描画(x,y)(透明)
 	void Draw(int x, int y);
 	
-	// 描画(x,y,横,縦,アルファ使う)
-	void Draw(int x, int y, int width, int height,bool use_alpha);
+	// 描画(x,y,アルファ使う)
+	void Draw(int x, int y, bool use_alpha);
 
 	// 部分描画(x,y,テクスチャx,テクスチャy,テクスチャxサイズ,テクスチャyサイズ,アルファ使う,反転処理使う)
 	void Draw(int x, int y, int tsx, int tsy, int tex, int tey, bool use_alpha, bool turn);

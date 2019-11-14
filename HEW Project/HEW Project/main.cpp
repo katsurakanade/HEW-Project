@@ -4,9 +4,6 @@
 #include "input.h"
 #include "sound.h"
 #include "scene.h"
-#include "IMGUI/imgui.h"
-#include "IMGUI/imgui_impl_dx9.h"
-#include "IMGUI/imgui_impl_win32.h"
 #include "DxLib.h"
 
 #define _USE_MATH_DEFINES
@@ -34,8 +31,6 @@ static void Finalize(void);
 static void Update(void);
 // ゲームの描画関数
 static void Draw(void);
-
-int testhandle[50];
 
 /*------------------------------------------------------------------------------
 メイン
@@ -127,10 +122,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			float timeInOneFps = 1000.0f / FPS_LOCK; 
 			DWORD timeBegin = GetTickCount();
 			
-			//ImGui_ImplDX9_NewFrame();
-			//ImGui_ImplWin32_NewFrame();
-			//ImGui::NewFrame();
-
 			// ゲームの更新
 			Update();
 
@@ -138,13 +129,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			Draw();
 
 			// FPSロック
-			
 			DWORD timeTotal = GetTickCount() - timeBegin;
 			if (timeTotal < timeInOneFps)
 				Sleep(DWORD(timeInOneFps - timeTotal));
 
 			ScreenCopy();
-			
 		}
 	}
 
@@ -154,15 +143,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	return (int)msg.wParam;
 }
 
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+//extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // ウィンドウプロシージャ(コールバック関数)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam)) {
-		return true;
-	}
 
 	switch (uMsg) {
 		
@@ -195,7 +180,6 @@ bool Initialize(HINSTANCE hInst)
 	if (!keyboard.Initialize(hInst, g_hWnd)){
 		return false;
 	}
-	/*
 	// DirectInputの初期化（ゲームパッド）
 	if (!joycon[0].Initialize(hInst, g_hWnd)){
 		return false;
@@ -204,20 +188,10 @@ bool Initialize(HINSTANCE hInst)
 	if (!joycon[1].Initialize(hInst, g_hWnd)) {
 		return false;
 	}
-	*/
+
 	if (!InitSound(g_hWnd)) {
 		return false;
 	}
-
-	/*
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO io = ImGui::GetIO();
-
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(g_hWnd);
-	ImGui_ImplDX9_Init(GetD3DDevice());
-	*/
 
 	ChangeWindowMode(TRUE);
 	SetUserWindow(g_hWnd);
@@ -233,15 +207,7 @@ bool Initialize(HINSTANCE hInst)
 	if (DxLib_Init() == -1) {
 		return -1;
 	}
-
-	/*
-	SetUseASyncLoadFlag(TRUE);
-	for (int i = 0; i < 50; i++) {
-		testhandle [i]  = LoadGraph("asset/texture/start.png");
-	}
-	SetUseASyncLoadFlag(FALSE);
-	*/
-
+	
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	Scene_Initialize(SCENE_INDEX_TITLE);
@@ -253,14 +219,6 @@ void Finalize(void)
 {
 
 	UninitSound();
-
-	//Texture_Release();
-
-	/*
-	ImGui_ImplDX9_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-	*/
 
 	DxLib_End();
 	
@@ -275,11 +233,17 @@ void Update(void)
 
 	//キーボード更新
 	keyboard.Update();
-	/*
+
 	//ゲームパッド更新
-	joycon[0].Update();
-	joycon[1].Update();
-	*/
+
+	if (joycon[0].Device != nullptr) {
+		joycon[0].Update();
+	}
+
+	if (joycon[1].Device != nullptr) {
+		joycon[1].Update();
+	}
+	
 	Scene_Update();
 
 }
@@ -287,35 +251,6 @@ void Update(void)
 // ゲームの描画関数
 void Draw(void)
 {
-	/*
-	LPDIRECT3DDEVICE9 pD3DDevice = GetD3DDevice();
-
-	// 画面のクリア
-	pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 0, 255), 1.0f, 0);
-
-	// 描画バッチ命令の開始
-	pD3DDevice->BeginScene();
-
-	ImGui::Render();
-
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-
-	ImGui::EndFrame();
-
-	// 描画バッチ命令の終了
-	pD3DDevice->EndScene();
-
-	// バックバッファをフリップ（タイミングはD3DPRESENT_PARAMETERSの設定による）
-	pD3DDevice->Present(NULL, NULL, NULL, NULL);
-	*/
-
-	/*
-	ImGui::Render();
-
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-
-	ImGui::EndFrame();
-	*/
 
 	Scene_Draw();
 

@@ -143,75 +143,88 @@ bool Keyboard::IsRelease(int nKey)
 bool JoyCon::Initialize(HINSTANCE hInstance, HWND hWnd)
 {
 
-	if (!initialize(hInstance)) {
+	HRESULT		result;
+	bool flag = false;
 
+	if (!initialize(hInstance)) {
 		MessageBox(hWnd, "DirectInput Object Not Found ", "WARNINGI", MB_ICONWARNING);
 		return false;
 	}
 
-	HRESULT		result;
-
 	g_pInput->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)SearchGamePadCallback, NULL, DIEDFL_ATTACHEDONLY);
 
-	result = Device->SetDataFormat(&c_dfDIJoystick);
+	try {
+		throw Device;
+	}
+	catch(LPDIRECTINPUTDEVICE8 data){
+		if (data == NULL) {
+			MessageBox(hWnd, "JoyCon Not Found ", "WARNINGI", MB_ICONWARNING);
+		}
+		else {
+			result = Device->SetDataFormat(&c_dfDIJoystick);
+			flag = true;
+		}
+	}
 
 	for (int i = 0; i < JOYCON_MAX; i++) {
 	
-		if (FAILED(result))
-			return false; 
+		if (flag) {
+			if (FAILED(result))
+				return false;
 
-		DIPROPRANGE				diprg;
-		ZeroMemory(&diprg, sizeof(diprg));
-		diprg.diph.dwSize = sizeof(diprg);
-		diprg.diph.dwHeaderSize = sizeof(diprg.diph);
-		diprg.diph.dwHow = DIPH_BYOFFSET;
-		diprg.lMin = RANGE_MIN;
-		diprg.lMax = RANGE_MAX;
+			DIPROPRANGE				diprg;
+			ZeroMemory(&diprg, sizeof(diprg));
+			diprg.diph.dwSize = sizeof(diprg);
+			diprg.diph.dwHeaderSize = sizeof(diprg.diph);
+			diprg.diph.dwHow = DIPH_BYOFFSET;
+			diprg.lMin = RANGE_MIN;
+			diprg.lMax = RANGE_MAX;
 
-		// XŽ²‚Ì”ÍˆÍ‚ðÝ’è
-		diprg.diph.dwObj = DIJOFS_X;
-		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
-		// YŽ²‚Ì”ÍˆÍ‚ðÝ’è
-		diprg.diph.dwObj = DIJOFS_Y;
-		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
+			// XŽ²‚Ì”ÍˆÍ‚ðÝ’è
+			diprg.diph.dwObj = DIJOFS_X;
+			joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
+			// YŽ²‚Ì”ÍˆÍ‚ðÝ’è
+			diprg.diph.dwObj = DIJOFS_Y;
+			joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
 
-		// RzŽ²‚Ì”ÍˆÍ‚ðÝ’è
-		diprg.diph.dwObj = DIJOFS_RZ;
-		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
+			// RzŽ²‚Ì”ÍˆÍ‚ðÝ’è
+			diprg.diph.dwObj = DIJOFS_RZ;
+			joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
 
-		// Slider1‚Ì”ÍˆÍ‚ðÝ’è
-		diprg.diph.dwObj = DIJOFS_SLIDER(0);
-		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
+			// Slider1‚Ì”ÍˆÍ‚ðÝ’è
+			diprg.diph.dwObj = DIJOFS_SLIDER(0);
+			joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
 
-		// Slider2‚Ì”ÍˆÍ‚ðÝ’è
-		diprg.diph.dwObj = DIJOFS_SLIDER(1);
-		joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
+			// Slider2‚Ì”ÍˆÍ‚ðÝ’è
+			diprg.diph.dwObj = DIJOFS_SLIDER(1);
+			joycon[i].Device->SetProperty(DIPROP_RANGE, &diprg.diph);
 
-		DIPROPDWORD				dipdw;
-		dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-		dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
-		dipdw.diph.dwHow = DIPH_BYOFFSET;
-		dipdw.dwData = DEADZONE;
-		//XŽ²‚Ì–³Œøƒ][ƒ“‚ðÝ’è
-		dipdw.diph.dwObj = DIJOFS_X;
-		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-		//YŽ²‚Ì–³Œøƒ][ƒ“‚ðÝ’è
-		dipdw.diph.dwObj = DIJOFS_Y;
-		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+			DIPROPDWORD				dipdw;
+			dipdw.diph.dwSize = sizeof(DIPROPDWORD);
+			dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
+			dipdw.diph.dwHow = DIPH_BYOFFSET;
+			dipdw.dwData = DEADZONE;
+			//XŽ²‚Ì–³Œøƒ][ƒ“‚ðÝ’è
+			dipdw.diph.dwObj = DIJOFS_X;
+			joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+			//YŽ²‚Ì–³Œøƒ][ƒ“‚ðÝ’è
+			dipdw.diph.dwObj = DIJOFS_Y;
+			joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-		// RzŽ²‚Ì–³Œøƒ][ƒ“‚ðÝ’è
-		dipdw.diph.dwObj = DIJOFS_RZ;
-		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+			// RzŽ²‚Ì–³Œøƒ][ƒ“‚ðÝ’è
+			dipdw.diph.dwObj = DIJOFS_RZ;
+			joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-		// Slider1‚Ì–³Œøƒ][ƒ“‚ðÝ’è
-		dipdw.diph.dwObj = DIJOFS_SLIDER(0);
-		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+			// Slider1‚Ì–³Œøƒ][ƒ“‚ðÝ’è
+			dipdw.diph.dwObj = DIJOFS_SLIDER(0);
+			joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-		// Slider2‚Ì–³Œøƒ][ƒ“‚ðÝ’è
-		dipdw.diph.dwObj = DIJOFS_SLIDER(1);
-		joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+			// Slider2‚Ì–³Œøƒ][ƒ“‚ðÝ’è
+			dipdw.diph.dwObj = DIJOFS_SLIDER(1);
+			joycon[i].Device->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-		joycon[i].Device->Acquire();
+			joycon[i].Device->Acquire();
+		}
 	}
 
 	return true;
