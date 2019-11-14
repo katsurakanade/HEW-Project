@@ -13,6 +13,7 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/start.png",
 	"asset/texture/Exit.png",
 	"asset/texture/airou.png",
+	"asset/texture/luotianyi.png",//
 	"asset/texture/action1.png",
 	"asset/texture/action2.png",
 	"asset/texture/action3.png",

@@ -4,7 +4,7 @@ typedef enum SCENE_INDEX
 {
 	SCENE_INDEX_TITLE,
 	SCENE_INDEX_GAME,
-
+	
 	SCENE_INDEX_MAX
 };
 
