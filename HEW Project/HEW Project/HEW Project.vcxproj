@@ -21,14 +21,21 @@
   <ItemGroup>
     <ClCompile Include="ActionSlot.cpp" />
     <ClCompile Include="ActionUI.cpp" />
+    <ClCompile Include="BatonTouch.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="gameprogress.cpp" />
+    <ClCompile Include="IMGUI\imgui.cpp" />
+    <ClCompile Include="IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="IMGUI\imgui_impl_dx9.cpp" />
+    <ClCompile Include="IMGUI\imgui_impl_win32.cpp" />
+    <ClCompile Include="IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="Live2D.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="myDirect3D.cpp" />
-    <ClCompile Include="Result.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -37,14 +44,23 @@
   <ItemGroup>
     <ClInclude Include="ActionSlot.h" />
     <ClInclude Include="ActionUI.h" />
+    <ClInclude Include="BatonTouch.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameData.h" />
+    <ClInclude Include="gameprogress.h" />
+    <ClInclude Include="IMGUI\imconfig.h" />
+    <ClInclude Include="IMGUI\imgui.h" />
+    <ClInclude Include="IMGUI\imgui_impl_dx9.h" />
+    <ClInclude Include="IMGUI\imgui_impl_win32.h" />
+    <ClInclude Include="IMGUI\imgui_internal.h" />
+    <ClInclude Include="IMGUI\imstb_rectpack.h" />
+    <ClInclude Include="IMGUI\imstb_textedit.h" />
+    <ClInclude Include="IMGUI\imstb_truetype.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="Live2D.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="myDirect3D.h" />
-    <ClInclude Include="Result.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="GameObject.h" />
@@ -102,8 +118,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Users\Noa\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;C:\Users\Noa\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
@@ -115,11 +131,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\katsu\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;C:\Users\kanadekatsura\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\katsu\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\katsu\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;C:\Users\kanadekatsura\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\katsu\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
