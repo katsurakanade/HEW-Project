@@ -184,13 +184,13 @@ void GameProgress::Draw()
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "経過:%d秒",  stime/60);
 
 	//プログレスバーのフレーム
-	ProgressBar[0].Draw(160, 40, PROGRESS_WIDTH+20, PROGRESS_HEIGHT+20, TRUE);
+	//ProgressBar[0].Draw(160, 40, PROGRESS_WIDTH+20, PROGRESS_HEIGHT+20, TRUE);
 
 	//増化するプログレスバー
-	ProgressBar[1].Draw(200, 50, NowProgress+200.0f, PROGRESS_HEIGHT,TRUE);
+	//ProgressBar[1].Draw(200, 50, NowProgress+200.0f, PROGRESS_HEIGHT,TRUE);
 
 	//キャラアイコン
-	ProgressBar[2].Draw(NowProgress+180.0f, 50, 2.0f,2.0f, 256, 256, TRUE, FALSE);
+	//ProgressBar[2].Draw(NowProgress+180.0f, 50, 2.0f,2.0f, 256, 256, TRUE, FALSE);
 
 }
 

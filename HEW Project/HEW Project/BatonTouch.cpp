@@ -27,5 +27,5 @@ void Update_BatonTouch()
 }
 void Draw_BatonTouch()
 {
-	Baton[0].Draw(100, 50, 1, 1, 450, 355, TRUE, FALSE);
+	//Baton[0].Draw(100, 50, 1, 1, 450, 355, TRUE, FALSE);
 }

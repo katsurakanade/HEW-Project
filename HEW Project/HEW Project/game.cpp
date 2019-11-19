@@ -8,6 +8,7 @@
 #include "ActionUI.h"
 #include "GameData.h"
 #include "Live2D.h"
+#include "gameprogress.h"
 
 // Debug Mode
 #define DEBUG
@@ -64,13 +65,14 @@ void Init_Game() {
 	Character.Pos.y = -150;
 
 	// アクション失敗初期化
-	Failed.LoadTexture(TexturePassDict[TEXTURE_INDEX_FAILED]);
+	Failed.LoadTexture(TexturePassDict[TEXTURE_INDEX_END]);
 	Failed.Object.Pos.x = 600;
 	Failed.Object.Pos.y = 200;
 
 	// ゲームデータ初期化
 	gamedata.Init();
 	
+	Init_GameProgress();
 }
 
 void Uninit_Game() {

@@ -21,14 +21,21 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/c.png",
 	"asset/texture/right.png",
 	"asset/texture/up.png",
+	"asset/texture/SL.png",
+	"asset/texture/SR.png",
+	"asset/texture/ZL.png",
+	"asset/texture/Failed.png",
+	"asset/texture/holyfire.png",
+	"asset/texture/arm.png",
+	"asset/texture/pink.png",
 	"asset/texture/progressbar.png",
 	"asset/texture/bar_frame.png",
 	"asset/texture/Batontouch_test.png",
-
 };
 
 GameObject::GameObject() {
-
+	Object.Scale.x = 1.0f;
+	Object.Scale.y = 1.0f;
 }
 
 GameObject::~GameObject() {
@@ -45,6 +52,7 @@ void GameObject::LoadTexture(const char * name) {
 
 		if (data > 0) {
 			handle = data;
+			GetGraphSizeF(handle, &Size.x, &Size.y);
 		}
 		else {
 			char errmsg[255] = "‰æ‘œ“Ç‚Ýž‚ÝƒGƒ‰[\n";
@@ -122,10 +130,11 @@ void GameObject::Delay_Zoom(float sec,double scale,double speed) {
 	}
 
 	if (Delay_Timer[1] >= sec) {
-		Object.Scale += speed;
+		Object.Scale.x += speed;
+		Object.Scale.y += speed;
 	}
 
-	if (Object.Scale >= scale) {
+	if (Object.Scale.x >= scale) {
 		Delay_Timer[1] = 0.0f;
 		Delay_Flag[1] = false;
 	}
@@ -151,12 +160,7 @@ void GameObject::Delay_Rotate(float sec,double rotate,double speed) {
 
 void GameObject::Draw() {
 
-	DrawRotaGraph(Object.Pos.x, Object.Pos.y, this->Object.Scale, this->Object.Rotate, this->handle, true, false);
-}
-
-void GameObject::Draw(bool use_alpha) {
-
-	DrawRotaGraph(Object.Pos.x, Object.Pos.y, this->Object.Scale, this->Object.Rotate ,this->handle, use_alpha, false);
+	DrawRotaGraph3((int)Object.Pos.x, (int)Object.Pos.y, Size.x / 2, Size.y / 2, Object.Scale.x, Object.Scale.y, Object.Rotate, handle, true, false);
 }
 
 void GameObject::Draw(int tsx,int tsy,int tex,int tey,bool use_alpha,bool turn) {
@@ -166,8 +170,7 @@ void GameObject::Draw(int tsx,int tsy,int tex,int tey,bool use_alpha,bool turn) 
 
 void GameObject::Draw_Anime(int cut) {
 
-	DrawRotaGraph(Object.Pos.x,Object.Pos.y, this->Object.Scale, this->Object.Rotate, Anime_handle[cut], TRUE, false);
-
+	DrawRotaGraph3((int)Object.Pos.x, (int)Object.Pos.y, Size.x / 2 , Size.y / 2, Object.Scale.x, Object.Scale.y, Object.Rotate, Anime_handle[cut], true, false);
 }
 
 void GameObject::Gauss_Filter(int param) {

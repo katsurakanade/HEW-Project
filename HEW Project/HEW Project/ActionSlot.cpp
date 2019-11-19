@@ -21,6 +21,7 @@ void ActionSlot::Load() {
 	Hand.LoadTexture(TexturePassDict[TEXTURE_INDEX_ARM]);
 
 	this->Scale = D3DXVECTOR2(0.20f,0.20f);
+
 	Fire.Object.Scale = this->Scale;
 	Hand.Object.Scale = this->Scale;
 
