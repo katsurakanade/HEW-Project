@@ -28,8 +28,8 @@ void Init_Title() {
 
 	Hiyori.Zoom.x = 3.0f;
 	Hiyori.Zoom.y = 3.0f;
-	Hiyori.Pos.x = -400.0f;
-	Hiyori.Pos.y = -500.0f;
+	Hiyori.Pos.x = -300.0f;
+	Hiyori.Pos.y = -450.0f;
 	
 	TitleMenu.Pos.x = 700.0f;
 	TitleMenu.Pos.y = 100.0f;
@@ -80,6 +80,20 @@ void Update_Title() {
 		Scene_Change(SCENE_INDEX_GAME);
 	}
 
+	/*
+	if (keyboard.IsPress(DIK_RIGHTARROW)) {
+		Hiyori.Pos.x += 5.0f;
+		Hiyori.Zoom.x += 0.005f;
+		Hiyori.Zoom.y += 0.005f;
+		Hiyori.Pos.y -= 1.0f;
+	}
+	if (keyboard.IsPress(DIK_LEFTARROW)) {
+		Hiyori.Pos.x -= 5.0f;
+		Hiyori.Zoom.x -= 0.005f;
+		Hiyori.Zoom.y -= 0.005f;
+		Hiyori.Pos.y += 1.0f;
+	}
+	*/
 }
 
 void Draw_Title() {
@@ -88,5 +102,7 @@ void Draw_Title() {
 
 	TitleMenu.Draw();
 
-	test.Draw();
+	//test.Draw();
+
+
 }

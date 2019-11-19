@@ -4,16 +4,24 @@ const int speed1 = 360;     //futuu
 const int speed2 = 315;     //osoi
 const int speed3 = 405;     //hayai
 
+GameData gamedata;
+
 GameData::GameData()
 {
-	hp = 3;
-	Running_Distance = 0;
-	Running_Speed = 0;
+	
 }
 
 GameData::~GameData()
 {
 
+}
+
+void GameData::Init() {
+
+	hp = 3;
+	Running_Distance = 0;
+	Running_Speed = 0;
+	Action_Point = 0;
 }
 
 void GameData::UpdateSpeed() {
@@ -33,8 +41,16 @@ void GameData::AddRunningSpeed(int value) {
 	Running_Speed += value;
 }
 
+void GameData::AddActionPoint(int value) {
+	Action_Point += value;
+}
+
 void GameData::SetRunningSpeed(int value) {
 	Running_Speed = value;
+}
+
+void GameData::SetActionPoint(int value) {
+	Action_Point = value;
 }
 
 int GameData::Gethp() {
@@ -51,4 +67,8 @@ int GameData::GetRunningSpeed() {
 
 int GameData::GetRunningMeter() {
 	return Running_meter;
+}
+
+int GameData::GetActionPoint() {
+	return Action_Point;
 }

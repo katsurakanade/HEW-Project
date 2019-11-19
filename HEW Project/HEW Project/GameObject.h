@@ -23,6 +23,13 @@ typedef enum {
 	TEXTURE_INDEX_C,
 	TEXTURE_INDEX_RIGHT,
 	TEXTURE_INDEX_UP,
+	TEXTURE_INDEX_SL,
+	TEXTURE_INDEX_SR,
+	TEXTURE_INDEX_ZL,
+	TEXTURE_INDEX_FAILED,
+	TEXTURE_INDEX_FIRE,
+	TEXTURE_INDEX_ARM,
+	TEXTURE_INDEX_PINK,
 
 	TEXTURE_INDEX_MAX
 
@@ -46,7 +53,7 @@ typedef struct {
 	// 座標
 	D3DXVECTOR2 Pos;
 	// 拡大率
-	double Scale = 1.0;
+	D3DXVECTOR2 Scale;
 	// 回転
 	double Rotate = 0;
 
@@ -61,6 +68,8 @@ private:
 	float Delay_Timer[3] = {0,0,0};
 	// 遅く処理用フラグ
 	bool Delay_Flag[3] = { true,true,true };
+	// 画像サイズ
+	D3DXVECTOR2 Size;
 
 public:
 
@@ -104,9 +113,6 @@ public:
 	// 描画(透明)
 	void Draw();
 	
-	// 描画(アルファ使う)
-	void Draw(bool use_alpha);
-
 	// 部分描画(テクスチャx,テクスチャy,テクスチャxサイズ,テクスチャyサイズ,アルファ使う,反転処理使う)
 	void Draw(int tsx, int tsy, int tex, int tey, bool use_alpha, bool turn);
 

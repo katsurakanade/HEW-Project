@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\IMGUI">
-      <UniqueIdentifier>{a2963a7b-abe0-4781-95fe-7259637d5223}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\IMGUI">
-      <UniqueIdentifier>{9025b89f-0baf-4def-b121-22685aa4a458}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="input.cpp">
@@ -42,24 +36,6 @@
     <ClCompile Include="game.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="IMGUI\imgui.cpp">
-      <Filter>ソース ファイル\IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="IMGUI\imgui_demo.cpp">
-      <Filter>ソース ファイル\IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="IMGUI\imgui_draw.cpp">
-      <Filter>ソース ファイル\IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="IMGUI\imgui_widgets.cpp">
-      <Filter>ソース ファイル\IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="IMGUI\imgui_impl_dx9.cpp">
-      <Filter>ソース ファイル\IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="IMGUI\imgui_impl_win32.cpp">
-      <Filter>ソース ファイル\IMGUI</Filter>
-    </ClCompile>
     <ClCompile Include="Live2D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -76,6 +52,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ActionSlot.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Result.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,30 +80,6 @@
     <ClInclude Include="game.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="IMGUI\imconfig.h">
-      <Filter>ヘッダー ファイル\IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="IMGUI\imgui.h">
-      <Filter>ヘッダー ファイル\IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="IMGUI\imgui_internal.h">
-      <Filter>ヘッダー ファイル\IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="IMGUI\imstb_rectpack.h">
-      <Filter>ヘッダー ファイル\IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="IMGUI\imstb_textedit.h">
-      <Filter>ヘッダー ファイル\IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="IMGUI\imstb_truetype.h">
-      <Filter>ヘッダー ファイル\IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="IMGUI\imgui_impl_dx9.h">
-      <Filter>ヘッダー ファイル\IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="IMGUI\imgui_impl_win32.h">
-      <Filter>ヘッダー ファイル\IMGUI</Filter>
-    </ClInclude>
     <ClInclude Include="Live2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -141,6 +96,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="ActionSlot.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Result.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
