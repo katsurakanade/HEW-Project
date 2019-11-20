@@ -8,6 +8,9 @@
 #include "ActionUI.h"
 #include "GameData.h"
 #include "Live2D.h"
+#include "gameprogress.h"
+#include "Staminagauge.h"
+
 
 // Debug Mode
 #define DEBUG
@@ -38,11 +41,17 @@ GameData gamedata;
 
 Live2D Character;
 
+GameProgress gameprogress;
+
+StaminaGauge stamina;
 
 void Init_Game() {
+	
+	//スタミナゲージ初期化
+	stamina.Init();
 
 	// アクションUI初期化
-	Action.Init();
+	//Action.Init();
 	Action.Pos.x = 500;
 	Action.Pos.y = 600;
 	Action.Interval.x = 150;
@@ -51,13 +60,17 @@ void Init_Game() {
 	// アクションゲージ初期化
 	Actionslot.Pos.x = 350;
 	Actionslot.Pos.y = 280;
-	Actionslot.Load();
+	//Actionslot.Load();
 	
-	Character.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_RICE]);
+	//Character.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_RICE]);
 	Character.Zoom.x = 2.5f;
 	Character.Zoom.y = 2.5f;
 	Character.Pos.x = -400;
 	Character.Pos.y = 100;
+
+	//ゲーム進行バー初期化
+	gameprogress.Init();
+
 }
 
 void Uninit_Game() {
@@ -67,6 +80,9 @@ void Uninit_Game() {
 }
 
 void Update_Game() {
+
+	//スタミナゲージ更新処理
+	stamina.Update();
 
 	Character.SetMontionIndex(GetRand(8));
 
@@ -80,6 +96,9 @@ void Update_Game() {
 	// 走る処理
 	Running();
 
+	gameprogress.Update();
+
+
 #ifdef DEBUG
 	if (keyboard.IsTrigger(DIK_R)) {
 		Scene_Change(SCENE_INDEX_TITLE);
@@ -89,6 +108,9 @@ void Update_Game() {
 }
 
 void Draw_Game() {
+	
+	//スタミナゲージ描画
+	stamina.Draw();
 
 	// アクションUI描画
 	Action.Draw();
@@ -96,6 +118,9 @@ void Draw_Game() {
 	Actionslot.Draw();
 
 	Character.Draw();
+
+	gameprogress.Draw();
+
 
 	// アクション完成判定
 	if (Action.GetFinishFlag()) {

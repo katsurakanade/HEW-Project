@@ -39,6 +39,7 @@
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Staminagauge.cpp" />
     <ClCompile Include="title.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +65,7 @@
     <ClInclude Include="scene.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Staminagauge.h" />
     <ClInclude Include="title.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

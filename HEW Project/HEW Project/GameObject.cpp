@@ -24,6 +24,7 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/progressbar.png",
 	"asset/texture/bar_frame.png",
 	"asset/texture/Batontouch_test.png",
+	"asset/texture/stamina_frame.png",
 
 };
 
@@ -151,7 +152,7 @@ void GameObject::Delay_Rotate(float sec,double rotate,double speed) {
 
 void GameObject::Draw() {
 
-	DrawRotaGraph(Object.Pos.x, Object.Pos.y, this->Object.Scale, this->Object.Rotate, this->handle, true, false);
+	DrawRotaGraph((int)Object.Pos.x, (int)Object.Pos.y, this->Object.Scale, this->Object.Rotate, this->handle, true, false);
 }
 
 void GameObject::Draw(bool use_alpha) {

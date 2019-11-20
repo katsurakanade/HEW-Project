@@ -35,11 +35,14 @@ void Scene_Finalize(void)
 		Uninit_Game();
 		break;
 
-
 	case SCENE_INDEX_BATON_TOUCH:
 		Uninit_BatonTouch();
 		break;
-
+		/*
+	case SCENE_INDEX_RESULT:
+		Uninit_BatonTouch();
+		break;
+		*/
 	}
 }
 
@@ -58,7 +61,11 @@ void Scene_Update(void)
 	case SCENE_INDEX_BATON_TOUCH:
 		Update_BatonTouch();
 		break;
-
+		/*
+	case SCENE_INDEX_RESULT:
+		Update_BatonTouch();
+		break;
+		*/
 	}
 }
 
@@ -78,7 +85,11 @@ void Scene_Draw(void)
 	case SCENE_INDEX_BATON_TOUCH:
 		Draw_BatonTouch();
 		break;
-
+		/*
+	case SCENE_INDEX_RESULT:
+		Draw_BatonTouch();
+		break;
+		*/
 	}
 }
 
