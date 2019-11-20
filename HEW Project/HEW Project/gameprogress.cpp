@@ -27,15 +27,15 @@ void GameProgress::Init()
 
 		ProgressBar[0].Object.Pos.x = SCREEN_WIDTH / 2;
 		ProgressBar[0].Object.Pos.y = 100.0f;
-		ProgressBar[0].Object.Scale = 1.0f;
+		ProgressBar[0].Object.Scale.x = 1.0f;
 
 		ProgressBar[1].Object.Pos.x = SCREEN_WIDTH / 2;
 		ProgressBar[1].Object.Pos.y = 100.0f;
-		ProgressBar[1].Object.Scale = 1.0f;
+		ProgressBar[1].Object.Scale.x = 1.0f;
 
 		ProgressBar[2].Object.Pos.x = 200.0f;
 		ProgressBar[2].Object.Pos.y = 100.0f;
-		ProgressBar[2].Object.Scale = 0.5f;
+		ProgressBar[2].Object.Scale.x = 0.5f;
 
 		//stime = 0.0f;
 		stime = SECONDS;
@@ -247,8 +247,8 @@ void GameProgress::Update()
 void GameProgress::Draw()
 {
 	//デバック用
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "経過:%d秒",  stime/60);
-	DrawFormatString(200, 500, GetColor(255, 255, 255), "airouの位置:%f", ProgressBar[2].Object.Pos.x);
+	//DrawFormatString(0, 0, GetColor(255, 255, 255), "経過:%d秒",  stime/60);
+	//DrawFormatString(200, 500, GetColor(255, 255, 255), "airouの位置:%f", ProgressBar[2].Object.Pos.x);
 
 	//プログレスバーのフレーム
 	//ProgressBar[0].Draw(PROGRESS_WIDTH+20, PROGRESS_HEIGHT+20);

@@ -25,7 +25,7 @@ void StaminaGauge::Init()
 		staminagauge[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_STAMINA_GAUGE]);
 		staminagauge[0].Object.Pos.x = SCREEN_WIDTH / 2;
 		staminagauge[0].Object.Pos.y = SCREEN_HEIGHT / 2;
-		SetStaminaGauge(StaminaScale);
+		SetStaminaGauge(StaminaScale_x, StaminaScale_y);
 		StaminaCount = SECONDS;
 		Initflag = false;
 	}
@@ -47,8 +47,9 @@ void StaminaGauge::Update()
 	StaminaCount++;
 	if (StaminaCount > 60.0f)
 	{
-		StaminaScale -= 0.005;
-		SetStaminaGauge(StaminaScale);
+		StaminaScale_x -= 0.005;
+		StaminaScale_y -= 0.005;
+		SetStaminaGauge(StaminaScale_x, StaminaScale_y);
 		StaminaCount = 0.0f;
 	}
 
@@ -60,9 +61,10 @@ void StaminaGauge::Draw()
 
 }
 
-void StaminaGauge::SetStaminaGauge(double scale)
+void StaminaGauge::SetStaminaGauge(double scale_x, double scale_y)
 {
-	staminagauge[0].Object.Scale = scale;
+	staminagauge[0].Object.Scale.x = scale_x;
+	staminagauge[0].Object.Scale.y = scale_y;
 
 }
 
@@ -73,5 +75,5 @@ float StaminaGauge::GetStaminaCount()
 
 double StaminaGauge::GetStaminaScale()
 {
-	return StaminaScale;
+	return StaminaScale_x;
 }

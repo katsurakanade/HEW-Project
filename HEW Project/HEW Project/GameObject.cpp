@@ -31,6 +31,7 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/progressbar.png",
 	"asset/texture/bar_frame.png",
 	"asset/texture/Batontouch_test.png",
+	"asset/texture/stamina_frame.png",
 };
 
 GameObject::GameObject() {

@@ -14,7 +14,10 @@ public:
 
 	bool Initflag = true;
 	
-	double StaminaScale=2.0;
+	double StaminaScale_x=2.0;
+
+	double StaminaScale_y = 2.0;
+
 
 	//------------ƒƒ“ƒoŠÖ”------------------
 
@@ -24,7 +27,7 @@ public:
 
 	void Draw();
 
-	void SetStaminaGauge(double scale);
+	void SetStaminaGauge(double scale_x, double scale_y);
 
 	float GetStaminaCount();
 

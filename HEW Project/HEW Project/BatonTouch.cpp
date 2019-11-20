@@ -15,7 +15,7 @@ void Init_BatonTouch()
 	Baton[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATON_TEST]);
 	Baton[0].Object.Pos.x = 500.0f;
 	Baton[0].Object.Pos.y = 500.0f;
-	Baton[0].Object.Scale = 1.0f;
+	Baton[0].Object.Scale.x = 1.0f;
 
 }
 void Uninit_BatonTouch()

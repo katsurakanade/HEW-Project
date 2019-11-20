@@ -1,8 +1,6 @@
 
 #include "myDirect3D.h"
 #include "main.h"
-#include "IMGUI/imgui.h"
-#include "IMGUI/imgui_impl_dx9.h"
 
 static LPDIRECT3D9 g_pD3D = NULL;             // Direct3Dインターフェース
 static LPDIRECT3DDEVICE9 g_pD3DDevice = NULL; // Direct3Dデバイス
