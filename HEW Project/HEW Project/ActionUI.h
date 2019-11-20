@@ -10,7 +10,11 @@ using namespace std;
 
 typedef enum {
 
-	ACTION_STATE_PRESSBUTTON_ABAC,
+	// トランポリン
+	ACTION_STATE_TRAMPOLINING,
+	// バランスボード
+	ACTION_STATE_BALANCEBOARD,
+
 	ACTION_STATE_LONGJUMP,
 
 	ACTION_STATE_MAX

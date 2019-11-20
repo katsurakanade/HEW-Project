@@ -8,7 +8,11 @@
 
 using namespace std;
 
-vector <const char *> PRESSBUTTON_ABAC_PASS;
+// トランポリン
+vector <const char *> TRAMPOLINING_PASS;
+// バランスボード
+vector <const char*>	 BALANCEBOARD_PASS;
+
 vector <const char*>  LONG_JUMP_PASS;
 
 static GameObject onetime[8];
@@ -20,26 +24,29 @@ ActionUI::ActionUI()
 
 ActionUI::~ActionUI()
 {
-
+	Action_vector.clear();
 }
 
 void ActionUI::Init() {
 
-	State = 1;
+	State = ACTION_STATE_BALANCEBOARD;
 	State_Switch = true;
 	progress = 0;
 	Finish_Flag = false;
 
-	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_A]);
-	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_B]);
-	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_A]);
-	PRESSBUTTON_ABAC_PASS.push_back(TexturePassDict[TEXTURE_INDEX_C]);
+	// トランポリン
+	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SL]);
+	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SR]);
+	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+
+	// バランスボード
+	BALANCEBOARD_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SL]);
+	BALANCEBOARD_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SR]);
 
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
-
 
 }
 
@@ -49,9 +56,17 @@ void ActionUI::Update() {
 
 		switch (State)
 		{
-		case ACTION_STATE_PRESSBUTTON_ABAC:
-			for (int i = 0; i < 4; i++) {
-				onetime[i].LoadTexture(PRESSBUTTON_ABAC_PASS[i]);
+			// トランポリン
+		case ACTION_STATE_TRAMPOLINING:
+			for (int i = 0; i < 3; i++) {
+				onetime[i].LoadTexture(TRAMPOLINING_PASS[i]);
+				Action_vector.push_back(onetime[i]);
+			}
+			break;
+			// バランスボード
+		case ACTION_STATE_BALANCEBOARD:
+			for (int i = 0; i < 2; i++) {
+				onetime[i].LoadTexture(BALANCEBOARD_PASS[i]);
 				Action_vector.push_back(onetime[i]);
 			}
 			break;
@@ -70,41 +85,40 @@ void ActionUI::Update() {
 
 	if (!Finish_Flag) {
 		switch (State)
-		{
-		case ACTION_STATE_PRESSBUTTON_ABAC:
-			switch (progress)
-			{
-			case 0:
-				if (keyboard.IsTrigger(DIK_A)) {
-					progress++;
-					Action_vector[0].Gauss_Filter(500);
-				}
-				break;
-			case 1:
-				if (keyboard.IsTrigger(DIK_B)) {
-					progress++;
-					Action_vector[1].Gauss_Filter(500);
-				}
-				break;
-			case 2:
-				if (keyboard.IsTrigger(DIK_A)) {
-					progress++;
-					Action_vector[2].Gauss_Filter(500);
-				}
-				break;
-			case 3:
-				if (keyboard.IsTrigger(DIK_C)) {
-					progress++;
-					Action_vector[3].Gauss_Filter(500);
-				}
-				break;
-			case 4:
+		{			
+			// トランポリン
+		case ACTION_STATE_TRAMPOLINING:
+			if (joycon[LEFT_JOYCON].IsTrigger(JOYCON_SL_LEFT)) {
+				Action_vector[0].Gauss_Filter(500);
+			}
+			if (joycon[LEFT_JOYCON].IsTrigger(JOYCON_SR_LEFT)) {
+				Action_vector[1].Gauss_Filter(500);
+			}
+			if (joycon[LEFT_JOYCON].GetGyro_X() < -100  && joycon[LEFT_JOYCON].GetOldState() == (JOYCON_SL_LEFT + JOYCON_SR_LEFT)) {
+				Action_vector[2].Gauss_Filter(500);
+				progress = 3;
 				Finish_Flag = true;
-				break;
-			default:
-				break;
+			}
+			break;
+			// バランスボード
+		case ACTION_STATE_BALANCEBOARD:
+			// Failed
+			if (joycon[LEFT_JOYCON].GetGyro_Y() < -150 || joycon[LEFT_JOYCON].GetGyro_Y() > 150) {
+				Finish_Flag = true;
+			}
+			if (joycon[LEFT_JOYCON].IsTrigger(JOYCON_SL_LEFT)) {
+				Action_vector[0].Gauss_Filter(500);
+				progress++;
+			}
+			if (joycon[LEFT_JOYCON].IsTrigger(JOYCON_SR_LEFT)) {
+				Action_vector[1].Gauss_Filter(500);
+				progress++;
+			}
+			if (progress >= 2) {
+				Finish_Flag = true;
 			}
 
+			break;
 		case ACTION_STATE_LONGJUMP:
 			switch (progress)
 			{
@@ -165,12 +179,11 @@ void ActionUI::Update() {
 		}
 	}
 	
-
 	if (Finish_Flag) {
 		State_Switch_Timer += SECONDS;
 	}
 
-	if (State_Switch_Timer  >= 0.3f) {
+	if (State_Switch_Timer  >= 0.7f) {
 		progress = 0;
 		State_Switch = true;
 		State_Switch_Timer = 0.0f;

@@ -31,6 +31,12 @@ public:
 
 	// НјХW
 	D3DXVECTOR2 Pos;
+
+	// КgСеЧ¶
+	D3DXVECTOR2 Scale;
+
+	// РєЙќХќИЏ
+	D3DXVECTOR2 Fire_Offset;
 	
 	void Load();
 
