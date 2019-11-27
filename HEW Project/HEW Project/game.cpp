@@ -10,7 +10,8 @@
 #include "Live2D.h"
 #include "gameprogress.h"
 #include "Staminagauge.h"
-
+#include "GameOver.h"
+#include "BatonTouch.h"
 
 // Debug Mode
 #define DEBUG
@@ -38,6 +39,8 @@ void Debug_Running();
 std::vector<int> Speed_Array;
 static int Max_Count;
 static int Judge_Count;
+//ゲームステート
+int g_GameState;
 // アクションUI
 ActionUI Action;
 // アクションゲージ
@@ -50,6 +53,10 @@ Live2D Character;
 GameProgress gameprogress;
 
 StaminaGauge stamina;
+
+GameOver gameover;
+
+BatonTouch baton;
 
 void Init_Game() {
 	
@@ -108,6 +115,10 @@ void Init_Game() {
 	//ゲーム進行バー初期化
 	gameprogress.Init();
 
+	//ゲームオーバー初期化
+	gameover.Init();
+
+
 }
 
 void Uninit_Game() {
@@ -133,7 +144,11 @@ void Update_Game() {
 	// 走る処理
 	Running();
 
+	//プログレスバーの処理
 	gameprogress.Update();
+
+	//ゲームオーバー処理
+	gameover.Update();
 
 	// キャラクター処理
 
@@ -180,6 +195,7 @@ void Draw_Game() {
 
 	gameprogress.Draw();
 
+	gameover.Draw();
 
 	// アクション完成判定
 	if (Action.GetFinishFlag()) {

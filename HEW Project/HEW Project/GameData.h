@@ -3,7 +3,7 @@
 class GameData
 {
 private:
-
+	
 	// ¹‰Î
 	int hp;
 	// ‘–‚é‹——£

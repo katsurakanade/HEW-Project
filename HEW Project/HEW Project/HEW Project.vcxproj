@@ -24,6 +24,7 @@
     <ClCompile Include="BatonTouch.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="gameprogress.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="Live2D.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="BatonTouch.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameData.h" />
+    <ClInclude Include="GameOver.h" />
     <ClInclude Include="gameprogress.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="Live2D.h" />

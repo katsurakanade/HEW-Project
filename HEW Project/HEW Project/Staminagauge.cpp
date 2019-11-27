@@ -2,7 +2,7 @@
 /*------------------------------------------------------------------
 @brief	スタミナゲージ
 @author	萩原直之
-@date	2019/11/18
+@date	2019/11/21
 -------------------------------------------------------------------*/
 #include <algorithm>
 #include <vector>
@@ -15,7 +15,7 @@
 #include <time.h>
 #include "Staminagauge.h"
 
-static GameObject staminagauge[1];
+GameObject staminagauge[1];
 
 void StaminaGauge::Init()
 {
@@ -26,7 +26,9 @@ void StaminaGauge::Init()
 		staminagauge[0].Object.Pos.x = SCREEN_WIDTH / 2;
 		staminagauge[0].Object.Pos.y = SCREEN_HEIGHT / 2;
 		SetStaminaGauge(StaminaScale_x, StaminaScale_y);
-		StaminaCount = SECONDS;
+		StaminaCount = 0.005;
+		//NowCount = 1000.0f;
+		FlameCount = SECONDS;
 		Initflag = false;
 	}
 }
@@ -44,15 +46,7 @@ StaminaGauge::~StaminaGauge()
 
 void StaminaGauge::Update()
 {
-	StaminaCount++;
-	if (StaminaCount > 60.0f)
-	{
-		StaminaScale_x -= 0.005;
-		StaminaScale_y -= 0.005;
-		SetStaminaGauge(StaminaScale_x, StaminaScale_y);
-		StaminaCount = 0.0f;
-	}
-
+	StaminaReduce(0.005);
 }
 
 void StaminaGauge::Draw()
@@ -68,12 +62,40 @@ void StaminaGauge::SetStaminaGauge(double scale_x, double scale_y)
 
 }
 
-float StaminaGauge::GetStaminaCount()
+double StaminaGauge::GetStaminaCount()
 {
 	return StaminaCount;
 }
 
-double StaminaGauge::GetStaminaScale()
+
+void StaminaGauge::StaminaState(int state)
 {
-	return StaminaScale_x;
+	//Over
+	if (state==1)
+	{
+		StaminaCount -= 0.015;
+	}
+	//Great
+	if (state==2)
+	{
+		StaminaCount -= 0.001;
+	}
+	//Bad
+	if (state==3)
+	{
+		StaminaCount -= 0.010;
+	}
+}
+
+void StaminaGauge::StaminaReduce(double s_count)
+{
+	FlameCount++;
+	if (FlameCount > 60.0f)
+	{
+		StaminaScale_x -= s_count;
+		StaminaScale_y -= s_count;
+		SetStaminaGauge(StaminaScale_x, StaminaScale_y);
+		FlameCount = 0.0f;
+	}
+
 }

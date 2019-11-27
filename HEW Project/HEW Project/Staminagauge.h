@@ -10,11 +10,15 @@ public:
 
 	//------------メンバ変数------------------
 
-	float StaminaCount;
+	double StaminaCount;
+
+	float FlameCount;
+
+	double NowCount;
 
 	bool Initflag = true;
 	
-	double StaminaScale_x=2.0;
+	double StaminaScale_x = 2.0;
 
 	double StaminaScale_y = 2.0;
 
@@ -29,7 +33,11 @@ public:
 
 	void SetStaminaGauge(double scale_x, double scale_y);
 
-	float GetStaminaCount();
+	double GetStaminaCount();
 
-	double GetStaminaScale();
+	//入っているステートで減少させる
+	void  StaminaState(int state);
+
+	//scaleを少しずつ減らす関数
+	void StaminaReduce(double s_count);
 };

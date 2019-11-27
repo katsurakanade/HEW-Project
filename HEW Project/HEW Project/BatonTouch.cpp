@@ -9,27 +9,49 @@
 
 GameObject Baton[1];
 GameProgress Progress;
-
 void Init_BatonTouch()
 {
+	//StateBaton = false;
 	Baton[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATON_TEST]);
 	Baton[0].Object.Pos.x = 500.0f;
 	Baton[0].Object.Pos.y = 500.0f;
 	Baton[0].Object.Scale.x = 1.0f;
 
+	
+
 }
-void Uninit_BatonTouch()
+
+
+BatonTouch::BatonTouch()
 {
 
 }
-void Update_BatonTouch()
+
+BatonTouch::~BatonTouch()
+{
+
+}
+void BatonTouch::Init()
+{
+}
+void BatonTouch::Uninit()
+{
+
+}
+void BatonTouch::Update()
 {
 	if (keyboard.IsTrigger(DIK_RETURN)) {
 		Scene_Change(SCENE_INDEX_GAME);
+		//StateBaton = false;
 	}
-
+	
 }
-void Draw_BatonTouch()
+void BatonTouch::Draw()
 {
 	Baton[0].Draw();
+}
+
+bool BatonTouch::GetBatonState()
+{
+	return StateBaton;
 }

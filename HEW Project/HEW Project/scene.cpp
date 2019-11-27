@@ -7,7 +7,7 @@
 
 static SCENE_INDEX g_SceneIndex;
 static SCENE_INDEX g_SceneNextIndex;
-
+static BatonTouch baton;
 typedef void (*SceneFunc)(void);
 
 static const SceneFunc Initialize[] = {
@@ -38,7 +38,7 @@ void Scene_Finalize(void)
 		break;
 
 	case SCENE_INDEX_BATON_TOUCH:
-		Uninit_BatonTouch();
+		baton.Uninit();
 		break;
 
 	case SCENE_INDEX_RESULT:
@@ -61,7 +61,7 @@ void Scene_Update(void)
 		break;
 
 	case SCENE_INDEX_BATON_TOUCH:
-		Update_BatonTouch();
+		baton.Update();
 		break;
 
 	case SCENE_INDEX_RESULT:
@@ -85,7 +85,7 @@ void Scene_Draw(void)
 		break;
 
 	case SCENE_INDEX_BATON_TOUCH:
-		Draw_BatonTouch();
+		baton.Draw();
 		break;
 
 	case SCENE_INDEX_RESULT:
