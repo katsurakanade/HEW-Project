@@ -18,7 +18,8 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Staminagauge.cpp" />
     <ClCompile Include="title.cpp" />
-    <ClCompile Include="GameOver.cpp" />
+    <ClCompile Include="ActionAffect.cpp" />
+    <ClCompile Include="BackGround.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionSlot.h" />
@@ -38,6 +39,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Staminagauge.h" />
     <ClInclude Include="title.h" />
-    <ClInclude Include="GameOver.h" />
+    <ClInclude Include="ActionAffect.h" />
+    <ClInclude Include="BackGround.h" />
   </ItemGroup>
 </Project>

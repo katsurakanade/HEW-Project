@@ -1,4 +1,35 @@
 #pragma once
+#include "ActionSlot.h"
+
+
+class ActionPointAnime {
+
+private:
+
+	const int PosX = 500;
+	const int PosY = 500;
+
+	float timer = 0;
+
+	int ValueData;
+
+public:
+
+	GameObject self[3];
+
+	bool OutFlag = false;
+
+	void Create(int value);
+
+	void Update();
+
+	ActionPointAnime();
+
+	~ActionPointAnime();
+
+	void Draw();
+
+};
 
 class GameData
 {
@@ -14,6 +45,8 @@ private:
 	int	 Running_meter;
 	// アクションポイント
 	int Action_Point;
+	// アクションエフェクト状態
+	int Action_Affect_State;
 
 public:
 
@@ -24,6 +57,8 @@ public:
 	void Init();
 
 	void UpdateSpeed();
+
+	void Action_Point_Update(int value);
 
 	void Addhp(int value);
 
@@ -36,7 +71,7 @@ public:
 	void SetRunningSpeed(int value);
 
 	void SetActionPoint(int value);
-
+	
 	int Gethp();
 
 	int GetRunningDistance();
@@ -46,6 +81,8 @@ public:
 	int GetRunningMeter();
 
 	int GetActionPoint();
+
 };
+
 
 extern GameData gamedata;

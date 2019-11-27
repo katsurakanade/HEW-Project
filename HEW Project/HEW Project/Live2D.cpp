@@ -2,14 +2,9 @@
 #include "Live2D.h"
 #include <vector>
 #include <algorithm>
-#include <map>
 
-map<const char *, const char *> Live2D_Dict ;
-
-// Live2Dƒ‚ƒfƒ‹ƒpƒX
-vector <const char *>Live2DModelPassDict = {
-	"asset/Live2D/Hiyori/Hiyori.model3.json",
-	"asset/Live2D/Rice/Rice.model3.json"
+map<const char *, const char *> Live2D_Dict = {
+	{"HIYORI","asset/Live2D/Hiyori/Hiyori.model3.json"}
 };
 
 Live2D::Live2D() {

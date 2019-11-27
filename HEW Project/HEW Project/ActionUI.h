@@ -14,6 +14,8 @@ typedef enum {
 	ACTION_STATE_TRAMPOLINING,
 	// バランスボード
 	ACTION_STATE_BALANCEBOARD,
+	// ハードル
+	ACTION_STATE_HURDLE,
 
 	ACTION_STATE_LONGJUMP,
 
@@ -25,6 +27,8 @@ class ActionUI
 {
 
 private:
+
+	GameObject onetime[8];
 
 	int State;
 

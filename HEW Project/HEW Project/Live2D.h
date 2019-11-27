@@ -1,20 +1,11 @@
 #pragma once
 #include <vector>
 #include <algorithm>
+#include <map>
 #include "GameObject.h"
 #include "main.h"
 
 using namespace std;
-
-// Live2D モデルキー
-typedef enum {
-
-	LIVE2D_INDEX_HIYORI,
-	LIVE2D_INDEX_RICE,
-
-	LIVE2D_INDEX_MAX
-
-}LIVE2D_MODEL_KEY;
 
 class Live2D
 {
@@ -63,5 +54,4 @@ public:
 };
 
 // Live2Dモデルパス
-extern vector <const char *>Live2DModelPassDict;
-
+extern map<const char *, const char *> Live2D_Dict;

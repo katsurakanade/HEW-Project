@@ -19,8 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionAffect.cpp" />
     <ClCompile Include="ActionSlot.cpp" />
     <ClCompile Include="ActionUI.cpp" />
+    <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="BatonTouch.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameData.cpp" />
@@ -39,8 +41,10 @@
     <ClCompile Include="title.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActionAffect.h" />
     <ClInclude Include="ActionSlot.h" />
     <ClInclude Include="ActionUI.h" />
+    <ClInclude Include="BackGround.h" />
     <ClInclude Include="BatonTouch.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameData.h" />
