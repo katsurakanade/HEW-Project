@@ -8,7 +8,7 @@
 #include "ActionUI.h"
 #include "GameData.h"
 #include "Live2D.h"
-
+#include "back ground.h"
 // Debug Mode
 #define DEBUG
 
@@ -38,8 +38,12 @@ GameData gamedata;
 
 Live2D Character;
 
+BACK_GROUND background;
 
 void Init_Game() {
+
+	background.BACK_GROUND_Init();
+
 
 	// アクションUI初期化
 	Action.Init();
@@ -58,6 +62,7 @@ void Init_Game() {
 	Character.Zoom.y = 2.5f;
 	Character.Pos.x = -400;
 	Character.Pos.y = 100;
+
 }
 
 void Uninit_Game() {
@@ -80,6 +85,9 @@ void Update_Game() {
 	// 走る処理
 	Running();
 
+	background.BACK_GROUND_Update();
+
+
 #ifdef DEBUG
 	if (keyboard.IsTrigger(DIK_R)) {
 		Scene_Change(SCENE_INDEX_TITLE);
@@ -90,12 +98,17 @@ void Update_Game() {
 
 void Draw_Game() {
 
+	background.BACK_GROUND_Draw();
+
+
 	// アクションUI描画
 	Action.Draw();
 	// アクションゲージ描画
 	Actionslot.Draw();
 
 	Character.Draw();
+
+
 
 	// アクション完成判定
 	if (Action.GetFinishFlag()) {

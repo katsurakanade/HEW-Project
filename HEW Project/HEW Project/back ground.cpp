@@ -11,23 +11,48 @@
 
 
 
-static GameObject obj[1];
-static int GameFrame;
+
+
+BACK_GROUND::BACK_GROUND()
+{
+
+}
+
+BACK_GROUND::~BACK_GROUND()
+{
+
+}
 
 
 
 
 void BACK_GROUND::BACK_GROUND_Init()
 {
-	obj[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_LUOTIANYI]);
 
-	//ゲーム内のフレームを[SECONDS]の数値に初期化した
-	GameFrame = SECONDS;
-
-	GameFrame_pos = 0.0;
 	
 
-	GameFrame_spd = 3.0;
+
+
+	bg[0].GOB.LoadTexture(TexturePassDict[TEXTURE_INDEX_LUOTIANYI]);
+	bg[1].GOB.LoadTexture(TexturePassDict[TEXTURE_INDEX_LUOTIANYI]);
+	
+	for (int i = 0; i < BACK_GROUND_MAX; i++)
+	{
+		bg[i].isUse = false;
+
+	}
+	
+
+	bg[0].GOB.Object.Pos.x = 500;
+	bg[0].GOB.Object.Pos.y = 500;
+	bg[1].GOB.Object.Pos.x = 3840;
+	bg[1].GOB.Object.Pos.y = 500;
+	
+	bg[0].GOB.Object.Pos.x = GameFrame;
+	
+	bg[1].GOB.Object.Pos.x = g_GameFrame;
+
+
 	
 
 
@@ -36,20 +61,65 @@ void BACK_GROUND::BACK_GROUND_Init()
 
 void BACK_GROUND::BACK_GROUND_Update()
 {
-	GameFrame_pos++;
+	
 
-	if (GameFrame_pos > 100)
+	while (0)
 	{
-		GameFrame_pos--;
+		GameFrame--;
+		bg[0].isUse = true;
+		if (GameFrame < 330)
+		{
+			g_GameFrame--;
+			bg[1].isUse = true;
+			if (g_GameFrame < 980)
+			{
+				bg[0].isUse = false;
+			}
 
-	}
+
+			
+		}
+
+	 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
 void BACK_GROUND::BACK_GROUND_Draw()
 {
-	//デバック用
-	//DrawFormatString(0, 0, GetColor(255, 255, 255), "経過:%d秒", stime / 60);
+	//obj[0].Draw();
+	//obj[1].Draw();
 
+	for (int i = 0; i < BACK_GROUND_MAX; i++)
+	{
+		if (bg[i].isUse == true)
+		{
+			bg[i].GOB.Draw();
+		}
+	}
+	
+		
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "経過:%d秒", GameFrame);//デバック用
 
+	
 }
