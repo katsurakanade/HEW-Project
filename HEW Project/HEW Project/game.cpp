@@ -10,7 +10,8 @@
 #include "Live2D.h"
 #include "gameprogress.h"
 #include "Staminagauge.h"
-
+#include "ActionAffect.h"
+#include "BackGround.h"
 
 // Debug Mode
 #define DEBUG
@@ -28,8 +29,6 @@ void CharacterMove();
 // Debug走る (キーボード)
 void Debug_Running();
 
-
-
 /*
 グローバル変数
 */
@@ -44,19 +43,28 @@ ActionUI Action;
 ActionSlot Actionslot;
 // アクション失敗画像
 GameObject Failed;
-
+// Live2Dキャラクター
 Live2D Character;
+// ゲーム進行バー
+GameProgress *gameprogress;
+// スタミナゲージ
+StaminaGauge *stamina;
 
-GameProgress gameprogress;
+BackGround background;
+// アクションエフェクト用
+std::vector<ActionAffect*> ActionEffectVector;
 
-StaminaGauge stamina;
+std::vector <ActionPointAnime*> ActionPointVector;
 
 void Init_Game() {
-	
-	//スタミナゲージ初期化
-	stamina.Init();
 
-	// アクションUI初期化
+	gameprogress = new GameProgress;
+	stamina = new StaminaGauge;
+
+	//スタミナゲージ初期化
+	stamina->Init();
+
+	// アクションUI初期化	
 
 	Action.Init();
 
@@ -68,20 +76,17 @@ void Init_Game() {
 
 	Action.Interval.y = 0;
 
-
-
 	// アクションゲージ初期化
+
+	Actionslot.Load();
 
 	Actionslot.Pos.x = 80;
 
 	Actionslot.Pos.y = 500;
 
-	Actionslot.Load();
-
-
 	// キャラクター初期化
 
-	Character.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_HIYORI]);
+	Character.LoadModel(Live2D_Dict["HIYORI"]);
 
 	Character.Zoom.x = 0.5f;
 
@@ -90,8 +95,6 @@ void Init_Game() {
 	Character.Pos.x = -580;
 
 	Character.Pos.y = -150;
-
-
 
 	// アクション失敗初期化
 
@@ -106,20 +109,30 @@ void Init_Game() {
 	gamedata.Init();
 
 	//ゲーム進行バー初期化
-	gameprogress.Init();
+	gameprogress->Init();
 
+	background.Init();
 }
 
 void Uninit_Game() {
 
 	Character.~Live2D();
-	Action.~ActionUI();
+
+	gameprogress = nullptr;
+	delete gameprogress;
+
+	stamina = nullptr;
+	delete stamina;
+
+	ActionEffectVector.~vector();
+	ActionPointVector.~vector();
+	
 }
 
 void Update_Game() {
 
 	//スタミナゲージ更新処理
-	stamina.Update();
+	stamina->Update();
 
 	Character.SetMontionIndex(GetRand(8));
 
@@ -133,54 +146,79 @@ void Update_Game() {
 	// 走る処理
 	Running();
 
-	gameprogress.Update();
+	// ゲーム進行バー処理
+	gameprogress->Update();
 
 	// キャラクター処理
 
 	CharacterMove();
 
+	// アクションエフェクト処理
+	for (int i = 0; i < ActionEffectVector.size(); i++) {
+		if (ActionEffectVector[i] != NULL) {
+			ActionEffectVector[i]->Update();
+		}
+	}
+
+	for (int i = 0; i < ActionPointVector.size(); i++) {
+		if (ActionPointVector[i]->OutFlag) {
+			continue;
+		}
+		ActionPointVector[i]->Update();
+	}
+
+	if (gamedata.GetRunningSpeed() != 0) {
+		background.SetSpeed(gamedata.GetRunningSpeed() / 10);
+	}
+
+	else {
+		background.SetSpeed(1.0);
+	}
+
+	background.Update();
 
 #ifdef DEBUG
 
 	// Go Title
 
 	if (keyboard.IsTrigger(DIK_R)) {
-
 		Scene_Change(SCENE_INDEX_TITLE);
-
 	}
 
 	// Go Result
-
 	if (keyboard.IsTrigger(DIK_ESCAPE)) {
-
 		Scene_Change(SCENE_INDEX_RESULT);
-
 	}
 
+	// Remove Trash
+	if (keyboard.IsPress(DIK_Q)) {
 
+		std::vector<ActionAffect*>().swap(ActionEffectVector);
+		std::vector<ActionPointAnime*>().swap(ActionPointVector);
+	}
 
 	Debug_Running();
 
 #endif // DEBUG
 
+	
 }
 
 void Draw_Game() {
+
+	background.Draw();
 	
 	//スタミナゲージ描画
-	stamina.Draw();
+	stamina->Draw();
 
 	// アクションUI描画
 	Action.Draw();
 	// アクションゲージ描画
 	Actionslot.Draw();
 
-	Character.Draw();
+	gameprogress->Draw();
 
-	gameprogress.Draw();
-
-
+	
 	// アクション完成判定
 	if (Action.GetFinishFlag()) {
 		if (Action.GetProgress() == Action.GetActionAmount()) {
@@ -190,6 +228,21 @@ void Draw_Game() {
 		
 		}
 	}
+	
+
+	// アクションエフェクト描画
+	for (int i = 0; i < ActionEffectVector.size(); i++) {
+		if (ActionEffectVector[i] != NULL) {
+			ActionEffectVector[i]->Draw_Affect();
+		}
+	}
+
+	for (int i = 0; i < ActionPointVector.size(); i++) {
+		ActionPointVector[i]->Draw();
+	}
+
+	Character.Draw();
+
 
 #ifdef DEBUG
 	Debug_Panel();
@@ -228,6 +281,30 @@ void Running() {
 		gamedata.SetRunningSpeed(405);
 
 		Speed_Array.clear();
+
+
+		ActionPointAnime *obj = new ActionPointAnime();
+
+		ActionAffect *tmp = new ActionAffect(Actionslot.GetState());
+
+		switch (Actionslot.GetState())
+		{
+		case ACTIONSLOT_OVER:
+			obj->Create(150);
+			break;
+		case ACTIONSLOT_GREAT:
+			obj->Create(120);
+			break;
+		case ACTIONSLOT_GOOD:
+			obj->Create(50);
+			break;
+		case ACTIONSLOT_BAD:
+			break;
+		}
+
+		ActionEffectVector.push_back(tmp);
+
+		ActionPointVector.push_back(obj);
 	}
 
 	if (gamedata.GetRunningSpeed() > 0) {
@@ -285,25 +362,15 @@ void CharacterMove() {
 
 	}
 
-
-
 }
-
-
 
 void Debug_Running() {
 
-
-
-	if (keyboard.IsPress(DIK_RIGHTARROW)) {
-
+	if (keyboard.IsTrigger(DIK_RIGHTARROW)) {
 		Judge_Count += 350;
-
 	}
 
-
-
-	if (Judge_Count > 350) {
+	if (Judge_Count >= 350) {
 
 		gamedata.AddRunningDistance(gamedata.GetRunningSpeed());
 
@@ -311,9 +378,33 @@ void Debug_Running() {
 
 		Judge_Count = 0;
 
+		gamedata.Action_Point_Update(Actionslot.GetState());
+		
+		ActionPointAnime *obj = new ActionPointAnime();
+
+		ActionAffect *tmp = new ActionAffect(Actionslot.GetState());
+
+		switch (Actionslot.GetState())
+		{
+		case ACTIONSLOT_OVER:
+			obj->Create(150);
+			break;
+		case ACTIONSLOT_GREAT:
+			obj->Create(120);
+			break;
+		case ACTIONSLOT_GOOD:
+			obj->Create(50);
+			break;
+		case ACTIONSLOT_BAD:
+			break;
+		}
+		
+		ActionEffectVector.push_back(tmp);
+
+		ActionPointVector.push_back(obj);
+		
+		
 	}
-
-
 
 	if (gamedata.GetRunningSpeed() > 0) {
 
@@ -321,13 +412,9 @@ void Debug_Running() {
 
 	}
 
-
-
 	gamedata.AddRunningDistance(gamedata.GetRunningSpeed());
 
 }
-
-
 
 void Debug_Panel() {
 
@@ -347,7 +434,7 @@ void Debug_Panel() {
 
 	DrawFormatString(0, 180, GetColor(255, 255, 255), "アクションポイント： %d", gamedata.GetActionPoint());
 
-	DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%d秒",gameprogress.stime / 60);
+	DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%d秒",gameprogress->stime / 60);
 
-
+	
 }

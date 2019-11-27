@@ -5,6 +5,8 @@
 #include "sound.h"
 #include "scene.h"
 #include "DxLib.h"
+#include <Windows.h>
+#include <Psapi.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -16,6 +18,7 @@
 
 // ２Dポリゴン頂点フォーマット
 #define FVF_VERTEX2D (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1) 
+#define DEBUG
 
 // ウィンドウハンドル
 static HWND g_hWnd;                           
@@ -31,6 +34,8 @@ static void Finalize(void);
 static void Update(void);
 // ゲームの描画関数
 static void Draw(void);
+
+int GetMemoryUsage();
 
 /*------------------------------------------------------------------------------
 メイン
@@ -128,10 +133,18 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			// ゲームの描画
 			Draw();
 
+			
 			// FPSロック
 			DWORD timeTotal = GetTickCount() - timeBegin;
 			if (timeTotal < timeInOneFps)
 				Sleep(DWORD(timeInOneFps - timeTotal));
+			
+
+#ifdef DEBUG
+			//FpsTimeFanction();
+			SetFontSize(24);
+			DrawFormatString(900, 0, GetColor(255, 255, 255), "メモリ使用量 : %d", GetMemoryUsage());
+#endif // DEBUG
 
 			ScreenCopy();
 		}
@@ -267,3 +280,16 @@ double frand() {
 }
 
 
+int GetMemoryUsage() {
+
+	HANDLE hProc = GetCurrentProcess();
+	PROCESS_MEMORY_COUNTERS_EX pmc;
+	BOOL isSuccess = GetProcessMemoryInfo(
+		hProc,
+		(PROCESS_MEMORY_COUNTERS*)&pmc,
+		sizeof(pmc));
+	CloseHandle(hProc);
+	if (isSuccess == FALSE) return EXIT_FAILURE;
+
+	return pmc.PrivateUsage;
+}

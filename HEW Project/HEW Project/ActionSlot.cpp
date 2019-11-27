@@ -20,7 +20,7 @@ void ActionSlot::Load() {
 	Fire.LoadTexture(TexturePassDict[TEXTURE_INDEX_FIRE]);
 	Hand.LoadTexture(TexturePassDict[TEXTURE_INDEX_ARM]);
 
-	this->Scale = D3DXVECTOR2(0.20f,0.20f);
+	Scale = D3DXVECTOR2(0.20f,0.20f);
 
 	Fire.Object.Scale = this->Scale;
 	Hand.Object.Scale = this->Scale;
@@ -30,7 +30,7 @@ void ActionSlot::Load() {
 
 	Hand_mullet = Fire.Object.Pos;
 
-	this->Fire_Offset = D3DXVECTOR2(40.0f, 50.0f);
+	Fire_Offset = D3DXVECTOR2(40.0f, 50.0f);
 
 	Value = 0;
 }
@@ -39,7 +39,7 @@ void ActionSlot::Update() {
 
 	// íŽžŒ¸‚ç‚·
 	if (Value > VALUE_MIN && Value < VALUE_MAX) {
-		Value	 -= VALUE_DOWNSEC;
+		Value -= VALUE_DOWNSEC;
 	}
 
 	// Over ”»’è
@@ -106,10 +106,13 @@ ActionSlot::ActionSlot()
 
 }
 
+
 ActionSlot::~ActionSlot()
 {
-
+	Fire.~GameObject();
+	Hand.~GameObject();
 }
+
 
 void ActionSlot::AddValue(float value) {
 	Value += value;
