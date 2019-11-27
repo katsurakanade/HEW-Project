@@ -39,5 +39,6 @@ public:
 
 	//float Getstime();
 
+	void SetMesureflag(bool flag);
 };
 

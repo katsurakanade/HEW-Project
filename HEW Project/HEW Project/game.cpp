@@ -12,6 +12,7 @@
 #include "Staminagauge.h"
 #include "ActionAffect.h"
 #include "BackGround.h"
+#include "GameOver.h"
 
 // Debug Mode
 #define DEBUG
@@ -51,6 +52,8 @@ GameProgress *gameprogress;
 StaminaGauge *stamina;
 
 BackGround background;
+
+GameOver gameover;
 // アクションエフェクト用
 std::vector<ActionAffect*> ActionEffectVector;
 
@@ -112,6 +115,8 @@ void Init_Game() {
 	gameprogress->Init();
 
 	background.Init();
+
+	gameover.Init();
 }
 
 void Uninit_Game() {
@@ -152,6 +157,8 @@ void Update_Game() {
 	// キャラクター処理
 
 	CharacterMove();
+
+	gameover.Update();
 
 	// アクションエフェクト処理
 	for (int i = 0; i < ActionEffectVector.size(); i++) {
@@ -218,6 +225,7 @@ void Draw_Game() {
 
 	gameprogress->Draw();
 
+	gameover.Draw();
 	
 	// アクション完成判定
 	if (Action.GetFinishFlag()) {

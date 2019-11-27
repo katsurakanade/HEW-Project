@@ -9,9 +9,13 @@
 #include "GameData.h"
 #include "Live2D.h"
 #include "GameOver.h"
-
+#include "BackGround.h"
+#include "gameprogress.h"
 
 static GameObject obj[1];
+
+
+static GameProgress progress;
 
 GameOver::GameOver() 
 {
@@ -61,6 +65,8 @@ void GameOver::GameOverisUse()
 		//ゲームオーバーステートに入る
 		TimeCount++;
 		objflag = true;
+		//background.SetSpeed(0);
+		progress.SetMesureflag(true);
 
 		//ゲームオーバーテクスチャの表示
 		if (objflag == true)
