@@ -288,3 +288,10 @@ BOOL GamePad_IsTrigger(int padNo, DWORD button)
 {
 	return (button & g_padTrigger[padNo]);
 }
+
+
+
+
+
+
+//aaaaaaaaaaaaaa
