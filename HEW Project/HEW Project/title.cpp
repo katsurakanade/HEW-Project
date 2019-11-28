@@ -1,4 +1,3 @@
-// 21000 タイトル画面
 
 #include <algorithm>
 #include <vector>
@@ -13,6 +12,7 @@
 #include "ActionUI.h"
 #include "ActionSlot.h"
 #include "GameData.h"
+#include "BackGround.h"
 
 using namespace std;
 
@@ -22,14 +22,15 @@ Menu TitleMenu(3);
 
 GameObject test;
 
+
 void Init_Title() {
 
-	Hiyori.LoadModel(Live2DModelPassDict[LIVE2D_INDEX_HIYORI]);
+	Hiyori.LoadModel(Live2D_Dict["HIYORI"]);
 
 	Hiyori.Zoom.x = 3.0f;
 	Hiyori.Zoom.y = 3.0f;
-	Hiyori.Pos.x = -400.0f;
-	Hiyori.Pos.y = -500.0f;
+	Hiyori.Pos.x = -300.0f;
+	Hiyori.Pos.y = -450.0f;
 	
 	TitleMenu.Pos.x = 700.0f;
 	TitleMenu.Pos.y = 100.0f;
@@ -39,10 +40,10 @@ void Init_Title() {
 	TitleMenu.SelectText.push_back("チュートリアル");
 	TitleMenu.SelectText.push_back("終了");
 
-	test.LoadTexture(TexturePassDict[TEXTURE_INDEX_AIROU]);
-	test.Object.Pos.x = 300;
-	test.Object.Pos.y = 500;
+	test.LoadTexture(TextureDict["Airou"]);
+	test.Object.Pos = D3DXVECTOR2(600, 100);
 
+	
 }
 
 void Uninit_Title() {
@@ -56,7 +57,6 @@ void Update_Title() {
 	Hiyori.SetMontionIndex(GetRand(8));
 
 	TitleMenu.Update();
-
 
 	switch (TitleMenu.GetSelectNow())
 	{
@@ -80,13 +80,15 @@ void Update_Title() {
 		Scene_Change(SCENE_INDEX_GAME);
 	}
 
+	
 }
 
 void Draw_Title() {
+
+	
 
 	Hiyori.Draw();
 
 	TitleMenu.Draw();
 
-	test.Draw();
 }

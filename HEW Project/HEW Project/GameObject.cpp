@@ -8,6 +8,35 @@
 #include "main.h"
 #include <string.h>
 
+map <const char*, const char*> TextureDict = {
+	{"Start","asset/texture/start.png"},
+	{"Exit","asset/texture/exit.png"},
+	{"Airou","asset/texture/airou.png"},
+	{"Action1","asset/texture/action1.png"},
+	{"Action2","asset/texture/action2.png"},
+	{"Action3","asset/texture/action3.png"},
+	{"A","asset/texture/a.png"},
+	{"B","asset/texture/b.png"},
+	{"C","asset/texture/c.png"},
+	{"Right","asset/texture/right.png"},
+	{"Up","asset/texture/up.png"},
+	{"SL","asset/texture/SL.png"},
+	{"SR","asset/texture/SR.png"},
+	{"ZL","asset/texture/ZL.png"},
+	{"Failed","asset/texture/Failde.png"},
+	{"arm","asset/texture/arm.png"},
+	{"pink","asset/texture/pink.png"},
+	{"Progressbar","asset/texture/progressbar.png"},
+	{"Bar_frame","asset/texture/bar_frame.png"},
+	{"Batontouch_test","asset/texture/Batontouch_test.png"},
+	{"Stamina_frame","asset/texture/stamina_frame.png"},
+	{"Over","asset/texture/OVER.png"},
+	{"Great","asset/texture/GREAT.png"},
+	{"Good","asset/texture/GOOD.png"},
+	{"Bad","asset/texture/BAD.png"},
+	{"Number","asset/texture/Number.png"},
+};
+
 // 画像パスベクトル
 vector <const char *>TexturePassDict = {
 	"asset/texture/start.png",
@@ -22,18 +51,32 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/c.png",
 	"asset/texture/right.png",
 	"asset/texture/up.png",
+	"asset/texture/SL.png",
+	"asset/texture/SR.png",
+	"asset/texture/ZL.png",
+	"asset/texture/Failed.png",
+	"asset/texture/holyfire.png",
+	"asset/texture/arm.png",
+	"asset/texture/pink.png",
 	"asset/texture/progressbar.png",
 	"asset/texture/bar_frame.png",
 	"asset/texture/Batontouch_test.png",
-
+	"asset/texture/stamina_frame.png",
+	"asset/texture/OVER.png",
+	"asset/texture/GREAT.png",
+	"asset/texture/GOOD.png",
+	"asset/texture/BAD.png",
+	"asset/texture/Number.png",
+	"asset/texture/BackGround.png"
 };
 
 GameObject::GameObject() {
-
+	Object.Scale.x = 1.0f;
+	Object.Scale.y = 1.0f;
 }
 
 GameObject::~GameObject() {
-
+	
 }
 
 void GameObject::LoadTexture(const char * name) {
@@ -44,12 +87,20 @@ void GameObject::LoadTexture(const char * name) {
 
 	catch (int data) {
 
-		if (data > 0) {
+		if (data != -1) {
 			handle = data;
+			GetGraphSizeF(handle, &Size.x, &Size.y);
 		}
+
+		else if (name == NULL) {
+			char errmsg1[255] = "画像読み込みエラー 該当画像名はありません\n";
+			MessageBox(GetHWND(), errmsg1, "警告！", MB_ICONWARNING);
+			exit(1);
+		}
+
 		else {
-			char errmsg[255] = "画像読み込みエラー\n";
-			MessageBox(GetHWND(), strcat(errmsg,name), "警告！", MB_ICONWARNING);
+			char errmsg2[255] = "画像読み込みエラー 該当画像はありません\n";
+			MessageBox(GetHWND(), strcat(errmsg2,name), "警告！", MB_ICONWARNING);
 			exit(1);
 		}
 	}
@@ -62,102 +113,94 @@ void GameObject::LoadTexture(const char *name, int allcut, int xcut, int ycut, i
 	}
 
 	catch (int data) {
-		if (data < 0) {
-			char errmsg[255] = "画像読み込みエラー\n";
-			MessageBox(GetHWND(), strcat(errmsg, name), "警告！", MB_ICONWARNING);
+
+		if (data != -1) {
+			handle = data;
+			GetGraphSizeF(handle, &Size.x, &Size.y);
+		}
+
+		else if (name == NULL) {
+			char errmsg1[255] = "画像読み込みエラー 該当画像名はありません\n";
+			MessageBox(GetHWND(), errmsg1, "警告！", MB_ICONWARNING);
+			exit(1);
+		}
+
+		else {
+			char errmsg2[255] = "画像読み込みエラー 該当画像はありません\n";
+			MessageBox(GetHWND(), strcat(errmsg2, name), "警告！", MB_ICONWARNING);
+			exit(1);
 		}
 	}
 }
 
-void GameObject::Delay_Move(int arrow,float sec,int x,int y,int speed) {
+void GameObject::Delay_Move(int arrow,float sec,float x,float y) {
 
-	if (Delay_Flag[0]) {
-		Delay_Timer[0] += SECONDS;
+	if (arrow == ARROW_UP || arrow == ARROW_DOWN) {
+		const float moveframeY = y / 60 / sec;
+
+		if (Delay_Flag[0]) {
+			Object.Pos.y += moveframeY;
+		}
 	}
+
+	else if (arrow == ARROW_LEFT || arrow == ARROW_RIGHT){
+
+		const float moveframeX = x / 60 / sec;
+
+		if (Delay_Flag[0]) {
+			Object.Pos.x += moveframeX;
+		}
+	}
+
+	Delay_Timer[0] += SECONDS;
 
 	if (Delay_Timer[0] >= sec) {
-
-		if (arrow == 0) {
-			Object.Pos.x += speed;
-		}
-
-		if (arrow == 1) {
-			Object.Pos.x -= speed;
-		}
-
-		if (arrow == 2) {
-			Object.Pos.y += speed;
-		}
-
-		if (arrow == 3) {
-			Object.Pos.y -= speed;
-		}
-
-	}
-
-	if (arrow == 0 && Object.Pos.x >= x) {
-		Delay_Timer[0] = 0.0f;
 		Delay_Flag[0] = false;
+		Delay_Timer[0] = 0.0f;
 	}
 
-	else if (arrow == 1 && Object.Pos.x <= x) {
-		Delay_Timer[0] = 0.0f;
-		Delay_Flag[0] = false;
-	}
-
-	else if (arrow == 2 && Object.Pos.y >= y) {
-		Delay_Timer[0] = 0.0f;
-		Delay_Flag[0] = false;
-	}
-
-	else if (arrow == 3 && Object.Pos.y <= y) {
-		Delay_Timer[0] = 0.0f;
-		Delay_Flag[0] = false;
-	}
 }
 
-void GameObject::Delay_Zoom(float sec,double scale,double speed) {
+void GameObject::Delay_Zoom(float sec,double scale) {
 
-	if (Delay_Flag[1]) {
-		Delay_Timer[1] += SECONDS;
-	}
+	const float zoomframe = scale / 60 / sec;
+
+	Delay_Timer[1] += SECONDS;
 
 	if (Delay_Timer[1] >= sec) {
-		Object.Scale += speed;
+		Delay_Flag[1] = false;
+		Delay_Timer[1] = 0.0f;
 	}
 
-	if (Object.Scale >= scale) {
-		Delay_Timer[1] = 0.0f;
-		Delay_Flag[1] = false;
+	if (Delay_Flag[1]) {
+		Object.Scale.x += zoomframe;
+		Object.Scale.y += zoomframe;
 	}
+
+	
 
 }
 
-void GameObject::Delay_Rotate(float sec,double rotate,double speed) {
+void GameObject::Delay_Rotate(float sec,double rotate) {
 
-	if (Delay_Flag[2]) {
-		Delay_Timer[2] += SECONDS;
-	}
+	const float rotateframe = rotate / 60 / sec;
+
+	Delay_Timer[2] += SECONDS;
 
 	if (Delay_Timer[2] >= sec) {
-		Object.Rotate += (DOT * speed);
+		Delay_Flag[2] = false;
+		Delay_Timer[2] = 0.0f;
 	}
 
-	if (Object.Rotate >= (DOT * rotate)) {
-		Delay_Timer[2] = 0.0f;
-		Delay_Flag[2] = false;
+	if (Delay_Flag[2]) {
+		Object.Rotate += rotateframe;
 	}
 
 }
 
 void GameObject::Draw() {
 
-	DrawRotaGraph(Object.Pos.x, Object.Pos.y, this->Object.Scale, this->Object.Rotate, this->handle, true, false);
-}
-
-void GameObject::Draw(bool use_alpha) {
-
-	DrawRotaGraph(Object.Pos.x, Object.Pos.y, this->Object.Scale, this->Object.Rotate ,this->handle, use_alpha, false);
+	DrawRotaGraph3((int)Object.Pos.x, (int)Object.Pos.y, Size.x / 2, Size.y / 2, Object.Scale.x, Object.Scale.y, Object.Rotate, handle, true, false);
 }
 
 void GameObject::Draw(int tsx,int tsy,int tex,int tey,bool use_alpha,bool turn) {
@@ -167,8 +210,7 @@ void GameObject::Draw(int tsx,int tsy,int tex,int tey,bool use_alpha,bool turn) 
 
 void GameObject::Draw_Anime(int cut) {
 
-	DrawRotaGraph(Object.Pos.x,Object.Pos.y, this->Object.Scale, this->Object.Rotate, Anime_handle[cut], TRUE, false);
-
+	DrawRotaGraph3((int)Object.Pos.x, (int)Object.Pos.y, Size.x / 2 , Size.y / 2, Object.Scale.x, Object.Scale.y, Object.Rotate, Anime_handle[cut], true, false);
 }
 
 void GameObject::Gauss_Filter(int param) {
@@ -180,6 +222,17 @@ void GameObject::Gauss_Filter(int param) {
 void GameObject::HSB_Fillter() {
 
 	GraphFilter(this->handle, DX_GRAPH_FILTER_HSB, 0, (int)this->Color.hue, (int)this->Color.saturation, (int)this->Color.bright);
+}
+
+void GameObject::Destroy() {
+
+	DeleteGraph(handle);
+
+	if (Anime_handle[0] != NULL) {
+		for (int i = 0; i < sizeof(Anime_handle) / sizeof(Anime_handle[0]); i++) {
+			DeleteGraph(Anime_handle[i]);
+		}
+	}
 }
 
 void GameObject::SetDelayFlag(int index) {
@@ -201,4 +254,12 @@ int GameObject::GetHandle() {
 
 Color_Data GameObject::GetColorData() {
 	return Color;
+}
+
+bool GameObject::GetDelayFlag(int index) {
+	return Delay_Flag[index];
+}
+
+float GameObject::GetDelayTimer(int index) {
+	return Delay_Timer[index];
 }

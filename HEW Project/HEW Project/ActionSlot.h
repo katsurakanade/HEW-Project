@@ -10,6 +10,8 @@ typedef enum {
 	ACTIONSLOT_GREAT,
 	ACTIONSLOT_GOOD,
 	ACTIONSLOT_BAD,
+	
+	ACTIONSLOT_MAX,
 
 }ACTIONSLOT_STATE_INDEX;
 
@@ -31,6 +33,12 @@ public:
 
 	// НјХW
 	D3DXVECTOR2 Pos;
+
+	// КgСеЧ¶
+	D3DXVECTOR2 Scale;
+
+	// РєЙќХќИЏ
+	D3DXVECTOR2 Fire_Offset;
 	
 	void Load();
 

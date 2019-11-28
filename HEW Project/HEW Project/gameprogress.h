@@ -9,14 +9,11 @@ public:
 
 	GameProgress();	//コンストラクタ
 
-	~GameProgress();
+	~GameProgress(); //デストラクタ
 
-	void Update();
+	//------------メンバ変数------------------
 
-	void Draw();
-
-
-	int stime;		//スタートの時間
+	float stime = 0.0f;
 
 	float ProgressMax;
 
@@ -26,12 +23,21 @@ public:
 
 	bool GameFinish;
 
+	bool Initflag = true;
 
-	//メンバ関数
-	bool GetBT_Move();
+	bool MeasureFlag;
+
+	//------------メンバ関数------------------
+
+	void Init();
+
+	void Update();
+
+	void Draw();
 
 	int GetSection();
 
+	//float Getstime();
+
 };
 
-void Init_GameProgress();

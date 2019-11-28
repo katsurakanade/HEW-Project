@@ -3,6 +3,7 @@
 #include "DxLib.h"
 #include "main.h"
 #include <vector>
+#include <map>
 
 // アニメフレームリミット
 #define ANIME_CUT_LIMIT 36
@@ -24,13 +25,37 @@ typedef enum {
 	TEXTURE_INDEX_C,
 	TEXTURE_INDEX_RIGHT,
 	TEXTURE_INDEX_UP,
+	TEXTURE_INDEX_SL,
+	TEXTURE_INDEX_SR,
+	TEXTURE_INDEX_ZL,
+	TEXTURE_INDEX_FAILED,
+	TEXTURE_INDEX_FIRE,
+	TEXTURE_INDEX_ARM,
+	TEXTURE_INDEX_PINK,
 	TEXTURE_INDEX_PROGRESS_BAR,
 	TEXTURE_INDEX_BAR_FRAME,
 	TEXTURE_INDEX_BATON_TEST,
+	TEXTURE_INDEX_STAMINA_GAUGE,
+	TEXTURE_INDEX_OVER,
+	TEXTURE_INDEX_GREAT,
+	TEXTURE_INDEX_GOOD,
+	TEXTURE_INDEX_BAD,
+	TEXTURE_INDEX_NUMBER,
+	TEXTURE_INDEX_BACKGROUND,
 
 	TEXTURE_INDEX_MAX
 
 }TEXTURE_KEY;
+
+//方向キー
+typedef enum {
+	ARROW_UP,
+	ARROW_DOWN,
+	ARROW_LEFT,
+	ARROW_RIGHT,
+
+	ARROW_MAX,
+}ARROW_KEY;
 
 // 色彩データ
 typedef struct {
@@ -50,7 +75,7 @@ typedef struct {
 	// 座標
 	D3DXVECTOR2 Pos;
 	// 拡大率
-	double Scale = 1.0;
+	D3DXVECTOR2 Scale;
 	// 回転
 	double Rotate = 0;
 
@@ -59,12 +84,14 @@ typedef struct {
 // ゲームオブジェクト
 class GameObject {
 
-private:
+protected:
 
 	// 遅れ処理用タイマー
 	float Delay_Timer[3] = {0,0,0};
 	// 遅く処理用フラグ
 	bool Delay_Flag[3] = { true,true,true };
+	// 画像サイズ
+	D3DXVECTOR2 Size;
 
 public:
 
@@ -95,22 +122,19 @@ public:
 	// 遅れ移動(方向,時間,x,y)
 	// (必ずFlagを設定しないといけない)
 	// (0:右 1: 左 2:上 3:下)
-	void Delay_Move(int arrow,float sec,int x,int y,int speed);
+	void Delay_Move(int arrow,float sec,float x,float y);
 
-	// 遅れ拡大(時間,拡大率,速度)
+	// 遅れ拡大(時間,拡大率)
 	// (必ずFlagを設定しないといけない)
-	void Delay_Zoom(float sec,double scale,double speed);
+	void Delay_Zoom(float sec,double scale);
 
-	// 遅れ回転(時間,回転角度,速度)
+	// 遅れ回転(時間,回転角度)
 	// (必ずFlagを設定しないといけない)
-	void Delay_Rotate(float sec,double rotate,double speed);
+	void Delay_Rotate(float sec,double rotate);
 
 	// 描画(透明)
 	void Draw();
 	
-	// 描画(アルファ使う)
-	void Draw(bool use_alpha);
-
 	// 部分描画(テクスチャx,テクスチャy,テクスチャxサイズ,テクスチャyサイズ,アルファ使う,反転処理使う)
 	void Draw(int tsx, int tsy, int tex, int tey, bool use_alpha, bool turn);
 
@@ -123,6 +147,11 @@ public:
 	// HSBフィルター
 	void HSB_Fillter();
 
+	// 削除
+	// (画像メモリ)
+	void Destroy();
+
+	// 遅れフラグ設定(インデックス)
 	void SetDelayFlag(int index);
 
 	// HSB設定
@@ -133,7 +162,13 @@ public:
 
 	// Get色彩データ
 	Color_Data GetColorData();
+
+	bool GetDelayFlag(int index);
+
+	float GetDelayTimer(int index);
 };
 
 // 画像パスベクトル
 extern vector <const char *>TexturePassDict;
+
+extern map <const char*, const char*> TextureDict;
