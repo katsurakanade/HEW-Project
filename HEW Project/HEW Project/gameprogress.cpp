@@ -278,3 +278,7 @@ int GameProgress::GetSection() {
 	return Section;
 }
 
+void GameProgress::SetMesureflag(bool flag)
+{
+	MeasureFlag = flag;
+}
