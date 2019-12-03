@@ -20,6 +20,8 @@
     <ClCompile Include="title.cpp" />
     <ClCompile Include="ActionAffect.cpp" />
     <ClCompile Include="BackGround.cpp" />
+    <ClCompile Include="GameOver.cpp" />
+    <ClCompile Include="effect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionSlot.h" />
@@ -41,5 +43,7 @@
     <ClInclude Include="title.h" />
     <ClInclude Include="ActionAffect.h" />
     <ClInclude Include="BackGround.h" />
+    <ClInclude Include="GameOver.h" />
+    <ClInclude Include="effect.h" />
   </ItemGroup>
 </Project>
