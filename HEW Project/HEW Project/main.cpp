@@ -2,10 +2,11 @@
 #include "myDirect3D.h"
 #include <time.h>
 #include "input.h"
-#include "texture.h"
-#include "sprite.h"
 #include "sound.h"
 #include "scene.h"
+#include "DxLib.h"
+#include <Windows.h>
+#include <Psapi.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -17,6 +18,7 @@
 
 // ２Dポリゴン頂点フォーマット
 #define FVF_VERTEX2D (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1) 
+#define DEBUG
 
 // ウィンドウハンドル
 static HWND g_hWnd;                           
@@ -33,6 +35,8 @@ static void Update(void);
 // ゲームの描画関数
 static void Draw(void);
 
+int GetMemoryUsage();
+
 /*------------------------------------------------------------------------------
 メイン
 ------------------------------------------------------------------------------*/
@@ -43,16 +47,19 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 	// ウィンドウクラス構造体の設定
-	WNDCLASS wc = {};
+	WNDCLASSEX wc = {};
 	wc.lpfnWndProc = WndProc;                          // ウィンドウプロシージャの指定
 	wc.lpszClassName = CLASS_NAME;                     // クラス名の設定
 	wc.hInstance = hInstance;                          // インスタンスハンドルの指定
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);          // マウスカーソルを指定
 	wc.hbrBackground = (HBRUSH)(COLOR_BACKGROUND + 1); // ウインドウのクライアント領域の背景色を設定
+	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wc.lpszMenuName = 0;
 
 	// クラス登録
-	RegisterClass(&wc);
-
+	RegisterClassEx(&wc);
 
 	// ウィンドウスタイル
 	DWORD window_style = WS_OVERLAPPEDWINDOW & ~(WS_MAXIMIZEBOX | WS_THICKFRAME);
@@ -114,21 +121,32 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		}
 		else {
 
-			
+			ClearDrawScreen();
+
 			// 1フレームの時間計算
 			float timeInOneFps = 1000.0f / FPS_LOCK; 
 			DWORD timeBegin = GetTickCount();
 			
 			// ゲームの更新
 			Update();
+
 			// ゲームの描画
 			Draw();
 
+			
 			// FPSロック
 			DWORD timeTotal = GetTickCount() - timeBegin;
 			if (timeTotal < timeInOneFps)
 				Sleep(DWORD(timeInOneFps - timeTotal));
+			
 
+#ifdef DEBUG
+			//FpsTimeFanction();
+			SetFontSize(24);
+			DrawFormatString(900, 0, GetColor(255, 255, 255), "メモリ使用量 : %d", GetMemoryUsage());
+#endif // DEBUG
+
+			ScreenCopy();
 		}
 	}
 
@@ -138,17 +156,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	return (int)msg.wParam;
 }
 
+//extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 // ウィンドウプロシージャ(コールバック関数)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+
 	switch (uMsg) {
-		/*
-	case WM_KEYDOWN:
-		if (wParam == VK_ESCAPE) {
-			SendMessage(hWnd, WM_CLOSE, 0, 0); // WM_CLOSEメッセージの送信
-		}
-		break;
-		*/
+		
 	case WM_CLOSE:
 //		if (MessageBox(hWnd, "本当に終了してよろしいですか？", "確認", MB_OKCANCEL | MB_DEFBUTTON2) == IDOK) {
 			DestroyWindow(hWnd); // 指定のウィンドウにWM_DESTROYメッセージを送る
@@ -168,18 +183,22 @@ bool Initialize(HINSTANCE hInst)
 {
 	//シードの初期化
 	srand((unsigned int)time(NULL));
-
+	
 	// ゲームの初期化(Direct3Dの初期化)
 	if (!D3D_Initialize(g_hWnd)){
 		// ゲームの初期化に失敗した
 		return false;
 	}
 	// DirectInputの初期化（キーボード）
-	if (!Keyboard_Initialize(hInst, g_hWnd)){
+	if (!keyboard.Initialize(hInst, g_hWnd)){
 		return false;
 	}
 	// DirectInputの初期化（ゲームパッド）
-	if (!GamePad_Initialize(hInst, g_hWnd)){
+	if (!joycon[0].Initialize(hInst, g_hWnd)){
+		return false;
+	}
+
+	if (!joycon[1].Initialize(hInst, g_hWnd)) {
 		return false;
 	}
 
@@ -187,7 +206,22 @@ bool Initialize(HINSTANCE hInst)
 		return false;
 	}
 
-	Texture_Load(g_hWnd);
+	ChangeWindowMode(TRUE);
+	SetUserWindow(g_hWnd);
+
+	SetUseDirect3D9Ex(FALSE);
+
+	SetWaitVSyncFlag(TRUE);
+
+	if (Live2D_SetCubism4CoreDLLPath("Live2DCubismCore.dll") == -1) {
+		return -1;
+	}
+
+	if (DxLib_Init() == -1) {
+		return -1;
+	}
+	
+	SetDrawScreen(DX_SCREEN_BACK);
 
 	Scene_Initialize(SCENE_INDEX_TITLE);
 
@@ -199,7 +233,8 @@ void Finalize(void)
 
 	UninitSound();
 
-	Texture_Release();
+	DxLib_End();
+	
 
 	// ゲームの終了処理(Direct3Dの終了処理)
 	D3D_Finalize();
@@ -210,33 +245,27 @@ void Update(void)
 {
 
 	//キーボード更新
-	Keyboard_Update();
+	keyboard.Update();
 
 	//ゲームパッド更新
-	GamePad_Update();
+
+	if (joycon[0].Device != nullptr) {
+		joycon[0].Update();
+	}
+
+	if (joycon[1].Device != nullptr) {
+		joycon[1].Update();
+	}
 	
 	Scene_Update();
-	
+
 }
 
 // ゲームの描画関数
 void Draw(void)
 {
-	LPDIRECT3DDEVICE9 pD3DDevice = GetD3DDevice();
-
-	// 画面のクリア
-	pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 0, 255), 1.0f, 0);
-
-	// 描画バッチ命令の開始
-	pD3DDevice->BeginScene();
 
 	Scene_Draw();
-
-	// 描画バッチ命令の終了
-	pD3DDevice->EndScene();
-
-	// バックバッファをフリップ（タイミングはD3DPRESENT_PARAMETERSの設定による）
-	pD3DDevice->Present(NULL, NULL, NULL, NULL);
 
 	Scene_Check();
 }
@@ -246,7 +275,21 @@ HWND GetHWND(){
 	return g_hWnd;
 }
 
-
 double frand() {
 	return (double)rand() / RAND_MAX;
+}
+
+
+int GetMemoryUsage() {
+
+	HANDLE hProc = GetCurrentProcess();
+	PROCESS_MEMORY_COUNTERS_EX pmc;
+	BOOL isSuccess = GetProcessMemoryInfo(
+		hProc,
+		(PROCESS_MEMORY_COUNTERS*)&pmc,
+		sizeof(pmc));
+	CloseHandle(hProc);
+	if (isSuccess == FALSE) return EXIT_FAILURE;
+
+	return pmc.PrivateUsage;
 }
