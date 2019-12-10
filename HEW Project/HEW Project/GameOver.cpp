@@ -13,6 +13,7 @@
 #include "gameprogress.h"
 
 static GameObject obj[1];
+static GameOver gameOver;
 
 
 static GameProgress progress;
@@ -26,6 +27,12 @@ GameOver::~GameOver()
 {
 
 }
+
+void Init_GameOver()
+{
+	gameOver.Init();
+}
+
 
 void GameOver::Init() 
 {
