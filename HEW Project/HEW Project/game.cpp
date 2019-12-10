@@ -53,7 +53,7 @@ StaminaGauge *stamina;
 
 BackGround background;
 
-GameOver gameover;
+GameOver *gameover;
 // アクションエフェクト用
 std::vector<ActionAffect*> ActionEffectVector;
 
@@ -63,6 +63,7 @@ void Init_Game() {
 
 	gameprogress = new GameProgress;
 	stamina = new StaminaGauge;
+	gameover = new GameOver;
 
 	//スタミナゲージ初期化
 	stamina->Init();
@@ -116,7 +117,7 @@ void Init_Game() {
 
 	background.Init();
 
-	gameover.Init();
+	gameover->Init();
 }
 
 void Uninit_Game() {
@@ -128,6 +129,9 @@ void Uninit_Game() {
 
 	stamina = nullptr;
 	delete stamina;
+
+	gameover = nullptr;
+	delete gameover;
 
 	ActionEffectVector.~vector();
 	ActionPointVector.~vector();
@@ -158,7 +162,7 @@ void Update_Game() {
 
 	CharacterMove();
 
-	gameover.Update();
+	gameover->Update();
 
 	// アクションエフェクト処理
 	for (int i = 0; i < ActionEffectVector.size(); i++) {
@@ -225,7 +229,7 @@ void Draw_Game() {
 
 	gameprogress->Draw();
 
-	gameover.Draw();
+	gameover->Draw();
 	
 	// アクション完成判定
 	if (Action.GetFinishFlag()) {
@@ -442,7 +446,11 @@ void Debug_Panel() {
 
 	DrawFormatString(0, 180, GetColor(255, 255, 255), "アクションポイント： %d", gamedata.GetActionPoint());
 
-	DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%d秒",gameprogress->stime / 60);
+	DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%f秒",gameprogress->stime );
 
-	
+	DrawFormatString(0, 240, GetColor(255, 255, 255), "キャラアイコン:%f", gameprogress->GetProgressBarObjectPosx());
+
+	DrawFormatString(0, 270, GetColor(255, 255, 255), "距離 : %d", gamedata.GetRunningDistance());
+
+
 }

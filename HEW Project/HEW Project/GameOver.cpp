@@ -66,7 +66,7 @@ void GameOver::GameOverisUse()
 		TimeCount++;
 		objflag = true;
 		//background.SetSpeed(0);
-		progress.SetMesureflag(true);
+		//progress.SetMesureflag(true);
 
 		//ゲームオーバーテクスチャの表示
 		if (objflag == true)
