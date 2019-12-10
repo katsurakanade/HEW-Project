@@ -13,7 +13,6 @@ typedef void (*SceneFunc)(void);
 static const SceneFunc Initialize[] = {
 	Init_Title,
 	Init_Game,
-	Init_BatonTouch,
 	Init_Result,
 };
 
@@ -60,9 +59,11 @@ void Scene_Update(void)
 		Update_Game();
 		break;
 
+		///////////////////////////////////////////////////////////////
 	case SCENE_INDEX_BATON_TOUCH:
-		baton.Update();
+		//baton.Update();
 		break;
+		///////////////////////////////////////////////////////////////
 
 	case SCENE_INDEX_RESULT:
 		Update_Result();
