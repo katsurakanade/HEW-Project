@@ -50,6 +50,7 @@ private:
 
 public:
 
+
 	GameData();
 
 	~GameData();

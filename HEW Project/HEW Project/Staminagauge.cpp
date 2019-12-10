@@ -46,7 +46,12 @@ StaminaGauge::~StaminaGauge()
 
 void StaminaGauge::Update()
 {
-	StaminaReduce(0.005);
+	StaminaReduce(StaminaCount);
+	if (StaminaScale_x <= 1.0&&StaminaScale_y <= 1.0)
+	{
+		StaminaScale_x = 1.0;
+		StaminaScale_y = 1.0;
+	}
 }
 
 void StaminaGauge::Draw()
@@ -62,28 +67,32 @@ void StaminaGauge::SetStaminaGauge(double scale_x, double scale_y)
 
 }
 
-double StaminaGauge::GetStaminaCount()
+double StaminaGauge::GetStaminaScale_x()
 {
-	return StaminaCount;
+	return StaminaScale_x;
 }
 
 
 void StaminaGauge::StaminaState(int state)
 {
+	//Bad
+	if (state == 3)
+	{
+		StaminaCount -= 0.050;     //思いっきり越える＝スタミナ回復
+	}
+	else
+	{
+		StaminaCount = 0.005;
+	}
 	//Over
 	if (state==1)
 	{
-		StaminaCount -= 0.015;
+		StaminaCount += 0.015;
 	}
 	//Great
 	if (state==2)
 	{
-		StaminaCount -= 0.001;
-	}
-	//Bad
-	if (state==3)
-	{
-		StaminaCount -= 0.010;
+		StaminaCount -= 0.002;
 	}
 }
 
