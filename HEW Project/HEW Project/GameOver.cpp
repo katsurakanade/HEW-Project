@@ -13,9 +13,9 @@
 #include "gameprogress.h"
 
 static GameObject obj[1];
-
-
+static GameOver gameOver;
 static GameProgress progress;
+
 
 GameOver::GameOver() 
 {
@@ -27,11 +27,15 @@ GameOver::~GameOver()
 
 }
 
-void GameOver::Init() 
+
+void Init_GameOver()
 {
-	titleflag = false;
-	objflag = false;
-	TimeCount = SECONDS;
+	gameOver.Init();
+}
+
+void GameOver::Init()
+{
+
 }
 
 
@@ -60,36 +64,65 @@ bool GameOver::GetisUse()
 void GameOver::GameOverisUse()
 {
 
-	if (gamedata.Gethp() == 0)
+	//ゲームオーバーステートに入る
+	TimeCount++;
+	objflag = true;
+	//background.SetSpeed(0);
+	progress.SetMesureflag(true);
+
+	//ゲームオーバーテクスチャの表示
+	if (objflag == true)
 	{
-		//ゲームオーバーステートに入る
-		TimeCount++;
-		objflag = true;
-		//background.SetSpeed(0);
-		progress.SetMesureflag(true);
+		obj[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_GAME_OVER]);
+		obj[0].Object.Pos.x = SCREEN_WIDTH / 2;
+		obj[0].Object.Pos.y = SCREEN_HEIGHT / 2;
+		obj[0].Object.Scale.x = 1.5;
+		obj[0].Object.Scale.y = 1.5;
+	}
 
-		//ゲームオーバーテクスチャの表示
-		if (objflag == true)
-		{
-			obj[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_GAME_OVER]);
-			obj[0].Object.Pos.x = SCREEN_WIDTH / 2;
-			obj[0].Object.Pos.y = SCREEN_HEIGHT / 2;
-			obj[0].Object.Scale.x = 1.5;
-			obj[0].Object.Scale.y = 1.5;
-		}
+	if (TimeCount > 120.0f)
+	{
+		titleflag = true;
 
-		if (TimeCount > 120.0f)
-		{
-			titleflag = true;
-
-			//タイトルへ戻るの表示
-
-		}
-		if (titleflag == true && keyboard.IsTrigger(DIK_Z)) {
-			Scene_Change(SCENE_INDEX_TITLE);
-
-		}
+		//タイトルへ戻るの表示
 
 	}
+	if (titleflag == true && keyboard.IsTrigger(DIK_Z)) {
+		Scene_Change(SCENE_INDEX_TITLE);
+
+	}
+
+
+	//if (gamedata.Gethp() == 0)
+	//{
+	//	//ゲームオーバーステートに入る
+	//	TimeCount++;
+	//	objflag = true;
+	//	//background.SetSpeed(0);
+	//	progress.SetMesureflag(true);
+
+	//	//ゲームオーバーテクスチャの表示
+	//	if (objflag == true)
+	//	{
+	//		obj[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_GAME_OVER]);
+	//		obj[0].Object.Pos.x = SCREEN_WIDTH / 2;
+	//		obj[0].Object.Pos.y = SCREEN_HEIGHT / 2;
+	//		obj[0].Object.Scale.x = 1.5;
+	//		obj[0].Object.Scale.y = 1.5;
+	//	}
+
+	//	if (TimeCount > 120.0f)
+	//	{
+	//		titleflag = true;
+
+	//		//タイトルへ戻るの表示
+
+	//	}
+	//	if (titleflag == true && keyboard.IsTrigger(DIK_Z)) {
+	//		Scene_Change(SCENE_INDEX_TITLE);
+
+	//	}
+
+	//}
 
 }

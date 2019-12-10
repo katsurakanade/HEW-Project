@@ -89,7 +89,7 @@ protected:
 	// 遅れ処理用タイマー
 	float Delay_Timer[3] = {0,0,0};
 	// 遅く処理用フラグ
-	bool Delay_Flag[3] = { true,true,true };
+	bool Delay_Flag[3] = { false,false,false };
 	// 画像サイズ
 	D3DXVECTOR2 Size;
 
@@ -119,10 +119,13 @@ public:
 	// (アニメあり)(Initで使う)
 	void LoadTexture(const char * name,int allcut,int xcut,int ycut,int xsize,int ysize);
 
-	// 遅れ移動(方向,時間,x,y)
+	// 遅れ直線移動移動(時間,x,y)
 	// (必ずFlagを設定しないといけない)
-	// (0:右 1: 左 2:上 3:下)
-	void Delay_Move(int arrow,float sec,float x,float y);
+	void Delay_Move(float sec,float x,float y);
+
+	// 遅れ直線移動移動(時計回り==true,曲線の弧の大きさ,オブジェクトの現在座標,時間,x,y)
+	// (必ずFlagを設定しないといけない)
+	void Delay_CurveMove(bool cw, float r, const D3DXVECTOR2 &ThisPos, float sec, float x, float y);
 
 	// 遅れ拡大(時間,拡大率)
 	// (必ずFlagを設定しないといけない)

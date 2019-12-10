@@ -14,6 +14,7 @@
 #include "GameData.h"
 #include "DxLib.h"
 #include "BatonTouch.h"
+#include "game.h"
 
 static GameObject ProgressBar[3];
 static GameData rundata;
@@ -138,7 +139,7 @@ void GameProgress::Update()
 		//バトンタッチ処理
 		if (Section == 0) {
 			batontouch.StateBaton = true;
-			Scene_Change(SCENE_INDEX_BATON_TOUCH);
+			GameState_Change(GAME_STATE_BATONTOUCH);
 			Section = 1;
 		}
 	}
@@ -191,7 +192,7 @@ void GameProgress::Update()
 		//バトンタッチ処理
 		if (Section == 1) {
 			batontouch.StateBaton = true;
-			Scene_Change(SCENE_INDEX_BATON_TOUCH);
+			GameState_Change(GAME_STATE_BATONTOUCH);
 			Section = 2;
 		}
 	}
@@ -246,7 +247,7 @@ void GameProgress::Update()
 
 		//バトンタッチ処理
 		if (Section == 2) {
-			Scene_Change(SCENE_INDEX_RESULT);
+			GameState_Change(GAME_STATE_GAME_CLEAR);
 			Section = 3;
 		}
 	}

@@ -19,4 +19,5 @@ public:
 	bool GetBatonState();
 };
 
+void Init_GameStart();
 void Init_BatonTouch();
