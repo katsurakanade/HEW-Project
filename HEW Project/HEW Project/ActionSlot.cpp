@@ -7,7 +7,7 @@ static const float VALUE_MAX = 90.0;
 static const float VALUE_MIN = -30.0;
 
 // アクションゲージ状態値
-static const float VALUE_OVER = VALUE_MAX  * 0.75;
+static const float VALUE_OVER = VALUE_MAX * 0.75;
 static const float VALUE_GREAT = VALUE_MAX * 0.3;
 static const float VALUE_BAD = ((VALUE_MAX - VALUE_MIN) * 0.2) + VALUE_MIN;
 
@@ -26,13 +26,13 @@ void ActionSlot::Load() {
 	Hand.LoadTexture(TexturePassDict[TEXTURE_INDEX_ARM]);
 	Fire.LoadTexture(TexturePassDict[TEXTURE_INDEX_FIRE]);
 
-	Scale = D3DXVECTOR2(0.20f,0.20f);
+	Scale = D3DXVECTOR2(0.20f, 0.20f);
 
 	FireBase.Object.Scale = Scale;
 	Hand.Object.Scale = Scale;
 	Fire.Object.Scale = Scale;
 
-	FireBase.Object.Pos = Pos ;
+	FireBase.Object.Pos = Pos;
 	Hand.Object.Pos = Pos;
 	Fire.Object.Pos = Pos;
 
@@ -55,7 +55,7 @@ void ActionSlot::Update(double stamina) {
 		Value -= (1 / stamina);
 		StaminaTimer = 0.0f;
 	}
-	
+
 	// 常時減らす
 	if (Value > VALUE_MIN && Value < VALUE_MAX) {
 		Value -= VALUE_DOWNSEC;
@@ -104,7 +104,7 @@ void ActionSlot::Update(double stamina) {
 	}
 
 	else {
-		FireBase.Object.Pos.x = Hand.Object.Pos.x + 220 + Fire_Offset.x + ((Hand.Object.Rotate * 120)) + ((Scale.x + 0.8) * Value * 0.50) ;
+		FireBase.Object.Pos.x = Hand.Object.Pos.x + 220 + Fire_Offset.x + ((Hand.Object.Rotate * 120)) + ((Scale.x + 0.8) * Value * 0.50);
 		FireBase.Object.Pos.y = Hand.Object.Pos.y + 30 + Fire_Offset.y + (Hand.Object.Rotate * 120) - ((Scale.y + 0.8) * Value * 2.00);
 	}
 
@@ -118,7 +118,7 @@ void ActionSlot::Update(double stamina) {
 	Fire.Object.Rotate = -(DOT * Value);
 
 	// 画像拡大
-	FireBase.Object.Scale = Scale + D3DXVECTOR2(0.60,0.60);
+	FireBase.Object.Scale = Scale + D3DXVECTOR2(0.60, 0.60);
 	Hand.Object.Scale = Scale + D3DXVECTOR2(0.30, 0.30);
 	Fire.Object.Scale = Scale + D3DXVECTOR2(0.70, 0.70);
 
@@ -131,7 +131,7 @@ void ActionSlot::Update(double stamina) {
 void ActionSlot::Draw() {
 
 	FireBase.Draw();
-	Hand.Draw(0,0);
+	Hand.Draw(0, 0);
 	//Fire.Draw();
 }
 

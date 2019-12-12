@@ -123,19 +123,19 @@ void Init_Game() {
 
 	Actionslot.Load();
 
-	Actionslot.Pos.x = 80;
+	Actionslot.Pos.x = 330;
 
-	Actionslot.Pos.y = 500;
+	Actionslot.Pos.y = 450;
 
 	// キャラクター初期化
 
 	Character.LoadModel(Live2D_Dict["HIYORI"]);
 
-	Character.Zoom.x = 0.5f;
+	Character.Zoom.x = 1.0f;
 
-	Character.Zoom.y = 0.5f;
+	Character.Zoom.y = 1.0f;
 
-	Character.Pos.x = -580;
+	Character.Pos.x = -400;
 
 	Character.Pos.y = -150;
 
@@ -206,9 +206,6 @@ void Update_Game() {
 
 	case GAME_STATE_START:     // BattonTouchのゲームスタート処理--------------------------------------------------------
 
-
-
-
 		break;
 
 
@@ -222,7 +219,7 @@ void Update_Game() {
 		// アクションUI更新
 		Action.Update();
 		// アクションゲージ更新
-		Actionslot.Update();
+		Actionslot.Update(stamina->GetStaminaScale_x());
 		// スビート更新
 		gamedata.UpdateSpeed();
 
@@ -268,6 +265,7 @@ void Update_Game() {
 			GameState_Change(GAME_STATE_GAME_OVER);
 		}
 
+		Debug_Running();
 
 		////////////////////////////////////////////////////
 		EffectUpdate();     //エフェクト実験用
@@ -319,7 +317,9 @@ void Update_Game() {
 		std::vector<ActionPointAnime*>().swap(ActionPointVector);
 	}
 
-	Debug_Running();
+	if (keyboard.IsPress(DIK_E)) {
+		Actionslot.AddValue(0.5);
+	}
 
 #endif // DEBUG
 
@@ -333,11 +333,8 @@ void Draw_Game() {
 	{
 
 	case GAME_STATE_START:     // BattonTouchのゲームスタート処理--------------------------------------------------------
-
-
-
+		
 		break;
-
 
 	case GAME_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
 
@@ -352,7 +349,6 @@ void Draw_Game() {
 		Actionslot.Draw();
 
 		gameprogress->Draw();
-
 
 		// アクション完成判定
 		if (Action.GetFinishFlag()) {
@@ -541,7 +537,7 @@ void CharacterMove() {
 
 	// 右
 
-	if (gamedata.GetRunningSpeed() >= 150 && Character.Zoom.x < 1.0) {
+	if (gamedata.GetRunningSpeed() >= 150 && Character.Zoom.x < 1.3) {
 
 		Character.Pos.x += 5.0f;
 
@@ -549,23 +545,22 @@ void CharacterMove() {
 
 		Character.Zoom.y += 0.0025f;
 
-		Character.Pos.y += 0.75f;
+		Character.Pos.y -= 0.75f;
 
-		Actionslot.Pos.x += 5.4f;
+		Actionslot.Pos.x += 5.0f;
 
-		Actionslot.Pos.y -= 0.75f;
+		Actionslot.Pos.y += 0.75f;
 
 		Actionslot.Scale += D3DXVECTOR2(0.0025f, 0.0025f);
 
-		Actionslot.Fire_Offset += D3DXVECTOR2(0.45f, 0.25f);
+		Actionslot.Fire_Offset += D3DXVECTOR2(0.75f, 0.15f);
 
+		Actionslot.offsect_dis += 0.03;
 	}
-
-
 
 	// 左
 
-	if (gamedata.GetRunningSpeed() <= 30 && Character.Zoom.x > 0.5) {
+	if (gamedata.GetRunningSpeed() <= 30 && Character.Zoom.x > 1.0) {
 
 		Character.Pos.x -= 5.0f;
 
@@ -573,16 +568,17 @@ void CharacterMove() {
 
 		Character.Zoom.y -= 0.0025f;
 
-		Character.Pos.y -= 0.75f;
+		Character.Pos.y += 0.75f;
 
-		Actionslot.Pos.x -= 5.4f;
+		Actionslot.Pos.x -= 5.0f;
 
-		Actionslot.Pos.y += 0.75f;
+		Actionslot.Pos.y -= 0.75f;
 
 		Actionslot.Scale -= D3DXVECTOR2(0.0025f, 0.0025f);
 
-		Actionslot.Fire_Offset -= D3DXVECTOR2(0.45f, 0.25f);
+		Actionslot.Fire_Offset -= D3DXVECTOR2(0.75f, 0.15f);
 
+		Actionslot.offsect_dis -= 0.03;
 	}
 
 }
