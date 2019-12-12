@@ -52,7 +52,6 @@ void GameProgress::Init()
 		GameFinish = false;
 		MeasureFlag = false;
 
-		actionui.SetState(0);
 }
 
 
@@ -66,7 +65,7 @@ GameProgress::~GameProgress()
 
 }
 
-void GameProgress::Update()
+void GameProgress::Update(ActionUI target)
 {
 	//フレームでゲージを増やす処理
 	if (MeasureFlag == false)
@@ -108,7 +107,7 @@ void GameProgress::Update()
 		MeasureFlag = false;
 
 		//アクションが変わる処理
-		actionui.SetState(1);
+		target.SetState(ACTION_STATE_LONGJUMP);
 
 	}
 
@@ -135,7 +134,7 @@ void GameProgress::Update()
 			Section = 1;
 
 			//アクションが変わる処理
-			actionui.SetState(2);
+			target.SetState(ACTION_STATE_LONGJUMP);
 
 		}
 	}
@@ -159,7 +158,7 @@ void GameProgress::Update()
 		MeasureFlag = false;
 
 		//アクションが変わる処理
-		actionui.SetState(1);
+		target.SetState(ACTION_STATE_LONGJUMP);
 
 	}
 
@@ -185,7 +184,7 @@ void GameProgress::Update()
 			Section = 2;
 
 			//アクションが変わる処理
-			actionui.SetState(1);
+			target.SetState(ACTION_STATE_LONGJUMP);
 
 		}
 	}
@@ -210,7 +209,7 @@ void GameProgress::Update()
 		MeasureFlag = false;
 
 		//アクションが変わる処理
-		actionui.SetState(2);
+		target.SetState(ACTION_STATE_LONGJUMP);
 
 	}
 

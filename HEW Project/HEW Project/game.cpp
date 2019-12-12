@@ -235,7 +235,7 @@ void Update_Game() {
 		Running();
 
 		// ゲーム進行バー処理
-		gameprogress->Update();
+		gameprogress->Update(Action);
 
 		// キャラクター処理
 
