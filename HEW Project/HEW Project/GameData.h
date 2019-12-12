@@ -61,6 +61,7 @@ private:
 
 public:
 
+
 	GameData();
 
 	~GameData();

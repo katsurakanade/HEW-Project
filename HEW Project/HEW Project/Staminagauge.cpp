@@ -47,7 +47,7 @@ StaminaGauge::~StaminaGauge()
 void StaminaGauge::Update()
 {
 	StaminaReduce(StaminaCount);
-	if(StaminaScale_x<=1.0&&StaminaScale_y<=1.0)
+	if (StaminaScale_x <= 1.0&&StaminaScale_y <= 1.0)
 	{
 		StaminaScale_x = 1.0;
 		StaminaScale_y = 1.0;
@@ -78,7 +78,7 @@ void StaminaGauge::StaminaState(int state)
 	//Bad
 	if (state == 3)
 	{
-		StaminaCount -= 0.050;
+		StaminaCount -= 0.050;     //思いっきり越える＝スタミナ回復
 	}
 	else
 	{
@@ -94,7 +94,6 @@ void StaminaGauge::StaminaState(int state)
 	{
 		StaminaCount -= 0.002;
 	}
-	
 }
 
 void StaminaGauge::StaminaReduce(double s_count)

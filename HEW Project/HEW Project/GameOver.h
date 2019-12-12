@@ -10,11 +10,11 @@ public:
 
 	//------------メンバ変数------------------
 
-	bool titleflag;
+	bool titleflag = false;
 
-	float TimeCount;
+	float TimeCount = SECONDS;
 
-	bool objflag;
+	bool objflag = false;
 
 	//------------メンバ関数------------------
 
@@ -31,3 +31,8 @@ public:
 	void GameOverisUse();
 
 };
+
+
+//ゲームステート用
+void Init_GameOver();
+

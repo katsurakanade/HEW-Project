@@ -23,9 +23,10 @@ public:
 
 	bool GameFinish;
 
-	bool Initflag = true;
-
 	bool MeasureFlag;
+
+	float RunDistance;
+
 
 	//------------ƒƒ“ƒoŠÖ”------------------
 
@@ -40,5 +41,9 @@ public:
 	//float Getstime();
 
 	void SetMesureflag(bool flag);
+
+	float GetProgressBarObjectPosx();
+
+	void ChangeMeasure(float stime,float time2);
 };
 

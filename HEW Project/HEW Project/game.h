@@ -14,6 +14,12 @@ typedef enum
 
 
 void Init_Game();
+void Init_GameState();     // ２区間, ３区間用Init
 void Uninit_Game();
 void Update_Game();
 void Draw_Game();
+
+//ゲームステート用
+void GameState_Initialize(GAME_STATE index);
+void GameState_Check(void);
+void GameState_Change(GAME_STATE index);

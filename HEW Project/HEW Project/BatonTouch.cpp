@@ -9,6 +9,17 @@
 
 GameObject Baton[1];
 GameProgress Progress;
+
+//ゲームスタート処理(SL+SR+Lでスタート)=====================================
+void Init_GameStart()
+{
+
+}
+
+
+
+
+//バトンタッチ処理====================================================
 void Init_BatonTouch()
 {
 	//StateBaton = false;
@@ -16,8 +27,6 @@ void Init_BatonTouch()
 	Baton[0].Object.Pos.x = 500.0f;
 	Baton[0].Object.Pos.y = 500.0f;
 	Baton[0].Object.Scale.x = 1.0f;
-
-	
 
 }
 
@@ -40,8 +49,9 @@ void BatonTouch::Uninit()
 }
 void BatonTouch::Update()
 {
+
 	if (keyboard.IsTrigger(DIK_RETURN)) {
-		Scene_Change(SCENE_INDEX_GAME);
+		GameState_Change(GAME_STATE_GAME);     //ゲームステートに戻る
 		//StateBaton = false;
 	}
 	
