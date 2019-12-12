@@ -31,9 +31,9 @@ void EffectInit()
 	efc->Object.Pos.x = 600;
 	efc->Object.Pos.y = 350;
 
-	//efc->SetDelayFlag(0);
-	efc->SetDelayFlag(1);
-	efc->SetDelayFlag(2);
+	// efc->SetDelayFlag(0);
+	// efc->SetDelayFlag(1);
+	// efc->SetDelayFlag(2);
 
 }
 void EffectUpdate()
@@ -44,7 +44,9 @@ void EffectUpdate()
 	{
 		efc->SetDelayFlag(0);
 	}
-	efc->Delay_CurveMove(true, 100.0f, efc->Object.Pos, 2.0f, 500, 500);
+
+	efc->Delay_CurveMove(true, 7, 2.0f, 400, 200);
+	//efc->Delay_Move(2.0f, 400, 200);
 
 
 }

@@ -123,9 +123,9 @@ public:
 	// (必ずFlagを設定しないといけない)
 	void Delay_Move(float sec,float x,float y);
 
-	// 遅れ直線移動移動(時計回り==true,曲線の弧の大きさ,オブジェクトの現在座標,時間,x,y)
 	// (必ずFlagを設定しないといけない)
-	void Delay_CurveMove(bool cw, float r, const D3DXVECTOR2 &ThisPos, float sec, float x, float y);
+	// 遅れ直線移動移動(時計回り==true, 曲線の弧の大きさ(0~10), 時間, x, y)
+	void Delay_CurveMove(bool cw, float CurveSize, float sec, float x, float y);
 
 	// 遅れ拡大(時間,拡大率)
 	// (必ずFlagを設定しないといけない)
