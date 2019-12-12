@@ -50,12 +50,20 @@ void GameData::AddActionPoint(int value) {
 	Action_Point += value;
 }
 
+void GameData::SetGameMode(int value) {
+	GameMode = value;
+}
+
 void GameData::SetRunningSpeed(int value) {
 	Running_Speed = value;
 }
 
 void GameData::SetActionPoint(int value) {
 	Action_Point = value;
+}
+
+int GameData::GetGameMode() {
+	return GameMode;
 }
 
 int GameData::Gethp() {

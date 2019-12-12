@@ -269,10 +269,10 @@ void JoyCon::Update()
 		}
 
 		// JoyCon
-		if (dijs.lY > 0) State |= JOYCON_STICK_UP;
-		if (dijs.lY < 0) State |= JOYCON_STICK_DOWN;
-		if (dijs.lX < 0) State |= JOYCON_STICK_LEFT;
-		if (dijs.lX > 0) State |= JOYCON_STICK_RIGHT;
+		if (dijs.lY > 1800) State |= JOYCON_STICK_UP;
+		if (dijs.lY < -1800) State |= JOYCON_STICK_DOWN;
+		if (dijs.lX < -1800) State |= JOYCON_STICK_LEFT;
+		if (dijs.lX > 1800) State |= JOYCON_STICK_RIGHT;
 		
 		if (dijs.rgbButtons[0] & 0x80)	State |= JOYCON_DOWN;
 		if (dijs.rgbButtons[1] & 0x80)	State |= JOYCON_UP;

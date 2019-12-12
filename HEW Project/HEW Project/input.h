@@ -34,8 +34,8 @@ using namespace std;
 // Joyconスティック
 #define JOYCON_STICK_DOWN 0x00004000l  
 #define JOYCON_STICK_UP 0x00008000l  
-#define JOYCON_STICK_RIGHT 0x00016000l  
-#define JOYCON_STICK_LEFT 0x00032000l 
+#define JOYCON_STICK_RIGHT 0x00010000l  
+#define JOYCON_STICK_LEFT 0x00020000l 
 
 // JoyCon左
 #define JOYCON_DOWN 0x00000001l  

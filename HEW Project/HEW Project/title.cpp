@@ -12,7 +12,8 @@
 #include "ActionUI.h"
 #include "ActionSlot.h"
 #include "GameData.h"
-#include "BackGround.h"
+
+#define DEBUG
 
 using namespace std;
 
@@ -20,8 +21,7 @@ Live2D Hiyori;
 
 Menu TitleMenu(3);
 
-GameObject test;
-
+GameObject Background;
 
 void Init_Title() {
 
@@ -39,11 +39,11 @@ void Init_Title() {
 	TitleMenu.SelectText.push_back("スタート");
 	TitleMenu.SelectText.push_back("チュートリアル");
 	TitleMenu.SelectText.push_back("終了");
-
-	test.LoadTexture(TextureDict["Airou"]);
-	test.Object.Pos = D3DXVECTOR2(600, 100);
-
 	
+	Background.Object.Pos.x = 640.0f;
+	Background.Object.Pos.y = 360.0f;
+	Background.LoadTexture(TextureDict["Title"]);
+
 }
 
 void Uninit_Title() {
@@ -56,6 +56,7 @@ void Update_Title() {
 
 	Hiyori.SetMontionIndex(GetRand(8));
 
+	/*
 	TitleMenu.Update();
 
 	switch (TitleMenu.GetSelectNow())
@@ -75,20 +76,41 @@ void Update_Title() {
 	default:
 		break;
 	}
+	*/
+
+	if (joycon[0].IsPress(JOYCON_MIN)) {
+		Scene_Change(SCENE_INDEX_GAME);
+		gamedata.SetGameMode(GAMEMODE_MATCH);
+	}
+
+	if (joycon[1].IsPress(JOYCON_PLUS)) {
+		Scene_Change(SCENE_INDEX_GAME);
+		gamedata.SetGameMode(GAMEMODE_SINGLE);
+	}
+
+#ifdef DEBUG
 
 	if (keyboard.IsTrigger(DIK_Z)) {
 		Scene_Change(SCENE_INDEX_GAME);
+		gamedata.SetGameMode(GAMEMODE_MATCH);
 	}
 
-	
+	if (keyboard.IsTrigger(DIK_X)) {
+		Scene_Change(SCENE_INDEX_GAME);
+		gamedata.SetGameMode(GAMEMODE_SINGLE);
+	}
+
+#endif // DEBUG
+
+
 }
 
 void Draw_Title() {
 
-	
+	Background.Draw();
 
-	Hiyori.Draw();
+	//Hiyori.Draw();
 
-	TitleMenu.Draw();
+	//TitleMenu.Draw();
 
 }
