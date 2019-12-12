@@ -36,10 +36,6 @@ void Scene_Finalize(void)
 		Uninit_Game();
 		break;
 
-	case SCENE_INDEX_BATON_TOUCH:
-		baton.Uninit();
-		break;
-
 	case SCENE_INDEX_RESULT:
 		Uninit_Result();
 		break;
@@ -59,12 +55,6 @@ void Scene_Update(void)
 		Update_Game();
 		break;
 
-		///////////////////////////////////////////////////////////////
-	case SCENE_INDEX_BATON_TOUCH:
-		//baton.Update();
-		break;
-		///////////////////////////////////////////////////////////////
-
 	case SCENE_INDEX_RESULT:
 		Update_Result();
 		break;
@@ -83,10 +73,6 @@ void Scene_Draw(void)
 
 	case SCENE_INDEX_GAME:
 		Draw_Game();
-		break;
-
-	case SCENE_INDEX_BATON_TOUCH:
-		baton.Draw();
 		break;
 
 	case SCENE_INDEX_RESULT:

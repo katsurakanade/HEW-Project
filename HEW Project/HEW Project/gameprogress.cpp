@@ -15,9 +15,11 @@
 #include "DxLib.h"
 #include "BatonTouch.h"
 #include "game.h"
+#include "ActionUI.h"
 
 static GameObject ProgressBar[3];
-BatonTouch batontouch;
+static BatonTouch batontouch;
+static ActionUI actionui;
 
 void GameProgress::Init() 
 {
@@ -49,6 +51,8 @@ void GameProgress::Init()
 		RunDistance = 0.0f;		//ゲットした距離データを入れる
 		GameFinish = false;
 		MeasureFlag = false;
+
+		actionui.SetState(0);
 }
 
 
@@ -104,6 +108,7 @@ void GameProgress::Update()
 		MeasureFlag = false;
 
 		//アクションが変わる処理
+		actionui.SetState(1);
 
 	}
 
@@ -128,6 +133,10 @@ void GameProgress::Update()
 			batontouch.StateBaton = true;
 			GameState_Change(GAME_STATE_BATONTOUCH);
 			Section = 1;
+
+			//アクションが変わる処理
+			actionui.SetState(2);
+
 		}
 	}
 	//===================区間2===============================
@@ -141,15 +150,16 @@ void GameProgress::Update()
 
 	}
 	//距離で計測する処理
-	ChangeMeasure(2400.0f,3000.0f);
+	ChangeMeasure(2400.0f,2700.0f);
 
 	//45秒経ったら(1秒＝60)
-	if (/*(ProgressBar[2].Object.Pos.x > 600 && ProgressBar[2].Object.Pos.x < 660) || */(stime > 3000.0f && stime < 3060.0f))
+	if (/*(ProgressBar[2].Object.Pos.x > 600 && ProgressBar[2].Object.Pos.x < 660) || */(stime > 2700.0f && stime < 2760.0f))
 	{
 		DrawFormatString(300, 300, GetColor(255, 255, 255), "アクションチェンジ");
 		MeasureFlag = false;
 
 		//アクションが変わる処理
+		actionui.SetState(1);
 
 	}
 
@@ -173,6 +183,10 @@ void GameProgress::Update()
 			batontouch.StateBaton = true;
 			GameState_Change(GAME_STATE_BATONTOUCH);
 			Section = 2;
+
+			//アクションが変わる処理
+			actionui.SetState(1);
+
 		}
 	}
 
@@ -196,6 +210,7 @@ void GameProgress::Update()
 		MeasureFlag = false;
 
 		//アクションが変わる処理
+		actionui.SetState(2);
 
 	}
 
@@ -216,7 +231,7 @@ void GameProgress::Update()
 		DrawFormatString(300, 300, GetColor(255, 255, 255), "GOAL!!");
 		MeasureFlag = false;
 
-		//バトンタッチ処理
+		//ゲームクリア処理
 		if (Section == 2) {
 			GameState_Change(GAME_STATE_GAME_CLEAR);
 			Section = 3;
@@ -271,15 +286,15 @@ void GameProgress::ChangeMeasure(float time1, float time2)
 		if (keyboard.IsTrigger(DIK_RIGHTARROW))
 		{
 			RunDistance += gamedata.GetRunningDistance() / 1000;		//ゲットした距離データを入れる
+			if (RunDistance >= gamedata.GetRunningDistance() / 1000)
+			{
+				NowProgress = NowProgress / ProgressMax * PROGRESS_WIDTH;
+				NowProgress += stime / 6.4f;
+				ProgressBar[2].Object.Pos.x = NowProgress + 100.0f;
+				stime += 15.0f;
+				RunDistance = 0.0f;
+			}
 
-		}
-		if (RunDistance >= gamedata.GetRunningDistance() / 1000)
-		{
-			NowProgress = NowProgress / ProgressMax * PROGRESS_WIDTH;
-			NowProgress += stime / 6.4f;
-			ProgressBar[2].Object.Pos.x = NowProgress + 100.0f;
-			stime += 15.0f;
-			RunDistance = 0.0f;
 		}
 
 	}

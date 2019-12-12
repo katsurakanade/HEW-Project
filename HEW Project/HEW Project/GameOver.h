@@ -4,6 +4,7 @@ class GameOver
 {
 public:
 
+
 	GameOver();		//コンストラクタ
 
 	~GameOver();	//デストラクタ

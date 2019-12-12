@@ -12,8 +12,8 @@
 #include "BackGround.h"
 #include "gameprogress.h"
 
-static GameObject obj[1];
 static GameOver gameOver;
+static GameObject obj[1];
 
 
 static GameProgress progress;
@@ -25,7 +25,6 @@ GameOver::GameOver()
 
 GameOver::~GameOver()
 {
-
 }
 
 void Init_GameOver()
@@ -36,15 +35,22 @@ void Init_GameOver()
 
 void GameOver::Init() 
 {
+
+	obj[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_GAME_OVER]);
+	obj[0].Object.Pos.x = SCREEN_WIDTH / 2;
+	obj[0].Object.Pos.y = SCREEN_HEIGHT / 2;
+	obj[0].Object.Scale.x = 1.5;
+	obj[0].Object.Scale.y = 1.5;
+
+
 	titleflag = false;
-	objflag = false;
 	TimeCount = SECONDS;
+	objflag = false;
 }
 
 
 void GameOver::Uninit()
 {
-
 }
 
 void GameOver::Update()
@@ -54,7 +60,12 @@ void GameOver::Update()
 
 void GameOver::Draw() 
 {
-	obj[0].Draw();
+	if (objflag == true)
+	{
+		obj[0].Draw();
+
+	}
+
 }
 
 /*
@@ -72,18 +83,8 @@ void GameOver::GameOverisUse()
 		//ゲームオーバーステートに入る
 		TimeCount++;
 		objflag = true;
-		//background.SetSpeed(0);
-		//progress.SetMesureflag(true);
 
 		//ゲームオーバーテクスチャの表示
-		if (objflag == true)
-		{
-			obj[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_GAME_OVER]);
-			obj[0].Object.Pos.x = SCREEN_WIDTH / 2;
-			obj[0].Object.Pos.y = SCREEN_HEIGHT / 2;
-			obj[0].Object.Scale.x = 1.5;
-			obj[0].Object.Scale.y = 1.5;
-		}
 
 		if (TimeCount > 120.0f)
 		{
