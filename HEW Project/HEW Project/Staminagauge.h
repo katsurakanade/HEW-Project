@@ -33,7 +33,7 @@ public:
 
 	void SetStaminaGauge(double scale_x, double scale_y);
 
-	double GetStaminaCount();
+	double GetStaminaScale_x();
 
 	//入っているステートで減少させる
 	void  StaminaState(int state);

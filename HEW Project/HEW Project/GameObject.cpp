@@ -35,6 +35,7 @@ map <const char*, const char*> TextureDict = {
 	{"Good","asset/texture/GOOD.png"},
 	{"Bad","asset/texture/BAD.png"},
 	{"Number","asset/texture/Number.png"},
+	{"Title","asset/texture/Title.jpg"},
 };
 
 // 画像パスベクトル
@@ -68,6 +69,8 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/Number.png",
 	"asset/texture/BackGround.png",
 	"asset/texture/game_over.png",
+	"asset/texture/Fire.png",
+	"asset/texture/Left.png",
 };
 
 GameObject::GameObject() {
@@ -201,6 +204,11 @@ void GameObject::Delay_Rotate(float sec,double rotate) {
 void GameObject::Draw() {
 
 	DrawRotaGraph3((int)Object.Pos.x, (int)Object.Pos.y, Size.x / 2, Size.y / 2, Object.Scale.x, Object.Scale.y, Object.Rotate, handle, true, false);
+}
+
+void GameObject::Draw(float x, float y) {
+
+	DrawRotaGraph3((int)Object.Pos.x, (int)Object.Pos.y, x ,y , Object.Scale.x, Object.Scale.y, Object.Rotate, handle, true, false);
 }
 
 void GameObject::Draw(int tsx,int tsy,int tex,int tey,bool use_alpha,bool turn) {

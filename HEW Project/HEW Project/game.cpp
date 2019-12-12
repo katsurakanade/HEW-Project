@@ -83,19 +83,19 @@ void Init_Game() {
 
 	Actionslot.Load();
 
-	Actionslot.Pos.x = 80;
+	Actionslot.Pos.x = 330;
 
-	Actionslot.Pos.y = 500;
+	Actionslot.Pos.y = 450;
 
 	// キャラクター初期化
 
 	Character.LoadModel(Live2D_Dict["HIYORI"]);
 
-	Character.Zoom.x = 0.5f;
+	Character.Zoom.x = 1.0f;
 
-	Character.Zoom.y = 0.5f;
+	Character.Zoom.y = 1.0f;
 
-	Character.Pos.x = -580;
+	Character.Pos.x = -400;
 
 	Character.Pos.y = -150;
 
@@ -144,7 +144,7 @@ void Update_Game() {
 	// アクションUI更新
 	Action.Update();
 	// アクションゲージ更新
-	Actionslot.Update();
+	Actionslot.Update(stamina->GetStaminaScale_x());
 	// スビート更新
 	gamedata.UpdateSpeed();
 
@@ -152,10 +152,9 @@ void Update_Game() {
 	Running();
 
 	// ゲーム進行バー処理
-	gameprogress->Update();
+	//gameprogress->Update();
 
 	// キャラクター処理
-
 	CharacterMove();
 
 	gameover.Update();
@@ -174,20 +173,29 @@ void Update_Game() {
 		ActionPointVector[i]->Update();
 	}
 
-	if (gamedata.GetRunningSpeed() != 0) {
-		background.SetSpeed(gamedata.GetRunningSpeed() / 10);
-	}
+	
+	background.SetSpeed(1.0);
 
-	else {
-		background.SetSpeed(1.0);
+	if (gamedata.Gethp() <= 0) {
+		background.SetSpeed(0);
 	}
 
 	background.Update();
 
+	// アクション完成判定
+	if (Action.GetFinishFlag()) {
+		if (Action.GetProgress() == Action.GetActionAmount()) {
+			Actionslot.AddValue(0.5);
+			
+		}
+		else {
+		
+		}
+	}
+
 #ifdef DEBUG
 
 	// Go Title
-
 	if (keyboard.IsTrigger(DIK_R)) {
 		Scene_Change(SCENE_INDEX_TITLE);
 	}
@@ -204,6 +212,10 @@ void Update_Game() {
 		std::vector<ActionPointAnime*>().swap(ActionPointVector);
 	}
 
+	if (keyboard.IsPress(DIK_E)) {
+		Actionslot.AddValue(0.5);
+	}
+
 	Debug_Running();
 
 #endif // DEBUG
@@ -214,29 +226,6 @@ void Update_Game() {
 void Draw_Game() {
 
 	background.Draw();
-	
-	//スタミナゲージ描画
-	stamina->Draw();
-
-	// アクションUI描画
-	Action.Draw();
-	// アクションゲージ描画
-	Actionslot.Draw();
-
-	gameprogress->Draw();
-
-	gameover.Draw();
-	
-	// アクション完成判定
-	if (Action.GetFinishFlag()) {
-		if (Action.GetProgress() == Action.GetActionAmount()) {
-			Actionslot.AddValue(0.5);
-		}
-		else {
-		
-		}
-	}
-	
 
 	// アクションエフェクト描画
 	for (int i = 0; i < ActionEffectVector.size(); i++) {
@@ -249,8 +238,22 @@ void Draw_Game() {
 		ActionPointVector[i]->Draw();
 	}
 
-	Character.Draw();
 
+	// アクションゲージ描画
+	Actionslot.Draw();
+
+	Character.Draw();
+	
+	//スタミナゲージ描画
+	stamina->Draw();
+
+	// アクションUI描画
+	Action.Draw();
+	
+	gameprogress->Draw();
+
+	gameover.Draw();
+	
 
 #ifdef DEBUG
 	Debug_Panel();
@@ -326,7 +329,7 @@ void CharacterMove() {
 
 	// 右
 
-	if (gamedata.GetRunningSpeed() >= 150 && Character.Zoom.x < 1.0) {
+	if (gamedata.GetRunningSpeed() >= 150 && Character.Zoom.x < 1.3) {
 
 		Character.Pos.x += 5.0f;
 
@@ -334,23 +337,22 @@ void CharacterMove() {
 
 		Character.Zoom.y += 0.0025f;
 
-		Character.Pos.y += 0.75f;
+		Character.Pos.y -= 0.75f;
 
-		Actionslot.Pos.x += 5.4f;
+		Actionslot.Pos.x += 5.0f;
 
-		Actionslot.Pos.y -= 0.75f;
+		Actionslot.Pos.y += 0.75f;
 
 		Actionslot.Scale += D3DXVECTOR2(0.0025f, 0.0025f);
 
-		Actionslot.Fire_Offset += D3DXVECTOR2(0.45f, 0.25f);
+		Actionslot.Fire_Offset += D3DXVECTOR2(0.75f, 0.15f);
 
+		Actionslot.offsect_dis += 0.03;
 	}
-
-
 
 	// 左
 
-	if (gamedata.GetRunningSpeed() <= 30 && Character.Zoom.x > 0.5) {
+	if (gamedata.GetRunningSpeed() <= 30 && Character.Zoom.x > 1.0) {
 
 		Character.Pos.x -= 5.0f;
 
@@ -358,16 +360,17 @@ void CharacterMove() {
 
 		Character.Zoom.y -= 0.0025f;
 
-		Character.Pos.y -= 0.75f;
+		Character.Pos.y += 0.75f;
 
-		Actionslot.Pos.x -= 5.4f;
+		Actionslot.Pos.x -= 5.0f;
 
-		Actionslot.Pos.y += 0.75f;
+		Actionslot.Pos.y -= 0.75f;
 
 		Actionslot.Scale -= D3DXVECTOR2(0.0025f, 0.0025f);
 
-		Actionslot.Fire_Offset -= D3DXVECTOR2(0.45f, 0.25f);
+		Actionslot.Fire_Offset -= D3DXVECTOR2(0.75f, 0.15f);
 
+		Actionslot.offsect_dis -= 0.03;
 	}
 
 }
@@ -411,7 +414,6 @@ void Debug_Running() {
 
 		ActionPointVector.push_back(obj);
 		
-		
 	}
 
 	if (gamedata.GetRunningSpeed() > 0) {
@@ -442,7 +444,9 @@ void Debug_Panel() {
 
 	DrawFormatString(0, 180, GetColor(255, 255, 255), "アクションポイント： %d", gamedata.GetActionPoint());
 
-	DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%d秒",gameprogress->stime / 60);
+	//DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%d秒",gameprogress->stime / 60);
 
-	
+	DrawFormatString(0, 240, GetColor(255, 255, 255), "ゲームモード: %d ",gamedata.GetGameMode());
+
+
 }

@@ -1,6 +1,15 @@
 #pragma once
 #include "ActionSlot.h"
 
+// ゲームモード状態
+typedef enum {
+
+	GAMEMODE_MATCH,
+	GAMEMODE_SINGLE,
+	GAMEMODE_MAX,
+
+}GameModeState;
+
 
 class ActionPointAnime {
 
@@ -35,6 +44,8 @@ class GameData
 {
 private:
 	
+	// ゲームモード
+	int GameMode = -1;
 	// 聖火
 	int hp;
 	// 走る距離
@@ -68,10 +79,14 @@ public:
 
 	void AddActionPoint(int value);
 
+	void SetGameMode(int value);
+
 	void SetRunningSpeed(int value);
 
 	void SetActionPoint(int value);
 	
+	int GetGameMode();
+
 	int Gethp();
 
 	int GetRunningDistance();
