@@ -71,7 +71,9 @@ GameObject Alphabg;
 //バトンタッチ
 BatonTouch batonTouch;
 
-GameOver gameover;
+GameOver *gameover;
+
+GameClear *gameclear;
 
 // アクションエフェクト用
 std::vector<ActionAffect*> ActionEffectVector;
@@ -103,7 +105,8 @@ void Init_Game() {
 
 	gameprogress = new GameProgress;
 	stamina = new StaminaGauge;
-
+	gameover = new GameOver;
+	gameclear = new GameClear;
 
 	// とりあえずGameを動かしてみる----------------------------------------------------------------
 	g_GameStateIndex = GAME_STATE_GAME;
@@ -163,7 +166,7 @@ void Init_Game() {
 
 	background.Init();
 
-	gameover.Init();
+	gameover->Init();
 
 	batonTouch.Init();
 
@@ -211,6 +214,12 @@ void Uninit_Game() {
 	stamina = nullptr;
 	delete stamina;
 
+	gameover = nullptr;
+	delete gameover;
+
+	gameclear = nullptr;
+	delete gameclear;
+
 	ActionEffectVector.~vector();
 	ActionPointVector.~vector();
 
@@ -225,7 +234,6 @@ void Uninit_Game() {
 
 	batonTouch.Uninit();
 
-	Uninit_GameClear();
 
 }
 
@@ -257,13 +265,13 @@ void Update_Game() {
 		Running();
 
 		// ゲーム進行バー処理
-		gameprogress->Update();
+		gameprogress->Update(Action);
 
 		// キャラクター処理
 
 		CharacterMove();
 
-		gameover.Update();
+		gameover->Update();
 
 		if (gamedata.ExcellentModeCount >= 5) {
 			gamedata.InitExcellentMode();
@@ -330,14 +338,14 @@ void Update_Game() {
 
 	case GAME_STATE_GAME_OVER:     // GAME OVERのUpdate処理----------------------------------------------------------
 
-		gameover.Update();
+		gameover->Update();
 
 		break;
 
 
 	case 	GAME_STATE_GAME_CLEAR:     // GAME CLEARのUpdate処理--------------------------------------------------------
 
-		Update_GameClear();
+		gameclear->Update();
 
 		break;
 
@@ -496,13 +504,13 @@ void Draw_Game() {
 
 		//---------------------------------↑ゲーム画面描画↑----------------------------------------
 
-		gameover.Draw();     //GAME OVERの描画
+		gameover->Draw();     //GAME OVERの描画
 
 		break;
 
 	case 	GAME_STATE_GAME_CLEAR:     // GAME CLEARのUpdate処理--------------------------------------------------------
 
-		Draw_GameClear();
+		gameclear->Draw();
 
 		break;
 
@@ -718,7 +726,7 @@ void Debug_Panel() {
 
 	DrawFormatString(0, 180, GetColor(255, 255, 255), "アクションポイント： %d", gamedata.GetActionPoint());
 
-	DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%d秒", gameprogress->stime / 60);
+	DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%f秒", gameprogress->stime / 60);
 
 
 }
