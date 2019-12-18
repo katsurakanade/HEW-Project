@@ -61,6 +61,13 @@ GameProgress *gameprogress;
 StaminaGauge *stamina;
 //背景
 BackGround background;
+
+GameObject ExcellentFrame ;
+
+GameObject ExcellentImg;
+
+GameObject Alphabg;
+
 //バトンタッチ
 BatonTouch batonTouch;
 
@@ -162,7 +169,21 @@ void Init_Game() {
 
 	Init_GameClear();
 
+	ExcellentFrame.LoadTexture(TextureDict["alpha"]);
+	ExcellentFrame.Object.Pos.x = SCREEN_WIDTH / 2;
+	ExcellentFrame.Object.Pos.y = SCREEN_HEIGHT /2;
+	ExcellentFrame.Object.Scale.x = 2.0;
+	ExcellentFrame.Object.Scale.y = 2.0;
 
+	ExcellentImg.LoadTexture(TextureDict["excellent"]);
+	ExcellentImg.Object.Pos.x = 800;
+	ExcellentImg.Object.Pos.y = 200;
+
+	Alphabg.LoadTexture(TextureDict["alphabg"]);
+	Alphabg.Object.Pos.x = 0;
+	Alphabg.Object.Pos.y = 0;
+	Alphabg.Object.Scale.x = 10.0f;
+	Alphabg.Object.Scale.y = 10.0f;
 
 	////////////////////////////////////////////////////
 	EffectInit();		 //エフェクト実験用
@@ -192,6 +213,15 @@ void Uninit_Game() {
 
 	ActionEffectVector.~vector();
 	ActionPointVector.~vector();
+
+	Alphabg.Destroy();
+	ExcellentFrame.Destroy();
+	ExcellentImg.Destroy();
+
+	Alphabg.~GameObject();
+	ExcellentFrame.~GameObject();
+	ExcellentImg.~GameObject();
+
 
 	batonTouch.Uninit();
 
@@ -235,6 +265,16 @@ void Update_Game() {
 
 		gameover.Update();
 
+		if (gamedata.ExcellentModeCount >= 5) {
+			gamedata.InitExcellentMode();
+		}
+
+		if (gamedata.GetExcellentMode()) {
+
+			gamedata.UpdateExcellentMode(ActionPointVector);
+		}
+
+	
 		// アクションエフェクト処理
 		for (int i = 0; i < ActionEffectVector.size(); i++) {
 			if (ActionEffectVector[i] != NULL) {
@@ -248,6 +288,13 @@ void Update_Game() {
 			}
 			ActionPointVector[i]->Update();
 		}
+
+		if (gamedata.GetExcellentMode()) {
+			gamedata.UpdateExcellentMode(ActionPointVector);
+		}
+
+		
+		
 
 		if (gamedata.GetRunningSpeed() != 0) {
 			background.SetSpeed(gamedata.GetRunningSpeed() / 10);
@@ -321,6 +368,18 @@ void Update_Game() {
 		Actionslot.AddValue(0.5);
 	}
 
+	if (keyboard.IsPress(DIK_P)) {
+		if (gamedata.ExcellentModeInitFlag == false) {
+			gamedata.InitExcellentMode();
+		}
+	}
+
+	if (keyboard.IsRelease(DIK_O)) {
+		gamedata.ExcellentModeInitFlag = false;
+	}
+
+
+
 #endif // DEBUG
 
 
@@ -339,6 +398,12 @@ void Draw_Game() {
 	case GAME_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
 
 		background.Draw();
+
+		if (gamedata.GetExcellentMode()) {
+			Alphabg.Draw();
+			ExcellentFrame.Draw();
+			ExcellentImg.Draw();
+		}
 
 		//スタミナゲージ描画
 		stamina->Draw();

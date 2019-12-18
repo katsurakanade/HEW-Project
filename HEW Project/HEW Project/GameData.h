@@ -1,5 +1,7 @@
 #pragma once
 #include "ActionSlot.h"
+#include "GameObject.h"
+#include "BackGround.h"
 
 // ゲームモード状態
 typedef enum {
@@ -58,9 +60,17 @@ private:
 	int Action_Point;
 	// アクションエフェクト状態
 	int Action_Affect_State;
+	// エクセレントフラグ
+	bool ExcellentMode = false;
+
+	// エクセレントタイマー
+	float ExcellentTimer;
 
 public:
 
+	bool ExcellentModeInitFlag = false;
+
+	int ExcellentModeCount = 0;
 
 	GameData();
 
@@ -69,6 +79,12 @@ public:
 	void Init();
 
 	void UpdateSpeed();
+
+	void InitExcellentMode();
+
+	void UpdateExcellentMode(vector <ActionPointAnime*> actionpoint);
+
+	void DrawExcellentMode();
 
 	void Action_Point_Update(int value);
 
@@ -98,6 +114,9 @@ public:
 
 	int GetActionPoint();
 
+	bool GetExcellentMode();
+
+	float GetExcellentTimer();
 };
 
 
