@@ -41,6 +41,9 @@ typedef enum {
 	TEXTURE_INDEX_BAD,
 	TEXTURE_INDEX_NUMBER,
 	TEXTURE_INDEX_BACKGROUND,
+	TEXTURE_INDEX_HUOYAN,
+	TEXTURE_INDEX_MAHOU,
+	TEXTURE_INDEX_EFFECT,
 	TEXTURE_INDEX_GAME_OVER,
 
 	TEXTURE_INDEX_MAX
@@ -89,7 +92,7 @@ protected:
 	// 遅れ処理用タイマー
 	float Delay_Timer[3] = {0,0,0};
 	// 遅く処理用フラグ
-	bool Delay_Flag[3] = { true,true,true };
+	bool Delay_Flag[3] = { false,false,false };
 	// 画像サイズ
 	D3DXVECTOR2 Size;
 
@@ -121,7 +124,7 @@ public:
 
 	// 遅れ移動(方向,時間,x,y)
 	// (必ずFlagを設定しないといけない)
-	// (0:右 1: 左 2:上 3:下)
+	// (0:上 1: 下 2:左 3:右)
 	void Delay_Move(int arrow,float sec,float x,float y);
 
 	// 遅れ拡大(時間,拡大率)

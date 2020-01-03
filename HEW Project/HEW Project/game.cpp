@@ -13,6 +13,7 @@
 #include "ActionAffect.h"
 #include "BackGround.h"
 #include "GameOver.h"
+#include "effect.h"
 
 // Debug Mode
 #define DEBUG
@@ -52,6 +53,8 @@ GameProgress *gameprogress;
 StaminaGauge *stamina;
 
 BackGround background;
+
+effEct effect;
 
 GameOver gameover;
 // アクションエフェクト用
@@ -116,6 +119,8 @@ void Init_Game() {
 
 	background.Init();
 
+	effect.Init();
+
 	gameover.Init();
 }
 
@@ -157,6 +162,8 @@ void Update_Game() {
 	// キャラクター処理
 
 	CharacterMove();
+
+	effect.Update();
 
 	gameover.Update();
 
@@ -224,6 +231,9 @@ void Draw_Game() {
 	Actionslot.Draw();
 
 	gameprogress->Draw();
+
+	effect.Draw();
+
 
 	gameover.Draw();
 	

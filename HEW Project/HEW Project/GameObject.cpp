@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "main.h"
 #include <string.h>
+#include <math.h>
 
 map <const char*, const char*> TextureDict = {
 	{"Start","asset/texture/start.png"},
@@ -67,7 +68,11 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/BAD.png",
 	"asset/texture/Number.png",
 	"asset/texture/BackGround.png",
+	"asset/texture/huoyan.png",
+	"asset/texture/mahou.png",
+	"asset/texture/effect.png",
 	"asset/texture/game_over.png",
+	
 };
 
 GameObject::GameObject() {
@@ -193,7 +198,7 @@ void GameObject::Delay_Rotate(float sec,double rotate) {
 	}
 
 	if (Delay_Flag[2]) {
-		Object.Rotate += rotateframe;
+		Object.Rotate += rotateframe * PI / 180;
 	}
 
 }

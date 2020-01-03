@@ -5,11 +5,17 @@
 #include "main.h"
 #include "game.h"
 #include "input.h"
+#include <math.h>
+
+
+
 
 class effEct
 {
 
 public:
+
+	bool IsDraw;     // •`‰æƒtƒ‰ƒO
 
 
 	void Init();
@@ -21,8 +27,6 @@ public:
 	effEct();
 	
 	~effEct();
-
-	float spd = 1.0f;
 
 
 
