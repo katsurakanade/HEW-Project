@@ -19,6 +19,10 @@ typedef enum {
 
 	ACTION_STATE_LONGJUMP,
 
+	ACTION_STATE_WEIGHT,
+
+	ACTION_STATE_UNEVENBARS,
+
 	ACTION_STATE_MAX
 
 }Action_State;
@@ -42,7 +46,12 @@ private:
 
 	vector <GameObject> Action_vector;
 
+	bool UNEVENBARS_Array[4] = { false,false,false,false };
+	int UNEVENBARS_progress = 0;
+	int UNEVENBARS_rnd = -1;
+
 public:
+
 
 	D3DXVECTOR2 Pos;
 

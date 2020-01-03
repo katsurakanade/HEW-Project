@@ -13,12 +13,16 @@
 #include "ActionAffect.h"
 #include "BackGround.h"
 #include "GameOver.h"
-#include "effect.h"
+#include "BatonTouch.h"
+#include "GameClear.h"
+
+#include "Effect.h"
+
 
 // Debug Mode
 #define DEBUG
 
-/* 
+/*
 プロトタイプ宣言
 */
 
@@ -34,6 +38,10 @@ void Debug_Running();
 /*
 グローバル変数
 */
+
+// ゲームステート遷移用変数
+static GAME_STATE g_GameStateIndex;
+static GAME_STATE g_GameStateNextIndex;
 
 // スビート計算用
 std::vector<int> Speed_Array;
@@ -51,21 +59,60 @@ Live2D Character;
 GameProgress *gameprogress;
 // スタミナゲージ
 StaminaGauge *stamina;
-
+//背景
 BackGround background;
 
-effEct effect;
+GameObject ExcellentFrame ;
 
-GameOver gameover;
+GameObject ExcellentImg;
+
+GameObject Alphabg;
+
+//バトンタッチ
+BatonTouch batonTouch;
+
+GameOver *gameover;
+
+GameClear *gameclear;
+
 // アクションエフェクト用
 std::vector<ActionAffect*> ActionEffectVector;
 
 std::vector <ActionPointAnime*> ActionPointVector;
 
+
+typedef void(*GameStateFunc)(void);
+
+static const GameStateFunc Initialize[] = {
+	Init_GameStart,     //バトンタッチのゲームスタート処理のInit
+	Init_GameState,     //2区間, ３区間用Init
+	Init_BatonTouch,
+	Init_GameOver,     //ゲームオーバーのゲームスタート処理のInit
+	Init_GameClear,     //ゲームクリアのゲームスタート処理のInit
+};
+
+
+void GameState_Initialize(GAME_STATE index)
+{
+	g_GameStateNextIndex = g_GameStateIndex = index;
+
+	Initialize[g_GameStateIndex]();
+}
+
+
+
 void Init_Game() {
 
 	gameprogress = new GameProgress;
 	stamina = new StaminaGauge;
+	gameover = new GameOver;
+	gameclear = new GameClear;
+
+	// とりあえずGameを動かしてみる----------------------------------------------------------------
+	g_GameStateIndex = GAME_STATE_GAME;
+	g_GameStateNextIndex = GAME_STATE_GAME;
+	// とりあえずGameを動かしてみる
+
 
 	//スタミナゲージ初期化
 	stamina->Init();
@@ -86,19 +133,19 @@ void Init_Game() {
 
 	Actionslot.Load();
 
-	Actionslot.Pos.x = 80;
+	Actionslot.Pos.x = 330;
 
-	Actionslot.Pos.y = 500;
+	Actionslot.Pos.y = 450;
 
 	// キャラクター初期化
 
 	Character.LoadModel(Live2D_Dict["HIYORI"]);
 
-	Character.Zoom.x = 0.5f;
+	Character.Zoom.x = 1.0f;
 
-	Character.Zoom.y = 0.5f;
+	Character.Zoom.y = 1.0f;
 
-	Character.Pos.x = -580;
+	Character.Pos.x = -400;
 
 	Character.Pos.y = -150;
 
@@ -119,12 +166,45 @@ void Init_Game() {
 
 	background.Init();
 
-	effect.Init();
+	gameover->Init();
 
-	gameover.Init();
+	batonTouch.Init();
+
+	Init_GameClear();
+
+	ExcellentFrame.LoadTexture(TextureDict["alpha"]);
+	ExcellentFrame.Object.Pos.x = SCREEN_WIDTH / 2;
+	ExcellentFrame.Object.Pos.y = SCREEN_HEIGHT /2;
+	ExcellentFrame.Object.Scale.x = 2.0;
+	ExcellentFrame.Object.Scale.y = 2.0;
+
+	ExcellentImg.LoadTexture(TextureDict["excellent"]);
+	ExcellentImg.Object.Pos.x = 800;
+	ExcellentImg.Object.Pos.y = 200;
+
+	Alphabg.LoadTexture(TextureDict["alphabg"]);
+	Alphabg.Object.Pos.x = 0;
+	Alphabg.Object.Pos.y = 0;
+	Alphabg.Object.Scale.x = 10.0f;
+	Alphabg.Object.Scale.y = 10.0f;
+
+	////////////////////////////////////////////////////
+	EffectInit();		 //エフェクト実験用
+	////////////////////////////////////////////////////
+
+
 }
 
+
+// ２区間, ３区間用Init(関数名は気にしないで)
+void Init_GameState()
+{
+
+}
+
+
 void Uninit_Game() {
+
 
 	Character.~Live2D();
 
@@ -134,67 +214,148 @@ void Uninit_Game() {
 	stamina = nullptr;
 	delete stamina;
 
+	gameover = nullptr;
+	delete gameover;
+
+	gameclear = nullptr;
+	delete gameclear;
+
 	ActionEffectVector.~vector();
 	ActionPointVector.~vector();
-	
+
+	Alphabg.Destroy();
+	ExcellentFrame.Destroy();
+	ExcellentImg.Destroy();
+
+	Alphabg.~GameObject();
+	ExcellentFrame.~GameObject();
+	ExcellentImg.~GameObject();
+
+
+	batonTouch.Uninit();
+
+
 }
 
 void Update_Game() {
 
-	//スタミナゲージ更新処理
-	stamina->Update();
+	switch (g_GameStateIndex)
+	{
 
-	Character.SetMontionIndex(GetRand(8));
+	case GAME_STATE_START:     // BattonTouchのゲームスタート処理--------------------------------------------------------
 
-	// アクションUI更新
-	Action.Update();
-	// アクションゲージ更新
-	Actionslot.Update();
-	// スビート更新
-	gamedata.UpdateSpeed();
+		break;
 
-	// 走る処理
-	Running();
 
-	// ゲーム進行バー処理
-	gameprogress->Update();
+	case GAME_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
 
-	// キャラクター処理
+		//スタミナゲージ更新処理
+		stamina->Update();
 
-	CharacterMove();
+		Character.SetMontionIndex(GetRand(8));
 
-	effect.Update();
+		// アクションUI更新
+		Action.Update();
+		// アクションゲージ更新
+		Actionslot.Update(stamina->GetStaminaScale_x());
+		// スビート更新
+		gamedata.UpdateSpeed();
 
-	gameover.Update();
+		// 走る処理
+		Running();
 
-	// アクションエフェクト処理
-	for (int i = 0; i < ActionEffectVector.size(); i++) {
-		if (ActionEffectVector[i] != NULL) {
-			ActionEffectVector[i]->Update();
+		// ゲーム進行バー処理
+		gameprogress->Update(Action);
+
+		// キャラクター処理
+
+		CharacterMove();
+
+		gameover->Update();
+
+		if (gamedata.ExcellentModeCount >= 5) {
+			gamedata.InitExcellentMode();
 		}
-	}
 
-	for (int i = 0; i < ActionPointVector.size(); i++) {
-		if (ActionPointVector[i]->OutFlag) {
-			continue;
+		if (gamedata.GetExcellentMode()) {
+
+			gamedata.UpdateExcellentMode(ActionPointVector);
 		}
-		ActionPointVector[i]->Update();
+
+	
+		// アクションエフェクト処理
+		for (int i = 0; i < ActionEffectVector.size(); i++) {
+			if (ActionEffectVector[i] != NULL) {
+				ActionEffectVector[i]->Update();
+			}
+		}
+
+		for (int i = 0; i < ActionPointVector.size(); i++) {
+			if (ActionPointVector[i]->OutFlag) {
+				continue;
+			}
+			ActionPointVector[i]->Update();
+		}
+
+		if (gamedata.GetExcellentMode()) {
+			gamedata.UpdateExcellentMode(ActionPointVector);
+		}
+
+		
+		
+
+		if (gamedata.GetRunningSpeed() != 0) {
+			background.SetSpeed(gamedata.GetRunningSpeed() / 10);
+		}
+
+		else {
+			background.SetSpeed(1.0);
+		}
+
+		background.Update();
+
+		//聖火が消えたらGAME OVER
+		if (gamedata.Gethp() == 0)
+		{
+			GameState_Change(GAME_STATE_GAME_OVER);
+		}
+
+		Debug_Running();
+
+		////////////////////////////////////////////////////
+		EffectUpdate();     //エフェクト実験用
+		////////////////////////////////////////////////////
+
+		break;
+
+
+	case GAME_STATE_BATONTOUCH:     // BattonTouchのバトンタッチ処理--------------------------------------------------
+
+		batonTouch.Update();
+
+		break;
+
+
+	case GAME_STATE_GAME_OVER:     // GAME OVERのUpdate処理----------------------------------------------------------
+
+		gameover->Update();
+
+		break;
+
+
+	case 	GAME_STATE_GAME_CLEAR:     // GAME CLEARのUpdate処理--------------------------------------------------------
+
+		gameclear->Update();
+
+		break;
+
 	}
 
-	if (gamedata.GetRunningSpeed() != 0) {
-		background.SetSpeed(gamedata.GetRunningSpeed() / 10);
-	}
 
-	else {
-		background.SetSpeed(1.0);
-	}
-
-	background.Update();
 
 #ifdef DEBUG
 
 	// Go Title
-
 	if (keyboard.IsTrigger(DIK_R)) {
 		Scene_Change(SCENE_INDEX_TITLE);
 	}
@@ -211,55 +372,152 @@ void Update_Game() {
 		std::vector<ActionPointAnime*>().swap(ActionPointVector);
 	}
 
-	Debug_Running();
+	if (keyboard.IsPress(DIK_E)) {
+		Actionslot.AddValue(0.5);
+	}
+
+	if (keyboard.IsPress(DIK_P)) {
+		if (gamedata.ExcellentModeInitFlag == false) {
+			gamedata.InitExcellentMode();
+		}
+	}
+
+	if (keyboard.IsRelease(DIK_O)) {
+		gamedata.ExcellentModeInitFlag = false;
+	}
+
+
 
 #endif // DEBUG
 
-	
+
 }
 
 void Draw_Game() {
 
-	background.Draw();
-	
-	//スタミナゲージ描画
-	stamina->Draw();
 
-	// アクションUI描画
-	Action.Draw();
-	// アクションゲージ描画
-	Actionslot.Draw();
+	switch (g_GameStateIndex)
+	{
 
-	gameprogress->Draw();
-
-	effect.Draw();
-
-
-	gameover.Draw();
-	
-	// アクション完成判定
-	if (Action.GetFinishFlag()) {
-		if (Action.GetProgress() == Action.GetActionAmount()) {
-			Actionslot.AddValue(0.5);
-		}
-		else {
+	case GAME_STATE_START:     // BattonTouchのゲームスタート処理--------------------------------------------------------
 		
+		break;
+
+	case GAME_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
+
+		background.Draw();
+
+		if (gamedata.GetExcellentMode()) {
+			Alphabg.Draw();
+			ExcellentFrame.Draw();
+			ExcellentImg.Draw();
 		}
-	}
-	
 
-	// アクションエフェクト描画
-	for (int i = 0; i < ActionEffectVector.size(); i++) {
-		if (ActionEffectVector[i] != NULL) {
-			ActionEffectVector[i]->Draw_Affect();
+		//スタミナゲージ描画
+		stamina->Draw();
+
+		// アクションUI描画
+		Action.Draw();
+		// アクションゲージ描画
+		Actionslot.Draw();
+
+		gameprogress->Draw();
+
+		// アクション完成判定
+		if (Action.GetFinishFlag()) {
+			if (Action.GetProgress() == Action.GetActionAmount()) {
+				Actionslot.AddValue(0.5);
+			}
+			else {
+
+			}
 		}
+
+
+		// アクションエフェクト描画
+		for (int i = 0; i < ActionEffectVector.size(); i++) {
+			if (ActionEffectVector[i] != NULL) {
+				ActionEffectVector[i]->Draw_Affect();
+			}
+		}
+
+		for (int i = 0; i < ActionPointVector.size(); i++) {
+			ActionPointVector[i]->Draw();
+		}
+
+		Character.Draw();
+
+
+		////////////////////////////////////////////////////
+		EffectDraw();	 //エフェクト実験用
+		////////////////////////////////////////////////////
+
+
+		break;
+
+
+	case GAME_STATE_BATONTOUCH:     // BattonTouchのバトンタッチ処理--------------------------------------------------
+
+		batonTouch.Draw();
+
+		break;
+
+
+	case GAME_STATE_GAME_OVER:     // GAME OVERのUpdate処理----------------------------------------------------------
+
+		//---------------------------------↓ゲーム画面描画↓----------------------------------------
+
+		background.Draw();
+
+		//スタミナゲージ描画
+		stamina->Draw();
+
+		// アクションUI描画
+		Action.Draw();
+		// アクションゲージ描画
+		Actionslot.Draw();
+
+		gameprogress->Draw();
+
+		// アクション完成判定
+		if (Action.GetFinishFlag()) {
+			if (Action.GetProgress() == Action.GetActionAmount()) {
+				Actionslot.AddValue(0.5);
+			}
+			else {
+
+			}
+		}
+
+		// アクションエフェクト描画
+		for (int i = 0; i < ActionEffectVector.size(); i++) {
+			if (ActionEffectVector[i] != NULL) {
+				ActionEffectVector[i]->Draw_Affect();
+			}
+		}
+
+		for (int i = 0; i < ActionPointVector.size(); i++) {
+			ActionPointVector[i]->Draw();
+		}
+
+		Character.Draw();
+
+		//---------------------------------↑ゲーム画面描画↑----------------------------------------
+
+		gameover->Draw();     //GAME OVERの描画
+
+		break;
+
+	case 	GAME_STATE_GAME_CLEAR:     // GAME CLEARのUpdate処理--------------------------------------------------------
+
+		gameclear->Draw();
+
+		break;
+
 	}
 
-	for (int i = 0; i < ActionPointVector.size(); i++) {
-		ActionPointVector[i]->Draw();
-	}
 
-	Character.Draw();
+	GameState_Check();     //ゲームステート切り替え処理
 
 
 #ifdef DEBUG
@@ -267,6 +525,22 @@ void Draw_Game() {
 #endif // DEBUG
 
 }
+
+
+//ステート切り替え処理
+void GameState_Check(void)
+{
+	if (g_GameStateIndex != g_GameStateNextIndex) {
+		GameState_Initialize(g_GameStateNextIndex);
+	}
+}
+
+//切り替えステート設定
+void GameState_Change(GAME_STATE index)
+{
+	g_GameStateNextIndex = index;
+}
+
 
 void Running() {
 
@@ -336,7 +610,7 @@ void CharacterMove() {
 
 	// 右
 
-	if (gamedata.GetRunningSpeed() >= 150 && Character.Zoom.x < 1.0) {
+	if (gamedata.GetRunningSpeed() >= 150 && Character.Zoom.x < 1.3) {
 
 		Character.Pos.x += 5.0f;
 
@@ -344,23 +618,22 @@ void CharacterMove() {
 
 		Character.Zoom.y += 0.0025f;
 
-		Character.Pos.y += 0.75f;
+		Character.Pos.y -= 0.75f;
 
-		Actionslot.Pos.x += 5.4f;
+		Actionslot.Pos.x += 5.0f;
 
-		Actionslot.Pos.y -= 0.75f;
+		Actionslot.Pos.y += 0.75f;
 
 		Actionslot.Scale += D3DXVECTOR2(0.0025f, 0.0025f);
 
-		Actionslot.Fire_Offset += D3DXVECTOR2(0.45f, 0.25f);
+		Actionslot.Fire_Offset += D3DXVECTOR2(0.75f, 0.15f);
 
+		Actionslot.offsect_dis += 0.03;
 	}
-
-
 
 	// 左
 
-	if (gamedata.GetRunningSpeed() <= 30 && Character.Zoom.x > 0.5) {
+	if (gamedata.GetRunningSpeed() <= 30 && Character.Zoom.x > 1.0) {
 
 		Character.Pos.x -= 5.0f;
 
@@ -368,16 +641,17 @@ void CharacterMove() {
 
 		Character.Zoom.y -= 0.0025f;
 
-		Character.Pos.y -= 0.75f;
+		Character.Pos.y += 0.75f;
 
-		Actionslot.Pos.x -= 5.4f;
+		Actionslot.Pos.x -= 5.0f;
 
-		Actionslot.Pos.y += 0.75f;
+		Actionslot.Pos.y -= 0.75f;
 
 		Actionslot.Scale -= D3DXVECTOR2(0.0025f, 0.0025f);
 
-		Actionslot.Fire_Offset -= D3DXVECTOR2(0.45f, 0.25f);
+		Actionslot.Fire_Offset -= D3DXVECTOR2(0.75f, 0.15f);
 
+		Actionslot.offsect_dis -= 0.03;
 	}
 
 }
@@ -397,7 +671,7 @@ void Debug_Running() {
 		Judge_Count = 0;
 
 		gamedata.Action_Point_Update(Actionslot.GetState());
-		
+
 		ActionPointAnime *obj = new ActionPointAnime();
 
 		ActionAffect *tmp = new ActionAffect(Actionslot.GetState());
@@ -416,12 +690,12 @@ void Debug_Running() {
 		case ACTIONSLOT_BAD:
 			break;
 		}
-		
+
 		ActionEffectVector.push_back(tmp);
 
 		ActionPointVector.push_back(obj);
-		
-		
+
+
 	}
 
 	if (gamedata.GetRunningSpeed() > 0) {
@@ -452,7 +726,7 @@ void Debug_Panel() {
 
 	DrawFormatString(0, 180, GetColor(255, 255, 255), "アクションポイント： %d", gamedata.GetActionPoint());
 
-	DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%d秒",gameprogress->stime / 60);
+	DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%f秒", gameprogress->stime / 60);
 
-	
+
 }

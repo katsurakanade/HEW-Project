@@ -1,5 +1,16 @@
 #pragma once
 #include "ActionSlot.h"
+#include "GameObject.h"
+#include "BackGround.h"
+
+// ゲームモード状態
+typedef enum {
+
+	GAMEMODE_MATCH,
+	GAMEMODE_SINGLE,
+	GAMEMODE_MAX,
+
+}GameModeState;
 
 
 class ActionPointAnime {
@@ -35,6 +46,8 @@ class GameData
 {
 private:
 	
+	// ゲームモード
+	int GameMode = -1;
 	// 聖火
 	int hp;
 	// 走る距離
@@ -47,8 +60,17 @@ private:
 	int Action_Point;
 	// アクションエフェクト状態
 	int Action_Affect_State;
+	// エクセレントフラグ
+	bool ExcellentMode = false;
+
+	// エクセレントタイマー
+	float ExcellentTimer;
 
 public:
+
+	bool ExcellentModeInitFlag = false;
+
+	int ExcellentModeCount = 0;
 
 	GameData();
 
@@ -57,6 +79,12 @@ public:
 	void Init();
 
 	void UpdateSpeed();
+
+	void InitExcellentMode();
+
+	void UpdateExcellentMode(vector <ActionPointAnime*> actionpoint);
+
+	void DrawExcellentMode();
 
 	void Action_Point_Update(int value);
 
@@ -68,10 +96,14 @@ public:
 
 	void AddActionPoint(int value);
 
+	void SetGameMode(int value);
+
 	void SetRunningSpeed(int value);
 
 	void SetActionPoint(int value);
 	
+	int GetGameMode();
+
 	int Gethp();
 
 	int GetRunningDistance();
@@ -82,6 +114,9 @@ public:
 
 	int GetActionPoint();
 
+	bool GetExcellentMode();
+
+	float GetExcellentTimer();
 };
 
 

@@ -28,7 +28,7 @@ typedef enum {
 	TEXTURE_INDEX_SR,
 	TEXTURE_INDEX_ZL,
 	TEXTURE_INDEX_FAILED,
-	TEXTURE_INDEX_FIRE,
+	TEXTURE_INDEX_FIREBASE,
 	TEXTURE_INDEX_ARM,
 	TEXTURE_INDEX_PINK,
 	TEXTURE_INDEX_PROGRESS_BAR,
@@ -41,10 +41,13 @@ typedef enum {
 	TEXTURE_INDEX_BAD,
 	TEXTURE_INDEX_NUMBER,
 	TEXTURE_INDEX_BACKGROUND,
-	TEXTURE_INDEX_HUOYAN,
-	TEXTURE_INDEX_MAHOU,
-	TEXTURE_INDEX_EFFECT,
 	TEXTURE_INDEX_GAME_OVER,
+	TEXTURE_INDEX_FIRE,
+	TEXTURE_INDEX_LEFT,
+	TEXTURE_INDEX_RESULT,
+	TEXTURE_INDEX_GAME_CLEAR,
+
+
 
 	TEXTURE_INDEX_MAX
 
@@ -122,10 +125,13 @@ public:
 	// (アニメあり)(Initで使う)
 	void LoadTexture(const char * name,int allcut,int xcut,int ycut,int xsize,int ysize);
 
-	// 遅れ移動(方向,時間,x,y)
+	// 遅れ直線移動移動(時間,x,y)
 	// (必ずFlagを設定しないといけない)
-	// (0:上 1: 下 2:左 3:右)
-	void Delay_Move(int arrow,float sec,float x,float y);
+	void Delay_Move(float sec,float x,float y);
+
+	// 遅れ直線移動移動(時計回り==true,曲線の弧の大きさ,オブジェクトの現在座標,時間,x,y)
+	// (必ずFlagを設定しないといけない)
+	void Delay_CurveMove(bool cw, float r, const D3DXVECTOR2 &ThisPos, float sec, float x, float y);
 
 	// 遅れ拡大(時間,拡大率)
 	// (必ずFlagを設定しないといけない)
@@ -138,6 +144,9 @@ public:
 	// 描画(透明)
 	void Draw();
 	
+	// 描画(回転中心指定)
+	void Draw(float x,float y);
+	
 	// 部分描画(テクスチャx,テクスチャy,テクスチャxサイズ,テクスチャyサイズ,アルファ使う,反転処理使う)
 	void Draw(int tsx, int tsy, int tex, int tey, bool use_alpha, bool turn);
 
@@ -149,6 +158,8 @@ public:
 
 	// HSBフィルター
 	void HSB_Fillter();
+
+	void Trans_Color(int r, int g, int b);
 
 	// 削除
 	// (画像メモリ)

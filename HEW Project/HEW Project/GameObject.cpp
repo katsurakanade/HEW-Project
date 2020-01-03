@@ -7,7 +7,6 @@
 #include <algorithm>
 #include "main.h"
 #include <string.h>
-#include <math.h>
 
 map <const char*, const char*> TextureDict = {
 	{"Start","asset/texture/start.png"},
@@ -36,6 +35,10 @@ map <const char*, const char*> TextureDict = {
 	{"Good","asset/texture/GOOD.png"},
 	{"Bad","asset/texture/BAD.png"},
 	{"Number","asset/texture/Number.png"},
+	{"Title","asset/texture/Title.jpg"},
+	{"alpha","asset/texture/alpha.png"},
+	{"excellent","asset/texture/excellent.png"},
+	{"alphabg","asset/texture/alphabg.png"},
 };
 
 // 画像パスベクトル
@@ -68,11 +71,11 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/BAD.png",
 	"asset/texture/Number.png",
 	"asset/texture/BackGround.png",
-	"asset/texture/huoyan.png",
-	"asset/texture/mahou.png",
-	"asset/texture/effect.png",
 	"asset/texture/game_over.png",
-	
+	"asset/texture/Fire.png",
+	"asset/texture/Left.png",
+	"asset/texture/result.png",
+	"asset/texture/Game_Clear.png",
 };
 
 GameObject::GameObject() {
@@ -138,8 +141,11 @@ void GameObject::LoadTexture(const char *name, int allcut, int xcut, int ycut, i
 	}
 }
 
-void GameObject::Delay_Move(int arrow,float sec,float x,float y) {
 
+//直線移動(相対座標を指定)
+void GameObject::Delay_Move(float sec,float x,float y) {
+
+/*
 	if (arrow == ARROW_UP || arrow == ARROW_DOWN) {
 		const float moveframeY = y / 60 / sec;
 
@@ -156,6 +162,23 @@ void GameObject::Delay_Move(int arrow,float sec,float x,float y) {
 			Object.Pos.x += moveframeX;
 		}
 	}
+*/
+
+	
+
+	const float moveframeY = y / 60 / sec;
+
+	if (Delay_Flag[0]) {
+		Object.Pos.y += moveframeY;
+	}
+
+	const float moveframeX = x / 60 / sec;
+
+	if (Delay_Flag[0]) {
+		Object.Pos.x += moveframeX;
+	}
+
+
 
 	Delay_Timer[0] += SECONDS;
 
@@ -165,6 +188,169 @@ void GameObject::Delay_Move(int arrow,float sec,float x,float y) {
 	}
 
 }
+
+//--------------------------------------------------
+
+
+
+//// r(半径)を指定して現在地から目的座標まで曲線で移動する関数(r <= 0 : r=0.01) ////
+
+	// 関数呼んだ時だけ処理 //
+// this->Object.Pos;     //自分の座標
+// 相手の座標：引数の値
+/*
+	自分座標と相手座標(移動先)からベクトルA(Ax, Ay)を作る
+	ベクトルAの距離を測って中点Mを取る
+
+	○垂直ベクトルを取得する(求めるベクトル成分：Vx, Vy)
+	式1：Vx^2 + Vy^2 = 1
+	式2：Vx = -(Ay*Vy) / Ax
+	→(-(Ay*Vy) / Ax)^2 + Vy^2 = 1
+	Vy = ± 2Ax / sqrt(Ax^2 + Ay^2)
+	Vx = -(Ay*Vy) / Ax に Vyを代入
+	V(Vx, Vy)
+
+
+	○外積計算
+	ベクトルVを正規化する
+	ベクトルV＊r(引数で指定した半径) = Vmax
+	Vmax + M = 自分座標から相手座標までの角度を算出する原点O
+	ベクトルAに対してベクトルB(自分座標→原点O)の外積を取る
+
+	※時計回りの弧(曲線)を描きたいならベクトルAに対して右側(外積結果マイナス)の原点Oを採用する
+	※反時計回りの弧(曲線)を描きたいならベクトルAに対して左側(外積結果プラス)の原点Oを採用する
+	※→逆なら(*= -1)
+
+	O→自分座標：ベクトルC
+	O→相手座標：ベクトルD
+	rad = acos( (C・D) / (C.Length * D.Length) )
+
+
+	// 毎フレーム処理 //
+//上で求めた「rad(ラジアン)」をsin(), cos()にぶち込んで移動量を計算
+
+*/
+
+//--------------------------------------------------
+
+// 遅れ直線移動移動(時計回り==true, 曲線の弧の大きさ, オブジェクトの現在座標, 時間, x, y)
+void GameObject::Delay_CurveMove(bool cw, float r, const D3DXVECTOR2 &pos, float sec, float x, float y)
+{
+
+	/*
+
+	// 変数宣言
+	float Rad;     //移動に使用するラジアンθ( ベクトルCとベクトルDの角度 )
+	float rad_a;     //移動に使用するラジアンα( ベクトルAと-ベクトルCの角度 )
+	D3DXVECTOR3 ThisPos = { pos.x, pos.y, 0.0f };     //自分座標(初期位置)
+	D3DXVECTOR3 VecA;     //自分座標(初期位置)→移動先座標
+	D3DXVECTOR3 VecB;     //自分座標(初期位置)→原点O
+	D3DXVECTOR3 VecC;     //原点O→自分座標
+	D3DXVECTOR3 VecD;     //原点O→相手座標
+	D3DXVECTOR3 MovePos = {x, y, 0.0f};     //移動先座標(終点位置)
+	D3DXVECTOR3 MiddlePoint;     //中点M
+	D3DXVECTOR3 VecV;     //ベクトルAに対する垂直ベクトル
+	D3DXVECTOR3 VecVmax;     //VecV * r (半径)
+	D3DXVECTOR3 CenterPoint;     //原点O
+	D3DXVECTOR3 VecABCrossOut;     //ベクトルAとベクトルBの外積結果
+
+
+	// 処理ヘッド=============
+
+	//ベクトルA作成
+	VecA = MovePos - ThisPos;
+
+	//中点M作成(相対距離)
+	MiddlePoint.x = VecA.x / 2.0f;
+	MiddlePoint.y = VecA.y / 2.0f;
+
+	//垂直ベクトル:VecV作成(ｙが＋側)
+	VecV.y = 2 * VecA.x / sqrt((VecA.x * VecA.x) + (VecA.y * VecA.y));
+	VecV.x = -(VecA.y * VecV.y) / VecA.x;
+
+	//VecV正規化
+	D3DXVec3Normalize(&VecV, &VecV);
+
+	//VecVを指定半径倍率に直す
+	VecVmax = VecV * r;
+
+	//原点Oを算出(座標)
+	CenterPoint = VecVmax + MiddlePoint;
+
+	//ベクトルBを作る
+	VecB = MiddlePoint - ThisPos;
+
+	//ベクトルAとベクトルBの外積
+	D3DXVec3Cross(&VecABCrossOut, &VecA, &VecB);
+
+	//時計回り、反時計回りを判別(原点Oの確定)
+	if (cw)     // 時計回りの処理
+	{
+		if (!(VecABCrossOut < 0))     //逆だったら
+		{
+			CenterPoint *= -1;     // 逆側の原点Oを使用する
+		}
+	}
+	else     // 反時計回りの処理
+	{
+		if (!(VecABCrossOut > 0))     //逆だったら
+		{
+			CenterPoint *= -1;     // 逆側の原点Oを使用する
+		}
+	}
+
+
+	//ベクトルCと	ベクトルDを作る
+	VecC = ThisPos - CenterPoint;
+	VecC = MovePos - CenterPoint;
+
+
+	//// ラジアンを求める ////
+	Rad = acos(D3DXVec3Dot(&VecC, &VecD) / ( D3DXVec3Length(&VecC) * D3DXVec3Length(&VecD) ) );     //ベクトルCとベクトルDの角度
+	VecC *= -1;     //ベクトルC反転
+	rad_a = acos(D3DXVec3Dot(&VecA, &VecC) / ( D3DXVec3Length(&VecA) * D3DXVec3Length(&VecC) ) );     //ベクトルAと-ベクトルCの角度
+	VecC *= -1;     //ベクトルC反転(元に戻す)
+
+
+
+	//================移動処理(絶対距離)================
+
+	const float moveframeY = ((D3DXVec3Length(&VecA) * sin(rad_a))  * sin(Rad)) / 60 / sec;
+
+	if (Delay_Flag[0]) {
+		Object.Pos.y += moveframeY;
+	}
+
+	const float moveframeX = ((D3DXVec3Length(&VecA) * cos(rad_a))  * cos(Rad)) / 60 / sec;
+
+	if (Delay_Flag[0]) {
+		Object.Pos.x += moveframeX;
+	}
+
+
+
+	Delay_Timer[0] += SECONDS;
+
+	if (Delay_Timer[0] >= sec) {
+		//Finalize処理
+		Delay_Flag[0] = false;
+		Delay_Timer[0] = 0.0f;
+
+
+
+
+
+	}
+
+	*/
+
+}
+
+
+
+
+
+
 
 void GameObject::Delay_Zoom(float sec,double scale) {
 
@@ -182,8 +368,6 @@ void GameObject::Delay_Zoom(float sec,double scale) {
 		Object.Scale.y += zoomframe;
 	}
 
-	
-
 }
 
 void GameObject::Delay_Rotate(float sec,double rotate) {
@@ -198,7 +382,7 @@ void GameObject::Delay_Rotate(float sec,double rotate) {
 	}
 
 	if (Delay_Flag[2]) {
-		Object.Rotate += rotateframe * PI / 180;
+		Object.Rotate += rotateframe * PI/180;
 	}
 
 }
@@ -206,6 +390,11 @@ void GameObject::Delay_Rotate(float sec,double rotate) {
 void GameObject::Draw() {
 
 	DrawRotaGraph3((int)Object.Pos.x, (int)Object.Pos.y, Size.x / 2, Size.y / 2, Object.Scale.x, Object.Scale.y, Object.Rotate, handle, true, false);
+}
+
+void GameObject::Draw(float x, float y) {
+
+	DrawRotaGraph3((int)Object.Pos.x, (int)Object.Pos.y, x ,y , Object.Scale.x, Object.Scale.y, Object.Rotate, handle, true, false);
 }
 
 void GameObject::Draw(int tsx,int tsy,int tex,int tey,bool use_alpha,bool turn) {
@@ -227,6 +416,12 @@ void GameObject::Gauss_Filter(int param) {
 void GameObject::HSB_Fillter() {
 
 	GraphFilter(this->handle, DX_GRAPH_FILTER_HSB, 0, (int)this->Color.hue, (int)this->Color.saturation, (int)this->Color.bright);
+}
+
+void GameObject::Trans_Color(int r,int g,int b) {
+
+	SetTransColor(r, g, b);
+
 }
 
 void GameObject::Destroy() {
@@ -252,6 +447,8 @@ void GameObject::SetHSB(int hue,int saturation,int bright) {
 	this->Color.saturation = saturation;
 	this->Color.bright = bright;
 }
+
+
 
 int GameObject::GetHandle() {
 	return handle;

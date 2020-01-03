@@ -2,7 +2,7 @@
 /*------------------------------------------------------------------
 @brief	ゲームの進行バー
 @author	萩原直之
-@date	2019/11/18
+@date	2019/12/05
 -------------------------------------------------------------------*/
 #include <algorithm>
 #include <vector>
@@ -14,15 +14,15 @@
 #include "GameData.h"
 #include "DxLib.h"
 #include "BatonTouch.h"
+#include "game.h"
+#include "ActionUI.h"
 
 static GameObject ProgressBar[3];
-static GameData rundata;
-BatonTouch batontouch;
+static BatonTouch batontouch;
+static ActionUI actionui;
 
 void GameProgress::Init() 
 {
-	if (Initflag == true) 
-	{
 		ProgressBar[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BAR_FRAME]);
 		ProgressBar[1].LoadTexture(TexturePassDict[TEXTURE_INDEX_PROGRESS_BAR]);
 		ProgressBar[2].LoadTexture(TexturePassDict[TEXTURE_INDEX_AIROU]);
@@ -48,10 +48,10 @@ void GameProgress::Init()
 		ProgressMax = 5000;
 		NowProgress = 0.0f;
 		Section = 0;
+		RunDistance = 0.0f;		//ゲットした距離データを入れる
 		GameFinish = false;
-		Initflag = false;
 		MeasureFlag = false;
-	}
+
 }
 
 
@@ -65,7 +65,7 @@ GameProgress::~GameProgress()
 
 }
 
-void GameProgress::Update()
+void GameProgress::Update(ActionUI target)
 {
 	//フレームでゲージを増やす処理
 	if (MeasureFlag == false)
@@ -74,10 +74,10 @@ void GameProgress::Update()
 		NowProgress += stime / 6.4f;
 
 		//進行バーの増加処理
-		//ProgressBar[1].Object.Scale.x = NowProgress;
+		//ProgressBar[1].Object.Scale.x = NowProgress/10000;
 
 		//キャラアイコンの移動処理
-		ProgressBar[2].Object.Pos.x = NowProgress + 100.0f;
+		ProgressBar[2].Object.Pos.x = NowProgress + 100.0f;		//+100.0fはアイコンの初期位置の指定
 
 		if (stime < 5450.0f)	//90秒
 		{
@@ -94,24 +94,20 @@ void GameProgress::Update()
 	{
 		DrawFormatString(300, 400, GetColor(255, 255, 255), "残り10m!!");
 		//距離で計測する処理に切り替え
-		//MeasureFlag = true;
-
+		MeasureFlag = true;
 	}
 	//距離で計測する処理
-	if (MeasureFlag == true)
-	{
-		ProgressBar[2].Object.Pos.x += rundata.GetRunningDistance();
-		stime += rundata.GetRunningDistance();
-	}
-
+	ChangeMeasure(600.0f,900.0f);
+	
 	//アクションチェンジポイントに着いたら
 	//15秒経ったら(1秒＝60)
 	if (/*(ProgressBar[2].Object.Pos.x > 300 && ProgressBar[2].Object.Pos.x < 310) ||*/ (stime > 900.0f && stime < 960.0f))
 	{
 		DrawFormatString(300, 300, GetColor(255, 255, 255), "アクションチェンジ");
-		//MeasureFlag = false;
+		MeasureFlag = false;
 
 		//アクションが変わる処理
+		target.SetState(ACTION_STATE_LONGJUMP);
 
 	}
 
@@ -120,26 +116,26 @@ void GameProgress::Update()
 	{
 		DrawFormatString(300, 400, GetColor(255, 255, 255), "残り10m!!");
 		//距離で計測する処理に切り替え
-		//MeasureFlag = true;
+		MeasureFlag = true;
 
 	}
 	//距離で計測する処理
-	if (MeasureFlag == true)
-	{
-		ProgressBar[2].Object.Pos.x += rundata.GetRunningDistance();
-		stime += rundata.GetRunningDistance();
-	}
+	ChangeMeasure(1500.0f,1800.0f);
 
 	//30秒経ったら(1秒＝60)
 	if (/*(ProgressBar[2].Object.Pos.x > 450 && ProgressBar[2].Object.Pos.x < 460) || */(stime > 1800.0f && stime < 1860.0f))
 	{
-		//MeasureFlag = false;
+		MeasureFlag = false;
 
 		//バトンタッチ処理
 		if (Section == 0) {
 			batontouch.StateBaton = true;
-			Scene_Change(SCENE_INDEX_BATON_TOUCH);
+			GameState_Change(GAME_STATE_BATONTOUCH);
 			Section = 1;
+
+			//アクションが変わる処理
+			target.SetState(ACTION_STATE_LONGJUMP);
+
 		}
 	}
 	//===================区間2===============================
@@ -149,23 +145,20 @@ void GameProgress::Update()
 	{
 		DrawFormatString(300, 400, GetColor(255, 255, 255), "残り10m!!");
 		//距離で計測する処理に切り替え
-		//MeasureFlag = true;
+		MeasureFlag = true;
 
 	}
 	//距離で計測する処理
-	if (MeasureFlag == true)
-	{
-		ProgressBar[2].Object.Pos.x += rundata.GetRunningDistance();
-		stime += rundata.GetRunningDistance();
-	}
+	ChangeMeasure(2400.0f,2700.0f);
 
 	//45秒経ったら(1秒＝60)
-	if (/*(ProgressBar[2].Object.Pos.x > 600 && ProgressBar[2].Object.Pos.x < 660) || */(stime > 3000.0f && stime < 3060.0f))
+	if (/*(ProgressBar[2].Object.Pos.x > 600 && ProgressBar[2].Object.Pos.x < 660) || */(stime > 2700.0f && stime < 2760.0f))
 	{
 		DrawFormatString(300, 300, GetColor(255, 255, 255), "アクションチェンジ");
-		//MeasureFlag = false;
+		MeasureFlag = false;
 
 		//アクションが変わる処理
+		target.SetState(ACTION_STATE_LONGJUMP);
 
 	}
 
@@ -174,25 +167,25 @@ void GameProgress::Update()
 	{
 		DrawFormatString(300, 400, GetColor(255, 255, 255), "残り10m!!");
 		//距離で計測する処理に切り替え
-		//MeasureFlag = true;
+		MeasureFlag = true;
 	}
 	//距離で計測する処理
-	if (MeasureFlag == true)
-	{
-		ProgressBar[2].Object.Pos.x += rundata.GetRunningDistance();
-		stime += rundata.GetRunningDistance();
-	}
+	ChangeMeasure(3300.0f,3600.0f);
 
 	//60秒経ったら(1秒＝60)
 	if (/*(ProgressBar[2].Object.Pos.x > 750 && ProgressBar[2].Object.Pos.x < 760) || */(stime > 3600.0f && stime < 3660.0f))
 	{
-		//MeasureFlag = false;
+		MeasureFlag = false;
 
 		//バトンタッチ処理
 		if (Section == 1) {
 			batontouch.StateBaton = true;
-			Scene_Change(SCENE_INDEX_BATON_TOUCH);
+			GameState_Change(GAME_STATE_BATONTOUCH);
 			Section = 2;
+
+			//アクションが変わる処理
+			target.SetState(ACTION_STATE_LONGJUMP);
+
 		}
 	}
 
@@ -203,23 +196,20 @@ void GameProgress::Update()
 	{
 		DrawFormatString(300, 400, GetColor(255, 255, 255), "残り10m!!");
 		//距離で計測する処理に切り替え
-		//MeasureFlag = true;
+		MeasureFlag = true;
 
 	}
 	//距離で計測する処理
-	if (MeasureFlag == true)
-	{
-		ProgressBar[2].Object.Pos.x += rundata.GetRunningDistance();
-		stime += rundata.GetRunningDistance();
-	}
+	ChangeMeasure(4200.0f,4500.0f);
 
 	//75秒経ったら(1秒＝60)
 	if (/*(ProgressBar[2].Object.Pos.x > 900 && ProgressBar[2].Object.Pos.x < 910) || */(stime > 4500.0f && stime < 4560.0f))
 	{
 		DrawFormatString(300, 400, GetColor(255, 255, 255), "アクションチェンジ");
-		//MeasureFlag = false;
+		MeasureFlag = false;
 
 		//アクションが変わる処理
+		target.SetState(ACTION_STATE_LONGJUMP);
 
 	}
 
@@ -228,25 +218,21 @@ void GameProgress::Update()
 	{
 		DrawFormatString(300, 400, GetColor(255, 255, 255), "残り10m!!");
 		//距離で計測する処理に切り替え
-		//MeasureFlag = true;
+		MeasureFlag = true;
 
 	}
 	//距離で計測する処理
-	if (MeasureFlag == true)
-	{
-		ProgressBar[2].Object.Pos.x += rundata.GetRunningDistance();
-		stime += rundata.GetRunningDistance();
-	}
+	ChangeMeasure(5100.0f,5400.0f);
 
 	//90秒経ったら(1秒＝60)
 	if (/*(ProgressBar[2].Object.Pos.x > 1050 && ProgressBar[2].Object.Pos.x < 1010) || */(stime > 5400.0f && stime < 5460.0f))
 	{
 		DrawFormatString(300, 300, GetColor(255, 255, 255), "GOAL!!");
-		//MeasureFlag = false;
+		MeasureFlag = false;
 
-		//バトンタッチ処理
+		//ゲームクリア処理
 		if (Section == 2) {
-			Scene_Change(SCENE_INDEX_RESULT);
+			GameState_Change(GAME_STATE_GAME_CLEAR);
 			Section = 3;
 		}
 	}
@@ -264,12 +250,15 @@ void GameProgress::Draw()
 	ProgressBar[0].Draw();
 
 	//増化するプログレスバー
-	//ProgressBar[1].Draw(200, 50, NowProgress+200.0f, PROGRESS_HEIGHT,TRUE);
+	//ProgressBar[1].Draw(200, 60, NowProgress, PROGRESS_HEIGHT,TRUE,FALSE);
 	ProgressBar[1].Draw();
 
 	//キャラアイコン
 	//ProgressBar[2].Draw(NowProgress+180.0f, 50, 2.0f,2.0f, 256, 256, TRUE, FALSE);
 	ProgressBar[2].Draw();
+
+	DrawFormatString(0, 300, GetColor(255, 255, 255), "Distance:%f", RunDistance);
+
 
 }
 
@@ -281,4 +270,32 @@ int GameProgress::GetSection() {
 void GameProgress::SetMesureflag(bool flag)
 {
 	MeasureFlag = flag;
+}
+
+float GameProgress::GetProgressBarObjectPosx()
+{
+	return ProgressBar[2].Object.Pos.x;
+}
+
+void GameProgress::ChangeMeasure(float time1, float time2)
+{
+	//距離で計測する処理
+	if (MeasureFlag == true && stime >= time1 && stime <= time2)
+	{
+		if (keyboard.IsTrigger(DIK_RIGHTARROW))
+		{
+			RunDistance += gamedata.GetRunningDistance() / 1000;		//ゲットした距離データを入れる
+			if (RunDistance >= gamedata.GetRunningDistance() / 1000)
+			{
+				NowProgress = NowProgress / ProgressMax * PROGRESS_WIDTH;
+				NowProgress += stime / 6.4f;
+				ProgressBar[2].Object.Pos.x = NowProgress + 100.0f;
+				stime += 15.0f;
+				RunDistance = 0.0f;
+			}
+
+		}
+
+	}
+
 }
