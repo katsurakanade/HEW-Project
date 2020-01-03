@@ -139,9 +139,14 @@ void GameObject::LoadTexture(const char *name, int allcut, int xcut, int ycut, i
 }
 
 
-//直線移動(相対座標を指定)
-void GameObject::Delay_Move(float sec,float x,float y)
+
+// (true:終了, false:実行中) 遅れ直線移動移動(時間,x,y)
+// (必ずFlagを設定しないといけない)
+bool GameObject::Delay_Move(float sec,float x,float y)
 {
+	bool PlayFlag = false;     // true:終了, false:実行中
+
+	// 処理ヘッダ
 
 	if (Delay_Flag[0])
 	{
@@ -151,7 +156,8 @@ void GameObject::Delay_Move(float sec,float x,float y)
 		if (Delay_Timer[0] >= sec) {
 			Delay_Flag[0] = false;
 			Delay_Timer[0] = 0.0f;
-			return;
+			PlayFlag = true;     // エフェクト終了
+			return PlayFlag;
 		}
 
 
@@ -169,48 +175,38 @@ void GameObject::Delay_Move(float sec,float x,float y)
 
 	}// if (Delay_Flag[0])
 
+	return PlayFlag;
 }
 
-
-
-// 遅れ直線移動移動(時計回り==true, 曲線の弧の大きさ(0~10), 時間, x, y)
-void GameObject::Delay_CurveMove(bool cw, float CurveSize, float sec, float x, float y)
+// (true:終了, false:実行中) 遅れ曲線移動移動(反時計回り==true, 曲線の弧の大きさ(0.0f~10.0f程度), 時間, ベクトルA保持値, ラジアン保持値)
+// (必ずFlagを設定しないといけない)
+bool GameObject::Delay_CurveMove(bool cw, float CurveSize, float sec, D3DXVECTOR2& VecA, float& Rad)
 {
+	bool PlayFlag = false;     // true:終了, false:実行中
 
-	if (Delay_Flag[0])
+	// 処理ヘッダ
+
+	if (Delay_Flag[1])
 	{
 		// 変数宣言
-		static bool DoOnece = true;     //初回のみ処理
-		static D3DXVECTOR2 VecA;     // 現在座標→移動先座標
 		D3DXVECTOR2 VecB;     // ベクトルAに対する垂直ベクトル
 		D3DXVECTOR2 VecV;     // １フレーム毎の実際の移動座標
 		float VecABcrossOut;     // ベクトルAとベクトルBの外積結果
-		static float Rad = 0;     //弧を描くラジアンの値
 
 		// 処理ヘッド ----------------------
 
 
 	// 時間計測
-		Delay_Timer[0] += SECONDS;
+		Delay_Timer[1] += SECONDS;
 
 		// Finalize処理
-		if (Delay_Timer[0] >= sec) {
-			Delay_Flag[0] = false;
-			Delay_Timer[0] = 0.0f;
-
-			DoOnece = true;     //次使う用
-			return;
+		if (Delay_Timer[1] >= sec) {
+			Delay_Flag[1] = false;
+			Delay_Timer[1] = 0.0f;
+			PlayFlag = true;     // エフェクト終了
+			return PlayFlag;
 		}
 
-
-
-
-		// 初回処理
-		if (DoOnece)
-		{
-			VecA = { x, y };     //ベクトルAを作成
-			DoOnece = false;
-		}
 
 
 		Rad += PI / 60 / sec;     //１フレームあたりのラジアン増加量
@@ -228,15 +224,15 @@ void GameObject::Delay_CurveMove(bool cw, float CurveSize, float sec, float x, f
 
 		// ベクトルBの向き判断
 		if (cw)
-		{     // 時計回りの処理
-			if (VecABcrossOut < 0)     //ベクトルAの右側にある
+		{     // 反時計回りの処理
+			if (VecABcrossOut < 0)     //ベクトルAの左側にある
 			{
 				VecB *= -1;
 			}
 		}
 		else
-		{     // 反時計回り
-			if (VecABcrossOut > 0)     //ベクトルAの左側にある
+		{     // 時計回り
+			if (VecABcrossOut > 0)     //ベクトルAの右側にある
 			{
 				VecB *= -1;
 			}
@@ -249,76 +245,89 @@ void GameObject::Delay_CurveMove(bool cw, float CurveSize, float sec, float x, f
 
 		//================ 移動処理 ================
 
-		const float moveframeX = (x / 60 / sec) + VecV.x;
-		//const float moveframeX = cos(Rad);
+		const float moveframeX = (VecA.x / 60 / sec) + VecV.x;
 
-		if (Delay_Flag[0]) {
+		if (Delay_Flag[1]) {
 			Object.Pos.x += moveframeX;
 		}
 
-		const float moveframeY = (y / 60 / sec) + VecV.y;
-		//const float moveframeY = cos(Rad);
+		const float moveframeY = (VecA.y / 60 / sec) + VecV.y;
 
-		if (Delay_Flag[0]) {
+		if (Delay_Flag[1]) {
 			Object.Pos.y += moveframeY;
 		}
 
 
 		// ベクトルAの移動処理
-		VecA.x -= x / 60 / sec;
-		VecA.y -= y / 60 / sec;
-
-	}// if (Delay_Flag[0])
-
-
-}
-
-
-
-
-void GameObject::Delay_Zoom(float sec,double scale) {
-
-	if (Delay_Flag[1])
-	{
-
-		const float zoomframe = scale / 60 / sec;
-
-		Delay_Timer[1] += SECONDS;
-
-		if (Delay_Timer[1] >= sec) {
-			Delay_Flag[1] = false;
-			Delay_Timer[1] = 0.0f;
-		}
-
-		if (Delay_Flag[1]) {
-			Object.Scale.x += zoomframe;
-			Object.Scale.y += zoomframe;
-		}
+		VecA.x -= VecA.x / 60 / sec;
+		VecA.y -= VecA.y / 60 / sec;
 
 	}// if (Delay_Flag[1])
 
+	return PlayFlag;
 }
 
-void GameObject::Delay_Rotate(float sec,double rotate) {
+// (true:終了, false:実行中) 遅れ拡大(時間,拡大率)
+// (必ずFlagを設定しないといけない)
+bool GameObject::Delay_Zoom(float sec,double scale)
+{
+	bool PlayFlag = false;     // true:終了, false:実行中
+
+	// 処理ヘッダ
 
 	if (Delay_Flag[2])
 	{
 
-		const float rotateframe = rotate / 60 / sec;
+		const float zoomframe = scale / 60 / sec;
 
 		Delay_Timer[2] += SECONDS;
 
 		if (Delay_Timer[2] >= sec) {
 			Delay_Flag[2] = false;
 			Delay_Timer[2] = 0.0f;
+			PlayFlag = true;     // エフェクト終了
+			return PlayFlag;
 		}
 
 		if (Delay_Flag[2]) {
-			Object.Rotate += rotateframe * PI / 180;
+			Object.Scale.x += zoomframe;
+			Object.Scale.y += zoomframe;
 		}
 
 	}// if (Delay_Flag[2])
 
+	return PlayFlag;
+}
+
+// (true:終了, false:実行中) 遅れ回転(時間,回転角度)
+// (必ずFlagを設定しないといけない)
+bool GameObject::Delay_Rotate(float sec,double rotate)
+{
+	bool PlayFlag = false;     // true:終了, false:実行中
+
+	// 処理ヘッダ
+
+	if (Delay_Flag[3])
+	{
+
+		const float rotateframe = rotate / 60 / sec;
+
+		Delay_Timer[3] += SECONDS;
+
+		if (Delay_Timer[3] >= sec) {
+			Delay_Flag[3] = false;
+			Delay_Timer[3] = 0.0f;
+			PlayFlag = true;     // エフェクト終了
+			return PlayFlag;
+		}
+
+		if (Delay_Flag[3]) {
+			Object.Rotate += rotateframe * PI / 180;
+		}
+
+	}// if (Delay_Flag[3])
+
+	return PlayFlag;
 }
 
 void GameObject::Draw() {
