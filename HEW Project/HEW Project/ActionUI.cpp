@@ -19,7 +19,10 @@ vector <const char*>	 BALANCEBOARD_PASS;
 vector <const char*> HURDLE_PASS;
 
 vector <const char*>  LONG_JUMP_PASS;
-
+// 重量挙げ
+vector <const char*>  WEIGHT_PASS;
+// 段違い平行棒
+vector <const char*>  UNEVENBARS_PASS;
 
 ActionUI::ActionUI()
 {
@@ -34,10 +37,11 @@ ActionUI::~ActionUI()
 
 void ActionUI::Init() {
 
-	State = ACTION_STATE_TRAMPOLINING;
+	State = ACTION_STATE_UNEVENBARS;
 	State_Switch = true;
 	progress = 0;
 	Finish_Flag = false;
+	UNEVENBARS_rnd = GetRand(1);
 
 	// トランポリン
 	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SL]);
@@ -56,6 +60,16 @@ void ActionUI::Init() {
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+
+	// 重量挙げ
+	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_LEFT]);
+	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
+
+	// 段違い平行棒
+	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_AIROU]);
+	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_LEFT]);
+	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 
 	Action_vector.clear();
 }
@@ -87,13 +101,36 @@ void ActionUI::Update() {
 				Action_vector.push_back(onetime[i]);
 			}
 			break;
+
 		case ACTION_STATE_LONGJUMP:
 			for (int i = 0; i < 4; i++) {
 				onetime[i].LoadTexture(LONG_JUMP_PASS[i]);
 				Action_vector.push_back(onetime[i]);
 			}
 			break;
-		
+
+			// 重量挙げ
+		case ACTION_STATE_WEIGHT:
+			for (int i = 0; i < 3; i++) {
+				onetime[i].LoadTexture(WEIGHT_PASS[i]);
+				Action_vector.push_back(onetime[i]);
+			}
+			break;
+
+		case ACTION_STATE_UNEVENBARS:
+			onetime[0].LoadTexture(UNEVENBARS_PASS[0]);
+			Action_vector.push_back(onetime[0]);
+
+			if (UNEVENBARS_rnd == 0){
+				onetime[1].LoadTexture(UNEVENBARS_PASS[1]);
+				Action_vector.push_back(onetime[1]);
+			}
+			else if (UNEVENBARS_rnd == 1) {
+				onetime[1].LoadTexture(UNEVENBARS_PASS[2]);
+				Action_vector.push_back(onetime[1]);
+			}
+
+			break;
 		}
 
 		State_Switch = false;
@@ -110,10 +147,13 @@ void ActionUI::Update() {
 			if (joycon[LEFT_JOYCON].IsTrigger(JOYCON_SR_LEFT)) {
 				Action_vector[1].Gauss_Filter(500);
 			}
-			if (joycon[LEFT_JOYCON].GetGyro_X() < ACTION_UP_JUDGE  && joycon[LEFT_JOYCON].GetOldState() == (JOYCON_SL_LEFT + JOYCON_SR_LEFT)) {
-				Action_vector[2].Gauss_Filter(500);
-				progress = 3;
-				Finish_Flag = true;
+			if (joycon[LEFT_JOYCON].GetGyro_X() < ACTION_UP_JUDGE) {
+				if (joycon[LEFT_JOYCON].GetOldState() == (JOYCON_SL_LEFT + JOYCON_SR_LEFT) || 
+					joycon[LEFT_JOYCON].GetOldState() == (JOYCON_SL_LEFT + JOYCON_SR_LEFT + JOYCON_L)) {
+					Action_vector[2].Gauss_Filter(500);
+					progress = 3;
+					Finish_Flag = true;
+				}
 			}
 			break;
 			// バランスボード
@@ -210,6 +250,92 @@ void ActionUI::Update() {
 			
 			}
 			break;
+
+			// 重量挙げ
+		case ACTION_STATE_WEIGHT:
+
+			if (progress == 0 && joycon[0].GetGyro_X() < -300) {
+				progress++;
+				Action_vector[0].Gauss_Filter(500);
+			}
+
+			if (progress == 1) {
+
+				if (joycon[0].GetOldState() == (JOYCON_UP + JOYCON_DOWN) || joycon[0].GetOldState() == (JOYCON_UP + JOYCON_DOWN + JOYCON_L)) {
+					progress++;
+					Action_vector[1].Gauss_Filter(500);
+					Action_vector[2].Gauss_Filter(500);
+				}
+			}
+
+			if (progress == 2 && joycon[0].GetGyro_X() > 300) {
+				progress++;
+				Finish_Flag = true;
+			}
+
+			if (progress == 1) {
+				if (joycon[0].GetGyro_X() > 300) {
+					Finish_Flag = true;
+				}
+			}
+			break;
+
+			// 段違い平行棒
+		case ACTION_STATE_UNEVENBARS:
+			
+			if (joycon[0].IsPress(JOYCON_STICK_LEFT)) {
+				UNEVENBARS_Array[0] = true;
+			}
+
+			if (joycon[0].IsPress(JOYCON_STICK_RIGHT)) {
+				UNEVENBARS_Array[1] = true;
+			}
+
+			if (joycon[0].IsPress(JOYCON_STICK_UP)) {
+				UNEVENBARS_Array[2] = true;
+			}
+
+			if (joycon[0].IsPress(JOYCON_STICK_DOWN)) {
+				UNEVENBARS_Array[3] = true;
+			}
+			
+			if (UNEVENBARS_Array[0] == true && UNEVENBARS_Array[1] == true && UNEVENBARS_Array[2] == true && UNEVENBARS_Array[3] == true) {
+				if (progress == 0) {
+					Action_vector[0].Gauss_Filter(500);
+					progress++;	
+				}
+			}
+
+			if (progress == 1) {
+
+				if (UNEVENBARS_rnd == 0) {
+
+					if (joycon[0].IsPress(JOYCON_UP)) {
+						progress++;
+						Action_vector[1].Gauss_Filter(500);
+						Finish_Flag = true;
+					}
+
+					else if (joycon[0].IsPress(JOYCON_DOWN)) {
+						Finish_Flag = true;
+					}
+				}
+
+				else if (UNEVENBARS_rnd == 1) {
+					if (joycon[0].IsPress(JOYCON_DOWN)) {
+						progress++;
+						Action_vector[1].Gauss_Filter(500);
+						Finish_Flag = true;
+					}
+
+					else if (joycon[0].IsPress(JOYCON_UP)) {
+						Finish_Flag = true;
+					}
+				}
+
+			}
+
+			break;
 		}
 	}
 	
@@ -219,6 +345,10 @@ void ActionUI::Update() {
 
 	if (State_Switch_Timer  >= 0.7f) {
 		progress = 0;
+		for (int i = 0; i < 4; i++) {
+			UNEVENBARS_Array[i] = false;
+		}
+		UNEVENBARS_rnd = GetRand(1);
 		State_Switch = true;
 		State_Switch_Timer = 0.0f;
 		Finish_Flag = false;

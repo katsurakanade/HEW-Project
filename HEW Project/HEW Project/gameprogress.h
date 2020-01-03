@@ -1,4 +1,5 @@
 #pragma once
+#include "ActionUI.h"
 
 #define PROGRESS_WIDTH 1000
 #define PROGRESS_HEIGHT  120
@@ -32,7 +33,7 @@ public:
 
 	void Init();
 
-	void Update();
+	void Update(ActionUI target);
 
 	void Draw();
 

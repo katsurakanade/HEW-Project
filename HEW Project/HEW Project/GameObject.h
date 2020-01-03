@@ -28,7 +28,7 @@ typedef enum {
 	TEXTURE_INDEX_SR,
 	TEXTURE_INDEX_ZL,
 	TEXTURE_INDEX_FAILED,
-	TEXTURE_INDEX_FIRE,
+	TEXTURE_INDEX_FIREBASE,
 	TEXTURE_INDEX_ARM,
 	TEXTURE_INDEX_PINK,
 	TEXTURE_INDEX_PROGRESS_BAR,
@@ -42,6 +42,12 @@ typedef enum {
 	TEXTURE_INDEX_NUMBER,
 	TEXTURE_INDEX_BACKGROUND,
 	TEXTURE_INDEX_GAME_OVER,
+	TEXTURE_INDEX_FIRE,
+	TEXTURE_INDEX_LEFT,
+	TEXTURE_INDEX_RESULT,
+	TEXTURE_INDEX_GAME_CLEAR,
+
+
 
 	TEXTURE_INDEX_MAX
 
@@ -137,6 +143,9 @@ public:
 
 	// 描画(透明)
 	void Draw();
+	
+	// 描画(回転中心指定)
+	void Draw(float x,float y);
 	
 	// 部分描画(テクスチャx,テクスチャy,テクスチャxサイズ,テクスチャyサイズ,アルファ使う,反転処理使う)
 	void Draw(int tsx, int tsy, int tex, int tey, bool use_alpha, bool turn);

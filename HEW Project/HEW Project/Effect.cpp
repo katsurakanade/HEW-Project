@@ -52,7 +52,7 @@ void EffectUpdate()
 }
 void EffectDraw()
 {
-	efc->Draw();
+	//efc->Draw();
 }
 
 

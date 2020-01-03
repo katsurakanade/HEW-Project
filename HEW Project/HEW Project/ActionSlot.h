@@ -24,12 +24,16 @@ private:
 	int State;
 	// 値
 	float Value;
+	// 聖火台オブジェクト
+	GameObject FireBase;
 	// 聖火オブジェクト
 	GameObject Fire;
 	// 手オブジェクト
 	GameObject Hand;
 
 public:
+
+	float offsect_dis;
 
 	// 座標
 	D3DXVECTOR2 Pos;
@@ -42,7 +46,7 @@ public:
 	
 	void Load();
 
-	void Update();
+	void Update(double stamina);
 
 	void Draw();
 
