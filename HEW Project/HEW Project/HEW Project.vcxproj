@@ -25,6 +25,7 @@
     <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="BatonTouch.cpp" />
     <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="EffectGame.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameClear.cpp" />
     <ClCompile Include="GameData.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="BackGround.h" />
     <ClInclude Include="BatonTouch.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="EffectGame.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameClear.h" />
     <ClInclude Include="GameData.h" />
@@ -122,8 +124,8 @@
     <LibraryPath>C:\Users\81808\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\81901\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\81901\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>C:\Users\81808\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(LibraryPath)</LibraryPath>
@@ -150,7 +152,7 @@
       <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

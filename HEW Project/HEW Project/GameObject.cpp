@@ -36,9 +36,6 @@ map <const char*, const char*> TextureDict = {
 	{"Bad","asset/texture/BAD.png"},
 	{"Number","asset/texture/Number.png"},
 	{"Title","asset/texture/Title.jpg"},
-	{"alpha","asset/texture/alpha.png"},
-	{"excellent","asset/texture/excellent.png"},
-	{"alphabg","asset/texture/alphabg.png"},
 };
 
 // 画像パスベクトル
@@ -142,249 +139,195 @@ void GameObject::LoadTexture(const char *name, int allcut, int xcut, int ycut, i
 }
 
 
-//直線移動(相対座標を指定)
-void GameObject::Delay_Move(float sec,float x,float y) {
 
-/*
-	if (arrow == ARROW_UP || arrow == ARROW_DOWN) {
+// (true:終了, false:実行中) 遅れ直線移動移動(時間,x,y)
+// (必ずFlagを設定しないといけない)
+bool GameObject::Delay_Move(float sec,float x,float y)
+{
+	bool PlayFlag = false;     // true:終了, false:実行中
+
+	// 処理ヘッダ
+
+	if (Delay_Flag[0])
+	{
+
+		Delay_Timer[0] += SECONDS;
+
+		if (Delay_Timer[0] >= sec) {
+			Delay_Flag[0] = false;
+			Delay_Timer[0] = 0.0f;
+			PlayFlag = true;     // エフェクト終了
+			return PlayFlag;
+		}
+
+
 		const float moveframeY = y / 60 / sec;
 
 		if (Delay_Flag[0]) {
 			Object.Pos.y += moveframeY;
 		}
-	}
-
-	else if (arrow == ARROW_LEFT || arrow == ARROW_RIGHT){
 
 		const float moveframeX = x / 60 / sec;
 
 		if (Delay_Flag[0]) {
 			Object.Pos.x += moveframeX;
 		}
-	}
-*/
 
-	
+	}// if (Delay_Flag[0])
 
-	const float moveframeY = y / 60 / sec;
-
-	if (Delay_Flag[0]) {
-		Object.Pos.y += moveframeY;
-	}
-
-	const float moveframeX = x / 60 / sec;
-
-	if (Delay_Flag[0]) {
-		Object.Pos.x += moveframeX;
-	}
-
-
-
-	Delay_Timer[0] += SECONDS;
-
-	if (Delay_Timer[0] >= sec) {
-		Delay_Flag[0] = false;
-		Delay_Timer[0] = 0.0f;
-	}
-
+	return PlayFlag;
 }
 
-//--------------------------------------------------
-
-
-
-//// r(半径)を指定して現在地から目的座標まで曲線で移動する関数(r <= 0 : r=0.01) ////
-
-	// 関数呼んだ時だけ処理 //
-// this->Object.Pos;     //自分の座標
-// 相手の座標：引数の値
-/*
-	自分座標と相手座標(移動先)からベクトルA(Ax, Ay)を作る
-	ベクトルAの距離を測って中点Mを取る
-
-	○垂直ベクトルを取得する(求めるベクトル成分：Vx, Vy)
-	式1：Vx^2 + Vy^2 = 1
-	式2：Vx = -(Ay*Vy) / Ax
-	→(-(Ay*Vy) / Ax)^2 + Vy^2 = 1
-	Vy = ± 2Ax / sqrt(Ax^2 + Ay^2)
-	Vx = -(Ay*Vy) / Ax に Vyを代入
-	V(Vx, Vy)
-
-
-	○外積計算
-	ベクトルVを正規化する
-	ベクトルV＊r(引数で指定した半径) = Vmax
-	Vmax + M = 自分座標から相手座標までの角度を算出する原点O
-	ベクトルAに対してベクトルB(自分座標→原点O)の外積を取る
-
-	※時計回りの弧(曲線)を描きたいならベクトルAに対して右側(外積結果マイナス)の原点Oを採用する
-	※反時計回りの弧(曲線)を描きたいならベクトルAに対して左側(外積結果プラス)の原点Oを採用する
-	※→逆なら(*= -1)
-
-	O→自分座標：ベクトルC
-	O→相手座標：ベクトルD
-	rad = acos( (C・D) / (C.Length * D.Length) )
-
-
-	// 毎フレーム処理 //
-//上で求めた「rad(ラジアン)」をsin(), cos()にぶち込んで移動量を計算
-
-*/
-
-//--------------------------------------------------
-
-// 遅れ直線移動移動(時計回り==true, 曲線の弧の大きさ, オブジェクトの現在座標, 時間, x, y)
-void GameObject::Delay_CurveMove(bool cw, float r, const D3DXVECTOR2 &pos, float sec, float x, float y)
+// (true:終了, false:実行中) 遅れ曲線移動移動(反時計回り==true, 曲線の弧の大きさ(0.0f~10.0f程度), 時間, ベクトルA保持値, ラジアン保持値)
+// (必ずFlagを設定しないといけない)
+bool GameObject::Delay_CurveMove(bool cw, float CurveSize, float sec, D3DXVECTOR2& VecA, float& Rad)
 {
+	bool PlayFlag = false;     // true:終了, false:実行中
 
-	/*
+	// 処理ヘッダ
 
-	// 変数宣言
-	float Rad;     //移動に使用するラジアンθ( ベクトルCとベクトルDの角度 )
-	float rad_a;     //移動に使用するラジアンα( ベクトルAと-ベクトルCの角度 )
-	D3DXVECTOR3 ThisPos = { pos.x, pos.y, 0.0f };     //自分座標(初期位置)
-	D3DXVECTOR3 VecA;     //自分座標(初期位置)→移動先座標
-	D3DXVECTOR3 VecB;     //自分座標(初期位置)→原点O
-	D3DXVECTOR3 VecC;     //原点O→自分座標
-	D3DXVECTOR3 VecD;     //原点O→相手座標
-	D3DXVECTOR3 MovePos = {x, y, 0.0f};     //移動先座標(終点位置)
-	D3DXVECTOR3 MiddlePoint;     //中点M
-	D3DXVECTOR3 VecV;     //ベクトルAに対する垂直ベクトル
-	D3DXVECTOR3 VecVmax;     //VecV * r (半径)
-	D3DXVECTOR3 CenterPoint;     //原点O
-	D3DXVECTOR3 VecABCrossOut;     //ベクトルAとベクトルBの外積結果
-
-
-	// 処理ヘッド=============
-
-	//ベクトルA作成
-	VecA = MovePos - ThisPos;
-
-	//中点M作成(相対距離)
-	MiddlePoint.x = VecA.x / 2.0f;
-	MiddlePoint.y = VecA.y / 2.0f;
-
-	//垂直ベクトル:VecV作成(ｙが＋側)
-	VecV.y = 2 * VecA.x / sqrt((VecA.x * VecA.x) + (VecA.y * VecA.y));
-	VecV.x = -(VecA.y * VecV.y) / VecA.x;
-
-	//VecV正規化
-	D3DXVec3Normalize(&VecV, &VecV);
-
-	//VecVを指定半径倍率に直す
-	VecVmax = VecV * r;
-
-	//原点Oを算出(座標)
-	CenterPoint = VecVmax + MiddlePoint;
-
-	//ベクトルBを作る
-	VecB = MiddlePoint - ThisPos;
-
-	//ベクトルAとベクトルBの外積
-	D3DXVec3Cross(&VecABCrossOut, &VecA, &VecB);
-
-	//時計回り、反時計回りを判別(原点Oの確定)
-	if (cw)     // 時計回りの処理
+	if (Delay_Flag[1])
 	{
-		if (!(VecABCrossOut < 0))     //逆だったら
-		{
-			CenterPoint *= -1;     // 逆側の原点Oを使用する
+		// 変数宣言
+		D3DXVECTOR2 VecB;     // ベクトルAに対する垂直ベクトル
+		D3DXVECTOR2 VecV;     // １フレーム毎の実際の移動座標
+		float VecABcrossOut;     // ベクトルAとベクトルBの外積結果
+
+		// 処理ヘッド ----------------------
+
+
+	// 時間計測
+		Delay_Timer[1] += SECONDS;
+
+		// Finalize処理
+		if (Delay_Timer[1] >= sec) {
+			Delay_Flag[1] = false;
+			Delay_Timer[1] = 0.0f;
+			PlayFlag = true;     // エフェクト終了
+			return PlayFlag;
 		}
-	}
-	else     // 反時計回りの処理
-	{
-		if (!(VecABCrossOut > 0))     //逆だったら
-		{
-			CenterPoint *= -1;     // 逆側の原点Oを使用する
+
+
+
+		Rad += PI / 60 / sec;     //１フレームあたりのラジアン増加量
+
+
+		//// ベクトルBを求める(Byは＋側選択) ////
+		VecB.y = 2.0f * VecA.x / sqrt((VecA.x * VecA.x) + (VecA.y * VecA.y));
+		VecB.x = -(VecA.y * VecB.y) / VecA.x;
+
+		// ベクトルAとベクトルBの外積を取得
+		VecABcrossOut = VecA.x * VecB.y - VecB.x * VecA.y;
+		
+		// ベクトルBを正規化する
+		D3DXVec2Normalize(&VecB, &VecB);
+
+		// ベクトルBの向き判断
+		if (cw)
+		{     // 反時計回りの処理
+			if (VecABcrossOut < 0)     //ベクトルAの左側にある
+			{
+				VecB *= -1;
+			}
 		}
-	}
+		else
+		{     // 時計回り
+			if (VecABcrossOut > 0)     //ベクトルAの右側にある
+			{
+				VecB *= -1;
+			}
+		}
 
 
-	//ベクトルCと	ベクトルDを作る
-	VecC = ThisPos - CenterPoint;
-	VecC = MovePos - CenterPoint;
+		// ベクトルVを求める
+		VecV = VecB * (CurveSize * cos(Rad));
 
 
-	//// ラジアンを求める ////
-	Rad = acos(D3DXVec3Dot(&VecC, &VecD) / ( D3DXVec3Length(&VecC) * D3DXVec3Length(&VecD) ) );     //ベクトルCとベクトルDの角度
-	VecC *= -1;     //ベクトルC反転
-	rad_a = acos(D3DXVec3Dot(&VecA, &VecC) / ( D3DXVec3Length(&VecA) * D3DXVec3Length(&VecC) ) );     //ベクトルAと-ベクトルCの角度
-	VecC *= -1;     //ベクトルC反転(元に戻す)
+		//================ 移動処理 ================
+
+		const float moveframeX = (VecA.x / 60 / sec) + VecV.x;
+
+		if (Delay_Flag[1]) {
+			Object.Pos.x += moveframeX;
+		}
+
+		const float moveframeY = (VecA.y / 60 / sec) + VecV.y;
+
+		if (Delay_Flag[1]) {
+			Object.Pos.y += moveframeY;
+		}
 
 
+		// ベクトルAの移動処理
+		VecA.x -= VecA.x / 60 / sec;
+		VecA.y -= VecA.y / 60 / sec;
 
-	//================移動処理(絶対距離)================
+	}// if (Delay_Flag[1])
 
-	const float moveframeY = ((D3DXVec3Length(&VecA) * sin(rad_a))  * sin(Rad)) / 60 / sec;
-
-	if (Delay_Flag[0]) {
-		Object.Pos.y += moveframeY;
-	}
-
-	const float moveframeX = ((D3DXVec3Length(&VecA) * cos(rad_a))  * cos(Rad)) / 60 / sec;
-
-	if (Delay_Flag[0]) {
-		Object.Pos.x += moveframeX;
-	}
-
-
-
-	Delay_Timer[0] += SECONDS;
-
-	if (Delay_Timer[0] >= sec) {
-		//Finalize処理
-		Delay_Flag[0] = false;
-		Delay_Timer[0] = 0.0f;
-
-
-
-
-
-	}
-
-	*/
-
+	return PlayFlag;
 }
 
+// (true:終了, false:実行中) 遅れ拡大(時間,拡大率)
+// (必ずFlagを設定しないといけない)
+bool GameObject::Delay_Zoom(float sec,double scale)
+{
+	bool PlayFlag = false;     // true:終了, false:実行中
 
+	// 処理ヘッダ
 
+	if (Delay_Flag[2])
+	{
 
+		const float zoomframe = scale / 60 / sec;
 
+		Delay_Timer[2] += SECONDS;
 
+		if (Delay_Timer[2] >= sec) {
+			Delay_Flag[2] = false;
+			Delay_Timer[2] = 0.0f;
+			PlayFlag = true;     // エフェクト終了
+			return PlayFlag;
+		}
 
-void GameObject::Delay_Zoom(float sec,double scale) {
+		if (Delay_Flag[2]) {
+			Object.Scale.x += zoomframe;
+			Object.Scale.y += zoomframe;
+		}
 
-	const float zoomframe = scale / 60 / sec;
+	}// if (Delay_Flag[2])
 
-	Delay_Timer[1] += SECONDS;
-
-	if (Delay_Timer[1] >= sec) {
-		Delay_Flag[1] = false;
-		Delay_Timer[1] = 0.0f;
-	}
-
-	if (Delay_Flag[1]) {
-		Object.Scale.x += zoomframe;
-		Object.Scale.y += zoomframe;
-	}
-
+	return PlayFlag;
 }
 
-void GameObject::Delay_Rotate(float sec,double rotate) {
+// (true:終了, false:実行中) 遅れ回転(時間,回転角度)
+// (必ずFlagを設定しないといけない)
+bool GameObject::Delay_Rotate(float sec,double rotate)
+{
+	bool PlayFlag = false;     // true:終了, false:実行中
 
-	const float rotateframe = rotate / 60 / sec;
+	// 処理ヘッダ
 
-	Delay_Timer[2] += SECONDS;
+	if (Delay_Flag[3])
+	{
 
-	if (Delay_Timer[2] >= sec) {
-		Delay_Flag[2] = false;
-		Delay_Timer[2] = 0.0f;
-	}
+		const float rotateframe = rotate / 60 / sec;
 
-	if (Delay_Flag[2]) {
-		Object.Rotate += rotateframe * PI/180;
-	}
+		Delay_Timer[3] += SECONDS;
 
+		if (Delay_Timer[3] >= sec) {
+			Delay_Flag[3] = false;
+			Delay_Timer[3] = 0.0f;
+			PlayFlag = true;     // エフェクト終了
+			return PlayFlag;
+		}
+
+		if (Delay_Flag[3]) {
+			Object.Rotate += rotateframe * PI / 180;
+		}
+
+	}// if (Delay_Flag[3])
+
+	return PlayFlag;
 }
 
 void GameObject::Draw() {
@@ -418,12 +361,6 @@ void GameObject::HSB_Fillter() {
 	GraphFilter(this->handle, DX_GRAPH_FILTER_HSB, 0, (int)this->Color.hue, (int)this->Color.saturation, (int)this->Color.bright);
 }
 
-void GameObject::Trans_Color(int r,int g,int b) {
-
-	SetTransColor(r, g, b);
-
-}
-
 void GameObject::Destroy() {
 
 	DeleteGraph(handle);
@@ -447,8 +384,6 @@ void GameObject::SetHSB(int hue,int saturation,int bright) {
 	this->Color.saturation = saturation;
 	this->Color.bright = bright;
 }
-
-
 
 int GameObject::GetHandle() {
 	return handle;

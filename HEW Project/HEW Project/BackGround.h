@@ -17,8 +17,6 @@ private:
 
 public:
 
-	
-
 	void Init();
 
 	void Update();

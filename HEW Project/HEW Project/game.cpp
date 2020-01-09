@@ -16,7 +16,7 @@
 #include "BatonTouch.h"
 #include "GameClear.h"
 
-#include "Effect.h"
+#include "EffectGame.h"
 
 
 // Debug Mode
@@ -61,19 +61,14 @@ GameProgress *gameprogress;
 StaminaGauge *stamina;
 //背景
 BackGround background;
-
-GameObject ExcellentFrame ;
-
-GameObject ExcellentImg;
-
-GameObject Alphabg;
-
 //バトンタッチ
 BatonTouch batonTouch;
 
 GameOver *gameover;
 
 GameClear *gameclear;
+// ゲームエフェクト
+EGManager *egmanager;
 
 // アクションエフェクト用
 std::vector<ActionAffect*> ActionEffectVector;
@@ -108,7 +103,7 @@ void Init_Game() {
 	gameover = new GameOver;
 	gameclear = new GameClear;
 
-	// とりあえずGameを動かしてみる----------------------------------------------------------------
+	// とりあえずGameを動かしてみる----------------------------------------------------------------ゲームスタート処理(バトンタッチ)を作る時に変更
 	g_GameStateIndex = GAME_STATE_GAME;
 	g_GameStateNextIndex = GAME_STATE_GAME;
 	// とりあえずGameを動かしてみる
@@ -172,26 +167,8 @@ void Init_Game() {
 
 	Init_GameClear();
 
-	ExcellentFrame.LoadTexture(TextureDict["alpha"]);
-	ExcellentFrame.Object.Pos.x = SCREEN_WIDTH / 2;
-	ExcellentFrame.Object.Pos.y = SCREEN_HEIGHT /2;
-	ExcellentFrame.Object.Scale.x = 2.0;
-	ExcellentFrame.Object.Scale.y = 2.0;
-
-	ExcellentImg.LoadTexture(TextureDict["excellent"]);
-	ExcellentImg.Object.Pos.x = 800;
-	ExcellentImg.Object.Pos.y = 200;
-
-	Alphabg.LoadTexture(TextureDict["alphabg"]);
-	Alphabg.Object.Pos.x = 0;
-	Alphabg.Object.Pos.y = 0;
-	Alphabg.Object.Scale.x = 10.0f;
-	Alphabg.Object.Scale.y = 10.0f;
-
-	////////////////////////////////////////////////////
-	EffectInit();		 //エフェクト実験用
-	////////////////////////////////////////////////////
-
+	//エフェクト初期化処理
+	egmanager->Init();
 
 }
 
@@ -220,17 +197,13 @@ void Uninit_Game() {
 	gameclear = nullptr;
 	delete gameclear;
 
+	//エフェクト終了処理
+	egmanager->Uninit();
+	egmanager = nullptr;
+	delete egmanager;
+
 	ActionEffectVector.~vector();
 	ActionPointVector.~vector();
-
-	Alphabg.Destroy();
-	ExcellentFrame.Destroy();
-	ExcellentImg.Destroy();
-
-	Alphabg.~GameObject();
-	ExcellentFrame.~GameObject();
-	ExcellentImg.~GameObject();
-
 
 	batonTouch.Uninit();
 
@@ -248,6 +221,9 @@ void Update_Game() {
 
 
 	case GAME_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
+
+		//エフェクト更新処理
+		egmanager->Update();
 
 		//スタミナゲージ更新処理
 		stamina->Update();
@@ -273,16 +249,6 @@ void Update_Game() {
 
 		gameover->Update();
 
-		if (gamedata.ExcellentModeCount >= 5) {
-			gamedata.InitExcellentMode();
-		}
-
-		if (gamedata.GetExcellentMode()) {
-
-			gamedata.UpdateExcellentMode(ActionPointVector);
-		}
-
-	
 		// アクションエフェクト処理
 		for (int i = 0; i < ActionEffectVector.size(); i++) {
 			if (ActionEffectVector[i] != NULL) {
@@ -297,13 +263,6 @@ void Update_Game() {
 			ActionPointVector[i]->Update();
 		}
 
-		if (gamedata.GetExcellentMode()) {
-			gamedata.UpdateExcellentMode(ActionPointVector);
-		}
-
-		
-		
-
 		if (gamedata.GetRunningSpeed() != 0) {
 			background.SetSpeed(gamedata.GetRunningSpeed() / 10);
 		}
@@ -317,14 +276,25 @@ void Update_Game() {
 		//聖火が消えたらGAME OVER
 		if (gamedata.Gethp() == 0)
 		{
-			GameState_Change(GAME_STATE_GAME_OVER);
+			///GameState_Change(GAME_STATE_GAME_OVER);
 		}
 
 		Debug_Running();
 
-		////////////////////////////////////////////////////
-		EffectUpdate();     //エフェクト実験用
-		////////////////////////////////////////////////////
+		///////////////////////////////////////
+		// エフェクト実験用（Enterを押したらエフェクト再生）
+		if (keyboard.IsTrigger(DIK_RETURN))
+		{
+			static bool DoOnce = true;
+			if (DoOnce)
+			{
+				//call_E_game_Sample();     //エフェクト再生
+				call_E_game_ActionSucsess();
+
+				DoOnce = false;     // 消さない！
+			}
+		}
+		///////////////////////////////////////
 
 		break;
 
@@ -376,18 +346,6 @@ void Update_Game() {
 		Actionslot.AddValue(0.5);
 	}
 
-	if (keyboard.IsPress(DIK_P)) {
-		if (gamedata.ExcellentModeInitFlag == false) {
-			gamedata.InitExcellentMode();
-		}
-	}
-
-	if (keyboard.IsRelease(DIK_O)) {
-		gamedata.ExcellentModeInitFlag = false;
-	}
-
-
-
 #endif // DEBUG
 
 
@@ -406,12 +364,6 @@ void Draw_Game() {
 	case GAME_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
 
 		background.Draw();
-
-		if (gamedata.GetExcellentMode()) {
-			Alphabg.Draw();
-			ExcellentFrame.Draw();
-			ExcellentImg.Draw();
-		}
 
 		//スタミナゲージ描画
 		stamina->Draw();
@@ -445,13 +397,10 @@ void Draw_Game() {
 			ActionPointVector[i]->Draw();
 		}
 
+		//エフェクト描画処理
+		egmanager->Draw();
+
 		Character.Draw();
-
-
-		////////////////////////////////////////////////////
-		EffectDraw();	 //エフェクト実験用
-		////////////////////////////////////////////////////
-
 
 		break;
 

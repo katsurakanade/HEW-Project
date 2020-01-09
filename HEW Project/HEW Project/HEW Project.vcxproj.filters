@@ -23,6 +23,7 @@
     <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="GameClear.cpp" />
     <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="EffectGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionSlot.h" />
@@ -47,5 +48,6 @@
     <ClInclude Include="GameOver.h" />
     <ClInclude Include="GameClear.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="EffectGame.h" />
   </ItemGroup>
 </Project>

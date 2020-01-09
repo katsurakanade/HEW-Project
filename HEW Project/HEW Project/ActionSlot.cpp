@@ -69,7 +69,6 @@ void ActionSlot::Update(double stamina) {
 	// Great ”»’è
 	else if (Value < VALUE_OVER && Value >VALUE_GREAT) {
 		State = ACTIONSLOT_GREAT;
-		
 	}
 
 	// Bad ”»’è
