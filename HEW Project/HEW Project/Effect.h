@@ -84,7 +84,7 @@ public:
 	// 直線移動(時間,x,y)
 	void Move(float sec, float x, float y);
 
-	// 曲線移動(時計回り==true, 曲線の弧の大きさ(0.0f~10.0f程度), 時間, x, y)
+	// 曲線移動(反時計回り==true, 曲線の弧の大きさ(0.0f~10.0f程度), 時間, x, y)
 	void Curve(bool cw, float CurveSize, float sec, float x, float y);
 
 	// 拡大縮小(時間,拡大率)

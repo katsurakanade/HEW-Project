@@ -276,7 +276,7 @@ void Update_Game() {
 		//聖火が消えたらGAME OVER
 		if (gamedata.Gethp() == 0)
 		{
-			GameState_Change(GAME_STATE_GAME_OVER);
+			///GameState_Change(GAME_STATE_GAME_OVER);
 		}
 
 		Debug_Running();
@@ -288,8 +288,10 @@ void Update_Game() {
 			static bool DoOnce = true;
 			if (DoOnce)
 			{
-				call_E_game_Sample();     //エフェクト再生
-				DoOnce = false;
+				//call_E_game_Sample();     //エフェクト再生
+				call_E_game_ActionSucsess();
+
+				DoOnce = false;     // 消さない！
 			}
 		}
 		///////////////////////////////////////
