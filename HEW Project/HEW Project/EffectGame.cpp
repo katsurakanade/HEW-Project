@@ -125,21 +125,20 @@ void EffectGame::E_game_Sample()
 	//// ※-----------------------↓ここから下にエフェクトアニメーションを書く ↓-----------------------※ ////
 
 	// 1個目のアニメーション
-	//eft[0]->Zoom(2.0f, 0.5f);
-	//eft[0]->Sleep(4.0f);
-	///eft[1]->Curve(true, 3.0, 2.0, 300, 100);
-	///eft[1]->Sleep(2.0);
+	eft[0]->Zoom(2.0f, 0.5f);
+	eft[0]->Sleep(4.0f);
+	eft[1]->Curve(true, 3.0, 2.0, 300, 100);
+	eft[1]->Sleep(2.0);
 
 	// 2個目のアニメーション
-	//eft[0]->Zoom(2.0f, 0.5f);
-	//eft[0]->Sleep(2.0001);
-	///eft[1]->Curve(false, 3.0, 2.4, -300, -100);
-	///eft[1]->Sleep(3.0);
-	///eft[1]->LastSleep(0.0001f);
+	eft[0]->Zoom(2.0f, 0.5f);
+	eft[0]->Sleep(2.0001);
+	eft[1]->Curve(false, 3.0, 2.4, -300, -100);
+	eft[1]->Sleep(3.0);
+	eft[1]->LastSleep(0.0001f);
 
 	// 3個目のアニメーション
 	eft[0]->Curve(false, 3.0, 5.0, -100, -200);
-	//eft[0]->Curve(true, 3.0, 2.0, -100, -200.0001);
 	eft[0]->Sleep(5.0f);
 	eft[0]->LastSleep(0.0001f);
 	
