@@ -160,6 +160,8 @@ public:
 	// HSBフィルター
 	void HSB_Fillter();
 
+	void Trans_Color(int r, int g, int b);
+
 	// 削除
 	// (画像メモリ)
 	void Destroy();

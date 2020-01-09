@@ -27,12 +27,38 @@ void GameData::Init() {
 	Running_Speed = 0;
 	Action_Point = 0;
 
+	ExcellentMode = false;
+	ExcellentModeInitFlag = false;
+	ExcellentTimer = 0.0f;
 }
 
 void GameData::UpdateSpeed() {
 
 	Running_meter = (Running_Distance / 100);
 }
+
+void GameData::InitExcellentMode() {
+
+	ExcellentMode = true;
+}
+
+void GameData::UpdateExcellentMode(vector <ActionPointAnime*> actionpoint) {
+
+	ExcellentTimer += SECONDS;
+
+	if (ExcellentTimer > 3.0f) {
+		ExcellentModeInitFlag = false;
+		ExcellentMode = false;
+		ExcellentTimer = 0.0f;
+		ExcellentModeCount = 0;
+	}
+
+}
+
+void GameData::DrawExcellentMode() {
+
+}
+
 
 void GameData::Addhp(int value) {
 	hp += value;
@@ -61,6 +87,15 @@ void GameData::SetRunningSpeed(int value) {
 void GameData::SetActionPoint(int value) {
 	Action_Point = value;
 }
+
+bool GameData::GetExcellentMode() {
+	return ExcellentMode;
+}
+
+float GameData::GetExcellentTimer() {
+	return ExcellentTimer;
+}
+
 
 int GameData::GetGameMode() {
 	return GameMode;
@@ -134,7 +169,7 @@ void ActionPointAnime::Create(int value) {
 
 	for (int i = 0; i < 3; i++) {
 		self[i].LoadTexture(TexturePassDict[TEXTURE_INDEX_NUMBER], 10, 4, 4, 300 / 4, 300 / 4);
-		self[i].Object.Pos = D3DXVECTOR2(PosX + (i*(300 / 4)), PosY);
+		self[i].Object.Pos = D3DXVECTOR2(PosX + (i * (300 / 4) * self[i].Object.Scale.x), PosY);
 	}
 }
 
