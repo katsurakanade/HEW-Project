@@ -23,6 +23,8 @@
     <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="GameClear.cpp" />
     <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="ResultScore.cpp" />
+    <ClCompile Include="Tutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionSlot.h" />
@@ -47,5 +49,7 @@
     <ClInclude Include="GameOver.h" />
     <ClInclude Include="GameClear.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="ResultScore.h" />
+    <ClInclude Include="Tutorial.h" />
   </ItemGroup>
 </Project>

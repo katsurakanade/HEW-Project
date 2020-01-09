@@ -268,11 +268,11 @@ void Update_Game() {
 		background.Update();
 
 		//聖火が消えたらGAME OVER
-		if (gamedata.Gethp() == 0)
+		/*if (gamedata.Gethp() == 0)
 		{
 			GameState_Change(GAME_STATE_GAME_OVER);
 		}
-
+		*/
 		Debug_Running();
 
 		////////////////////////////////////////////////////
@@ -384,7 +384,7 @@ void Draw_Game() {
 
 
 		////////////////////////////////////////////////////
-		EffectDraw();	 //エフェクト実験用
+		//EffectDraw();	 //エフェクト実験用
 		////////////////////////////////////////////////////
 
 
