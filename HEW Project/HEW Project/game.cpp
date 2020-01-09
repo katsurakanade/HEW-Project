@@ -16,7 +16,7 @@
 #include "BatonTouch.h"
 #include "GameClear.h"
 
-#include "Effect.h"
+#include "EffectGame.h"
 
 
 // Debug Mode
@@ -67,6 +67,8 @@ BatonTouch batonTouch;
 GameOver *gameover;
 
 GameClear *gameclear;
+// ゲームエフェクト
+EGManager *egmanager;
 
 // アクションエフェクト用
 std::vector<ActionAffect*> ActionEffectVector;
@@ -101,7 +103,7 @@ void Init_Game() {
 	gameover = new GameOver;
 	gameclear = new GameClear;
 
-	// とりあえずGameを動かしてみる----------------------------------------------------------------
+	// とりあえずGameを動かしてみる----------------------------------------------------------------ゲームスタート処理(バトンタッチ)を作る時に変更
 	g_GameStateIndex = GAME_STATE_GAME;
 	g_GameStateNextIndex = GAME_STATE_GAME;
 	// とりあえずGameを動かしてみる
@@ -165,12 +167,8 @@ void Init_Game() {
 
 	Init_GameClear();
 
-
-
-	////////////////////////////////////////////////////
-	EffectInit();		 //エフェクト実験用
-	////////////////////////////////////////////////////
-
+	//エフェクト初期化処理
+	egmanager->Init();
 
 }
 
@@ -199,6 +197,11 @@ void Uninit_Game() {
 	gameclear = nullptr;
 	delete gameclear;
 
+	//エフェクト終了処理
+	egmanager->Uninit();
+	egmanager = nullptr;
+	delete egmanager;
+
 	ActionEffectVector.~vector();
 	ActionPointVector.~vector();
 
@@ -218,6 +221,9 @@ void Update_Game() {
 
 
 	case GAME_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
+
+		//エフェクト更新処理
+		egmanager->Update();
 
 		//スタミナゲージ更新処理
 		stamina->Update();
@@ -268,16 +274,27 @@ void Update_Game() {
 		background.Update();
 
 		//聖火が消えたらGAME OVER
-		/*if (gamedata.Gethp() == 0)
+		if (gamedata.Gethp() == 0)
 		{
-			GameState_Change(GAME_STATE_GAME_OVER);
+			///GameState_Change(GAME_STATE_GAME_OVER);
 		}
-		*/
+
 		Debug_Running();
 
-		////////////////////////////////////////////////////
-		EffectUpdate();     //エフェクト実験用
-		////////////////////////////////////////////////////
+		///////////////////////////////////////
+		// エフェクト実験用（Enterを押したらエフェクト再生）
+		if (keyboard.IsTrigger(DIK_RETURN))
+		{
+			static bool DoOnce = true;
+			if (DoOnce)
+			{
+				//call_E_game_Sample();     //エフェクト再生
+				call_E_game_ActionSucsess();
+
+				DoOnce = false;     // 消さない！
+			}
+		}
+		///////////////////////////////////////
 
 		break;
 
@@ -380,13 +397,10 @@ void Draw_Game() {
 			ActionPointVector[i]->Draw();
 		}
 
+		//エフェクト描画処理
+		egmanager->Draw();
+
 		Character.Draw();
-
-
-		////////////////////////////////////////////////////
-		//EffectDraw();	 //エフェクト実験用
-		////////////////////////////////////////////////////
-
 
 		break;
 
