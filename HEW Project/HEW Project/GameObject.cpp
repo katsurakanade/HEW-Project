@@ -36,6 +36,9 @@ map <const char*, const char*> TextureDict = {
 	{"Bad","asset/texture/BAD.png"},
 	{"Number","asset/texture/Number.png"},
 	{"Title","asset/texture/Title.jpg"},
+	{"alpha","asset/texture/alpha.png"},
+	{"excellent","asset/texture/excellent.png"},
+	{"alphabg","asset/texture/alphabg.png"},
 };
 
 // 画像パスベクトル
@@ -361,6 +364,12 @@ void GameObject::HSB_Fillter() {
 	GraphFilter(this->handle, DX_GRAPH_FILTER_HSB, 0, (int)this->Color.hue, (int)this->Color.saturation, (int)this->Color.bright);
 }
 
+void GameObject::Trans_Color(int r,int g,int b) {
+
+	SetTransColor(r, g, b);
+
+}
+
 void GameObject::Destroy() {
 
 	DeleteGraph(handle);
@@ -384,6 +393,8 @@ void GameObject::SetHSB(int hue,int saturation,int bright) {
 	this->Color.saturation = saturation;
 	this->Color.bright = bright;
 }
+
+
 
 int GameObject::GetHandle() {
 	return handle;

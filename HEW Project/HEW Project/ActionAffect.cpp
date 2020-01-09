@@ -1,4 +1,5 @@
 #include "ActionAffect.h"
+#include "GameData.h"
 
 static const float InitPosY = 600;
 
@@ -11,15 +12,19 @@ ActionAffect::ActionAffect(int value)
 	{
 	case ACTIONSLOT_OVER:
 		self->LoadTexture(TexturePassDict[TEXTURE_INDEX_OVER]);
+		gamedata.ExcellentModeCount = 0;
 		break;
 	case ACTIONSLOT_GREAT:
 		self->LoadTexture(TexturePassDict[TEXTURE_INDEX_GREAT]);
+		gamedata.ExcellentModeCount++;
 		break;
 	case ACTIONSLOT_GOOD:
 		self->LoadTexture(TexturePassDict[TEXTURE_INDEX_GOOD]);
+		gamedata.ExcellentModeCount = 0;
 		break;
 	case ACTIONSLOT_BAD:
 		self->LoadTexture(TexturePassDict[TEXTURE_INDEX_BAD]);
+		gamedata.ExcellentModeCount = 0;
 		break;
 	}
 
