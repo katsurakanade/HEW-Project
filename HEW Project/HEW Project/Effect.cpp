@@ -1,300 +1,270 @@
-/*
-		エフェクトパーティクル処理
-		高橋 智裕
-*/
+#include "effect.h"
+
+GameObject eft[15];
 
 
-#include <algorithm>
-#include <vector>
-#include "Effect.h"
-#include "EffectGame.h"
+static GameObject eftt[6];//箱
+static GameObject ef[6];//箱
 
+int k;
+int n;
+int h;
 
-//EffectGameのメンバに触る為の変数
-static EffectGame* peg;
-
-
-Effect::Effect()
+void effEct::Init()
 {
-}
+	//flag設定
+	//★
+	eft[0].SetDelayFlag(0);
+	eft[1].SetDelayFlag(0);
+	eft[2].SetDelayFlag(0);
+	eft[3].SetDelayFlag(0);
+	//魔法陣
+	eft[4].SetDelayFlag(1);
+	eft[4].SetDelayFlag(2);
 
-Effect::Effect(Effect* pEft)
-{
-	// 子クラスのメンバに触る為の操作 //
-	peg = (EffectGame*)pEft;
-	// 子クラスのメンバに触る為の操作 //
-	aryNum = peg->MaxAryNum;     // 自分自身の配列番号確保
-	peg->MaxAryNum++;
-}
-Effect::~Effect()
-{
-	peg->MaxAryNum--;
-	aryNum = -1;
-}
-
-//ゲームループ
-void Effect::Init()
-{
-}
-void Effect::Uninit()
-{
-}
-void Effect::Update()
-{
-}
-void Effect::Draw()
-{
-}
+	//フィーアボール
+	eft[5].SetDelayFlag(0);
+	eft[6].SetDelayFlag(0);
+	eft[7].SetDelayFlag(0);
+	eft[8].SetDelayFlag(0);
 
 
 
-//// エフェクト関数群 ////
-// ※使い方はDelay_○○と同じ
-// ※アニメーション終了前に同じエフェクトで同じ名前の関数を呼び出すと情報が上書きされる(前のアニメーションを中断して新しいアニメーションを再生し始める)
 
-// 直線移動(時間,x,y)
-void Effect::Move(float sec, float x, float y)
-{
 
-	if (FinishedFancNum < MyFancNum_Move && this->MoveSec == sec && this->MoveX == x && this->MoveY == y     // まだ終了してないエフェクト再生
-		|| this->SleepNow && MyFancNum_Move == -1)     // Sleep中じゃない && 初回で実行
-	{
-		if (DoOnce_Move)     // 初回処理
-		{
-			//IsUse = true;     // 使用フラグ
-			this->IsDraw = true;     // 描画フラグ
-			this->MoveSec = sec;     //値保持
-			this->MoveX = x;     //値保持
-			this->MoveY = y;     //値保持
-			this->obj.SetDelayFlag(E_MOVE);     // Delayフラグを立てる
-			LastFancNum++;     //関数の個数カウント
-			MyFancNum_Move = LastFancNum;     // 自分の関数の数字を保持
-			DoOnce_Move = false;
-		}
-
-		if (this->obj.Delay_Move(this->MoveSec, this->MoveX, this->MoveY))     // エフェクト再生
-		{
-			// 終了時処理
-			if (FinishedFancNum == -1)
-			{
-				FinishedFancNum = 1;
-			}
-			else
-			{
-				FinishedFancNum++;
-			}
-			//IsUse = false;     // 使用フラグ
-			DoOnce_Move = true;
-			MyFancNum_Move = -1;
-
-			/*
-			if(DrawEnd(デフォルト値引数))     //描画終了
-			{
-				IsDraw = false;
-			}
-			*/
-
-		}
-
-	}// if (FinishedFancNum < MyFancNum_Move || this->SleepNow && MyFancNum_Move == -1)
-
-}
-
-// 曲線移動(反時計回り==true, 曲線の弧の大きさ(0.0f~10.0f程度), 時間, x, y)
-void Effect::Curve(bool cw, float curveSize, float sec, float x, float y)
-{
 	
-	if (FinishedFancNum < MyFancNum_Curve && this->CurveCW == cw && this->CurveSize == curveSize && this->CurveSec == sec && this->CurveX == x && this->CurveY == y      // まだ終了してない && 上書きじゃないエフェクト再生
-		|| this->SleepNow && MyFancNum_Curve == -1)     // Sleep中じゃない && 初回で実行
+
+
+	
+	//写真
+	eft[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_EFFECT]);
+	eft[1].LoadTexture(TexturePassDict[TEXTURE_INDEX_EFFECT]);
+	eft[2].LoadTexture(TexturePassDict[TEXTURE_INDEX_EFFECT]);
+	eft[3].LoadTexture(TexturePassDict[TEXTURE_INDEX_EFFECT]);
+	//魔法陣
+	eft[4].LoadTexture(TexturePassDict[TEXTURE_INDEX_MAHOU]);
+	//フィーアボール
+	eft[5].LoadTexture(TexturePassDict[TEXTURE_INDEX_HUOYAN]);
+	eft[6].LoadTexture(TexturePassDict[TEXTURE_INDEX_HUOYAN]);
+	eft[7].LoadTexture(TexturePassDict[TEXTURE_INDEX_HUOYAN]);
+	eft[8].LoadTexture(TexturePassDict[TEXTURE_INDEX_HUOYAN]);
+
+
+
+	//大きさ
+    //★
+	eft[0].Object.Scale.x = 0.05;
+	eft[0].Object.Scale.y = 0.05;
+
+	eft[1].Object.Scale.x = 0.05;
+	eft[1].Object.Scale.y = 0.05;
+
+	eft[2].Object.Scale.x = 0.05;
+	eft[2].Object.Scale.y = 0.05;
+
+	eft[3].Object.Scale.x = 0.05;
+	eft[3].Object.Scale.y = 0.05;
+	//フィーアボール-------------------------------------
+	eft[5].Object.Scale.x = 0.1;
+	eft[5].Object.Scale.y = 0.1;
+
+	eft[6].Object.Scale.x = 0.1;
+	eft[6].Object.Scale.y = 0.1;
+
+	eft[7].Object.Scale.x = 0.1;
+	eft[7].Object.Scale.y = 0.1;
+
+	eft[8].Object.Scale.x = 0.1;
+	eft[8].Object.Scale.y = 0.1;
+	//魔法陣-------------------------------------
+	eft[4].Object.Scale.x = 0.1;
+	eft[4].Object.Scale.y = 0.1;
+
+	//色
+	//eft[0].Color.saturation = 1.0f;
+
+	//位置
+	//★
+	//右上
+	eft[0].Object.Pos.x = 500;
+	eft[0].Object.Pos.y = 300;
+	//右下
+    eft[1].Object.Pos.x = 500;
+	eft[1].Object.Pos.y = 500;
+	//左上
+	eft[2].Object.Pos.x = 300;
+	eft[2].Object.Pos.y = 300;
+	//左下
+	eft[3].Object.Pos.x = 300;
+	eft[3].Object.Pos.y = 500;
+	//魔法陣----------------------------
+	
+
+	eft[4].Object.Pos.x = 400;
+	eft[4].Object.Pos.y = 400;
+	//フィーアボール------------------------------
+	//右
+	eft[5].Object.Pos.x = 500;
+	eft[5].Object.Pos.y = 400;
+	//左
+	eft[6].Object.Pos.x = 300;
+	eft[6].Object.Pos.y = 400;
+	//上
+	eft[7].Object.Pos.x = 400;
+	eft[7].Object.Pos.y = 300;
+	//下
+	eft[8].Object.Pos.x = 400;
+	eft[8].Object.Pos.y = 500;
+
+
+}
+
+void effEct::Update()
+{
+	//初期化
+	float a = 0.0f;
+	float b = 0.0f;
+
+	effEct fuck;
+
+	//移動
+	if (keyboard.IsTrigger(DIK_B))
 	{
-		if (DoOnce_Curve)     // 初回処理
+		k = true;		
+	}
+	if (k)
+	{
+		//右上
+		a = eft[0].Object.Pos.x;
+		b = eft[0].Object.Pos.y;
+
+		eft[0].Delay_Move(3, 5.0, 500.0f, 0.0f);//右移動
+		if (a < 600)
+		{			
+			eft[0].Delay_Move(0, 5.0, 0.0f, -500.0f);			
+		}
+
+		//右下
+		a = eft[1].Object.Pos.x;
+		b = eft[1].Object.Pos.y;
+		
+		eft[1].Delay_Move(3, 5.0, 500.0f, 0.0f);
+		if (a < 600)
 		{
-			//IsUse = true;     // 使用フラグ
-			this->IsDraw = true;     // 描画フラグ
-			this->CurveCW = cw;
-			this->CurveSize = curveSize;
-			this->CurveSec = sec;
-			this->CurveX = x;
-			this->CurveY = y;
-			this->VecA = { this->CurveX , this->CurveY };
-			this->obj.SetDelayFlag(E_CURVE);     // Delayフラグを立てる
-			LastFancNum++;     //関数の個数カウント
-			MyFancNum_Curve = LastFancNum;     // 自分の関数の数字を保持
-			DoOnce_Curve = false;
+			eft[1].Delay_Move(0, 5.0, 0.0f, 500.0f);
+		}
+		//左上
+		a = eft[2].Object.Pos.x;
+		b = eft[2].Object.Pos.y;
+
+		eft[2].Delay_Move(2, 5.0, -500.0f, 0.0f);
+
+		if (a>200)
+		{
+			eft[2].Delay_Move(0, 5.0, 0.0f, -500.0f);
+		}
+
+		
+		//左下
+		a = eft[3].Object.Pos.x;
+		b = eft[3].Object.Pos.y;
+
+		eft[3].Delay_Move(2, 5.0, -500.0f, 0.0f);
+		if (a > 200)
+		{
+			eft[3].Delay_Move(0, 5.0, 0.0f, 500.0f);
 		}
 		
-		// エフェクト再生
-		if (this->obj.Delay_CurveMove(this->CurveCW, this->CurveSize, this->CurveSec, this->VecA, this->Rad))
-		{     // 終了時処理
-			if (FinishedFancNum == -1)
-			{
-				FinishedFancNum = 1;
-			}
-			else
-			{
-				FinishedFancNum++;
-			}
-			//IsUse = false;
-			DoOnce_Curve = true;
-			MyFancNum_Curve = -1;
-		}
+		fuck.IsDraw = true;
+	}
 
-	}// if (FinishedFancNum < MyFancNum_Curve || this->SleepNow && MyFancNum_Curve == -1)
-
-}
-
-// 拡大縮小(時間,拡大率)     ※拡大率のところがおかしい
-void Effect::Zoom(float sec, double scale)
-{
-
-	if (FinishedFancNum < MyFancNum_Zoom && this->ZoomSec == sec && this->ZoomScale == scale     // まだ終了してないエフェクト再生
-		|| this->SleepNow && MyFancNum_Zoom == -1)     // Sleep中じゃない && 初回で実行
+	
+	//フィーアボール-------------------------------------------------
+	//移動
+	if (keyboard.IsTrigger(DIK_N))
 	{
-		if (DoOnce_Zoom)     // 初回処理
-		{
-			//IsUse = true;     // 使用フラグ
-			this->IsDraw = true;     // 描画フラグ
-			this->ZoomSec = sec;
-			this->ZoomScale = scale;
-			this->obj.SetDelayFlag(E_ZOOM);     // Delayフラグを立てる
-			LastFancNum++;     //関数の個数カウント
-			MyFancNum_Zoom = LastFancNum;     // 自分の関数の数字を保持
-			DoOnce_Zoom = false;
-		}
-
-		// エフェクト再生
-		if (this->obj.Delay_Zoom(this->ZoomSec, this->ZoomScale))
-		{     // 終了時処理
-			if (FinishedFancNum == -1)
-			{
-				FinishedFancNum = 1;
-			}
-			else
-			{
-				FinishedFancNum++;
-			}
-			//IsUse = false;
-			DoOnce_Zoom = true;
-			MyFancNum_Zoom = -1;
-		}
-
-	}// if (FinishedFancNum < MyFancNum_Zoom || this->SleepNow && MyFancNum_Zoom == -1)
-
-}
-
-// 回転(時間,回転角度)     // 回転角度がマイナス判定しない
-void Effect::Rotate(float sec, double rotate)
-{
-
-	if (FinishedFancNum < MyFancNum_Rot && this->RotSec == sec && this->RotRotate == rotate     // まだ終了してないエフェクト再生
-		|| this->SleepNow && MyFancNum_Rot == -1)     // Sleep中じゃない && 初回で実行
+		n = true;
+	}
+	if (n)
 	{
-		if (DoOnce_Rot)     // 初回処理
-		{
-			//IsUse = true;     // 使用フラグ
-			this->IsDraw = true;     // 描画フラグ
-			this->RotSec = sec;
-			this->RotRotate = rotate;
-			this->obj.SetDelayFlag(E_ROT);     // Delayフラグを立てる
-			LastFancNum++;     //関数の個数カウント
-			MyFancNum_Rot = LastFancNum;     // 自分の関数の数字を保持
-			DoOnce_Rot = false;
-		}
+		//右
+		eft[5].Delay_Move(3, 5.0, 500.0f, 0.0f);
+		//左
+		eft[6].Delay_Move(2, 5.0, -500.0f, 0.0f);
+		//上
+		eft[7].Delay_Move(0, 5.0, 0.0f, -500.0f);
+		//下
+		eft[8].Delay_Move(1, 5.0, 0.0f, 500.0f);
 
-		// エフェクト再生
-		if (this->obj.Delay_Rotate(this->RotSec, this->RotRotate))
-		{     // 終了時処理
-			if (FinishedFancNum == -1)
-			{
-				FinishedFancNum = 1;
-			}
-			else
-			{
-				FinishedFancNum++;
-			}
-			//IsUse = false;
-			DoOnce_Rot = true;
-			MyFancNum_Rot = -1;
-		}
 
-	}// if (FinishedFancNum < MyFancNum_Rot || this->SleepNow && MyFancNum_Rot == -1)
 
-}
 
-// エフェクト再生待ち関数 (待ち時間)
-void Effect::Sleep(float sec)
-{
-	if (FinishedFancNum < MyFancNum_Sleep && this->SleepSec == sec     // まだ終了してないエフェクト再生
-		|| MyFancNum_Sleep == -1)     // 初回で実行
+		fuck.IsDraw = true;
+
+
+	}
+	//魔法陣------------------------------------------------
+
+	if (keyboard.IsTrigger(DIK_M))
 	{
-		if (DoOnce_Sleep)     // 初回処理
-		{
-			this->SleepNow = false;
-			this->lastSleepFlag = false;
-			this->SleepSec = sec;
-			LastFancNum++;     // 関数の個数カウント
-			MyFancNum_Sleep = LastFancNum;     // 自分の関数の数字を保持
-			DoOnce_Sleep = false;
-		}
-
-
-		this->SleepCnt += SECONDS;     // Sleep時間計測
-
-		if (this->SleepCnt >= this->SleepSec)     // Sleep終了処理
-		{
-			this->SleepCnt = 0;
-			this->SleepNow = true;
-			if (FinishedFancNum == -1)
-			{
-				FinishedFancNum = 1;
-			}
-			else
-			{
-				FinishedFancNum++;
-			}
-			DoOnce_Sleep = true;
-			MyFancNum_Sleep = -1;
-		}
-
-	}// if (FinishedFancNum < MyFancNum_Sleep || this->SleepNow && MyFancNum_Sleep == -1)
-
-}
-
-
-// エフェクト再生最終待ち関数 (待ち時間)
-void Effect::LastSleep(float sec)
-{
-	if (FinishedFancNum < MyFancNum_Sleep && this->SleepSec == sec     // まだ終了してないエフェクト再生
-		|| MyFancNum_Sleep == -1)     // 初回で実行
+		h = true;
+	}
+	if (h)
 	{
-		if (DoOnce_Sleep)     // 初回処理
-		{
-			this->SleepNow = false;
-			this->SleepSec = sec;
-			LastFancNum++;     // 関数の個数カウント
-			MyFancNum_Sleep = LastFancNum;     // 自分の関数の数字を保持
-			DoOnce_Sleep = false;
-		}
+
+		eft[4].Delay_Zoom(5.0, 2.0);
+		eft[4].Delay_Rotate(5.0, 360);
+		fuck.IsDraw = true;
+
+	}
+	
 
 
-		this->SleepCnt += SECONDS;     // Sleep時間計測
 
-		if (this->SleepCnt >= this->SleepSec)     // Sleep終了処理
-		{
-			this->lastSleepFlag = true;
-			if (FinishedFancNum == -1)
-			{
-				FinishedFancNum = 1;
-			}
-			else
-			{
-				FinishedFancNum++;
-			}
-		}
 
-	}// if (FinishedFancNum < MyFancNum_Sleep || this->SleepNow && MyFancNum_Sleep == -1)
+	//eft[0].Delay_Move(3, 3.0, 50.0f, 0.0f);
+	//拡大
+	//eft[0].Delay_Zoom(5.0f, 2.0);
+	//回転
+	//eft[0].Delay_Rotate(5.0, 360);
+	//eft[0].Color.saturation -= 0.1f;	
+}
+
+void effEct::Draw()
+{
+	//★★
+	eft[0].Draw();
+	eft[1].Draw();
+	eft[2].Draw();
+	eft[3].Draw();
+	//魔法陣
+	eft[4].Draw();
+	//フィーアボール
+	eft[5].Draw();
+	eft[6].Draw();
+	eft[7].Draw();
+	eft[8].Draw();
+	//
+
+
+
+
+	
+
 
 }
+
+effEct::effEct()
+{
+}
+
+effEct::~effEct()
+{
+}
+
+
+
+
 
 
 
