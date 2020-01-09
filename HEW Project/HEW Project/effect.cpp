@@ -103,7 +103,7 @@ void Effect::Move(float sec, float x, float y)
 // 曲線移動(反時計回り==true, 曲線の弧の大きさ(0.0f~10.0f程度), 時間, x, y)
 void Effect::Curve(bool cw, float curveSize, float sec, float x, float y)
 {
-	
+
 	if (FinishedFancNum < MyFancNum_Curve && this->CurveCW == cw && this->CurveSize == curveSize && this->CurveSec == sec && this->CurveX == x && this->CurveY == y      // まだ終了してない && 上書きじゃないエフェクト再生
 		|| this->SleepNow && MyFancNum_Curve == -1)     // Sleep中じゃない && 初回で実行
 	{
@@ -122,7 +122,7 @@ void Effect::Curve(bool cw, float curveSize, float sec, float x, float y)
 			MyFancNum_Curve = LastFancNum;     // 自分の関数の数字を保持
 			DoOnce_Curve = false;
 		}
-		
+
 		// エフェクト再生
 		if (this->obj.Delay_CurveMove(this->CurveCW, this->CurveSize, this->CurveSec, this->VecA, this->Rad))
 		{     // 終了時処理
@@ -295,7 +295,3 @@ void Effect::LastSleep(float sec)
 	}// if (FinishedFancNum < MyFancNum_Sleep || this->SleepNow && MyFancNum_Sleep == -1)
 
 }
-
-
-
-

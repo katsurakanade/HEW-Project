@@ -98,5 +98,5 @@ public:
 
 	// エフェクト再生最終待ち関数 (待ち時間)
 	void LastSleep(float sec);
-	
+
 };

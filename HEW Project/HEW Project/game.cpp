@@ -288,8 +288,8 @@ void Update_Game() {
 			static bool DoOnce = true;
 			if (DoOnce)
 			{
-				//call_E_game_Sample();     //エフェクト再生
-				call_E_game_ActionSucsess();
+				call_E_game_Sample();     //エフェクト再生
+				//call_E_game_ActionSucsess();
 
 				DoOnce = false;     // 消さない！
 			}
