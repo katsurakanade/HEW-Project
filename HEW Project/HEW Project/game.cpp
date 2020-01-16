@@ -15,7 +15,6 @@
 #include "GameOver.h"
 #include "BatonTouch.h"
 #include "GameClear.h"
-
 #include "Effect.h"
 
 
