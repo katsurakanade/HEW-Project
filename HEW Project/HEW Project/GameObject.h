@@ -46,6 +46,7 @@ typedef enum {
 	TEXTURE_INDEX_LEFT,
 	TEXTURE_INDEX_RESULT,
 	TEXTURE_INDEX_GAME_CLEAR,
+	TEXTURE_INDEX_PUSH_PLUS_TITLE,
 
 
 
@@ -93,9 +94,9 @@ class GameObject {
 protected:
 
 	// 遅れ処理用タイマー
-	float Delay_Timer[3] = {0,0,0};
+	float Delay_Timer[4] = { 0,0,0,0 };
 	// 遅く処理用フラグ
-	bool Delay_Flag[3] = { false,false,false };
+	bool Delay_Flag[4] = { false,false,false,false };
 	// 画像サイズ
 	D3DXVECTOR2 Size;
 
@@ -125,21 +126,21 @@ public:
 	// (アニメあり)(Initで使う)
 	void LoadTexture(const char * name,int allcut,int xcut,int ycut,int xsize,int ysize);
 
-	// 遅れ直線移動移動(時間,x,y)
+	// (true:終了, false:実行中) 遅れ直線移動移動(時間,x,y)
 	// (必ずFlagを設定しないといけない)
-	void Delay_Move(float sec,float x,float y);
+	bool Delay_Move(float sec,float x,float y);
 
-	// 遅れ直線移動移動(時計回り==true,曲線の弧の大きさ,オブジェクトの現在座標,時間,x,y)
+	// (true:終了, false:実行中) 遅れ曲線移動移動(時計回り==true, 曲線の弧の大きさ(0.0f~10.0f程度), 時間, ベクトルA保持値, ラジアン保持値)
 	// (必ずFlagを設定しないといけない)
-	void Delay_CurveMove(bool cw, float r, const D3DXVECTOR2 &ThisPos, float sec, float x, float y);
+	bool Delay_CurveMove(bool cw, float CurveSize, float sec, D3DXVECTOR2 &VecA, float& Rad);
 
-	// 遅れ拡大(時間,拡大率)
+	// (true:終了, false:実行中) 遅れ拡大(時間,拡大率)
 	// (必ずFlagを設定しないといけない)
-	void Delay_Zoom(float sec,double scale);
+	bool Delay_Zoom(float sec,double scale);
 
-	// 遅れ回転(時間,回転角度)
+	// (true:終了, false:実行中) 遅れ回転(時間,回転角度)
 	// (必ずFlagを設定しないといけない)
-	void Delay_Rotate(float sec,double rotate);
+	bool Delay_Rotate(float sec,double rotate);
 
 	// 描画(透明)
 	void Draw();

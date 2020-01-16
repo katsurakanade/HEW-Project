@@ -257,7 +257,7 @@ void GameProgress::Draw()
 	//ProgressBar[2].Draw(NowProgress+180.0f, 50, 2.0f,2.0f, 256, 256, TRUE, FALSE);
 	ProgressBar[2].Draw();
 
-	DrawFormatString(0, 300, GetColor(255, 255, 255), "Distance:%f", RunDistance);
+	//DrawFormatString(0, 300, GetColor(255, 255, 255), "Distance:%f", RunDistance);
 
 
 }

@@ -4,6 +4,7 @@
 #include "Result.h"
 #include "BatonTouch.h"
 #include "DxLib.h"
+#include "Tutorial.h"
 
 static SCENE_INDEX g_SceneIndex;
 static SCENE_INDEX g_SceneNextIndex;
@@ -12,6 +13,7 @@ typedef void (*SceneFunc)(void);
 
 static const SceneFunc Initialize[] = {
 	Init_Title,
+	Init_Tutorial,
 	Init_Game,
 	Init_Result,
 };
@@ -30,6 +32,10 @@ void Scene_Finalize(void)
 
 	case SCENE_INDEX_TITLE:
 		Uninit_Title();
+		break;
+
+	case SCENE_INDEX_TUTORIAL:
+		Uninit_Tutorial();
 		break;
 
 	case SCENE_INDEX_GAME:
@@ -51,6 +57,10 @@ void Scene_Update(void)
 		Update_Title();
 		break;
 
+	case SCENE_INDEX_TUTORIAL:
+		Update_Tutorial();
+		break;
+
 	case SCENE_INDEX_GAME:
 		Update_Game();
 		break;
@@ -69,6 +79,10 @@ void Scene_Draw(void)
 
 	case SCENE_INDEX_TITLE:
 		Draw_Title();
+		break;
+
+	case SCENE_INDEX_TUTORIAL:
+		Draw_Tutorial();
 		break;
 
 	case SCENE_INDEX_GAME:

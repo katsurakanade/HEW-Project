@@ -2,7 +2,6 @@
 #include "main.h"
 #include <vector>
 
-
 const int speed1 = 360;     //futuu
 const int speed2 = 315;     //osoi
 const int speed3 = 405;     //hayai
@@ -43,7 +42,6 @@ void GameData::InitExcellentMode() {
 	ExcellentMode = true;
 }
 
-
 void GameData::UpdateExcellentMode(vector <ActionPointAnime*> actionpoint) {
 
 	ExcellentTimer += SECONDS;
@@ -60,6 +58,7 @@ void GameData::UpdateExcellentMode(vector <ActionPointAnime*> actionpoint) {
 void GameData::DrawExcellentMode() {
 
 }
+
 
 void GameData::Addhp(int value) {
 	hp += value;
@@ -89,6 +88,15 @@ void GameData::SetActionPoint(int value) {
 	Action_Point = value;
 }
 
+bool GameData::GetExcellentMode() {
+	return ExcellentMode;
+}
+
+float GameData::GetExcellentTimer() {
+	return ExcellentTimer;
+}
+
+
 int GameData::GetGameMode() {
 	return GameMode;
 }
@@ -111,14 +119,6 @@ int GameData::GetRunningMeter() {
 
 int GameData::GetActionPoint() {
 	return Action_Point;
-}
-
-bool GameData::GetExcellentMode() {
-	return ExcellentMode;
-}
-
-float GameData::GetExcellentTimer() {
-	return ExcellentTimer;
 }
 
 void GameData::Action_Point_Update(int value) {

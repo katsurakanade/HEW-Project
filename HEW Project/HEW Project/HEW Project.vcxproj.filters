@@ -1,11 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="ActionAffect.cpp" />
     <ClCompile Include="ActionSlot.cpp" />
     <ClCompile Include="ActionUI.cpp" />
+    <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="BatonTouch.cpp" />
+    <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="EffectGame.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="GameClear.cpp" />
     <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="gameprogress.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="Live2D.cpp" />
@@ -13,23 +19,26 @@
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="myDirect3D.cpp" />
     <ClCompile Include="Result.cpp" />
+    <ClCompile Include="ResultScore.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Staminagauge.cpp" />
     <ClCompile Include="title.cpp" />
-    <ClCompile Include="ActionAffect.cpp" />
-    <ClCompile Include="BackGround.cpp" />
-    <ClCompile Include="GameOver.cpp" />
-    <ClCompile Include="GameClear.cpp" />
-    <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="Tutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActionAffect.h" />
     <ClInclude Include="ActionSlot.h" />
     <ClInclude Include="ActionUI.h" />
+    <ClInclude Include="BackGround.h" />
     <ClInclude Include="BatonTouch.h" />
+    <ClInclude Include="Effect.h" />
+    <ClInclude Include="EffectGame.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="GameClear.h" />
     <ClInclude Include="GameData.h" />
+    <ClInclude Include="GameOver.h" />
     <ClInclude Include="gameprogress.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="Live2D.h" />
@@ -37,15 +46,12 @@
     <ClInclude Include="Menu.h" />
     <ClInclude Include="myDirect3D.h" />
     <ClInclude Include="Result.h" />
+    <ClInclude Include="ResultScore.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Staminagauge.h" />
     <ClInclude Include="title.h" />
-    <ClInclude Include="ActionAffect.h" />
-    <ClInclude Include="BackGround.h" />
-    <ClInclude Include="GameOver.h" />
-    <ClInclude Include="GameClear.h" />
-    <ClInclude Include="Effect.h" />
+    <ClInclude Include="Tutorial.h" />
   </ItemGroup>
 </Project>

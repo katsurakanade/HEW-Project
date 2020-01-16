@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "BackGround.h"
 
+
 // ゲームモード状態
 typedef enum {
 
@@ -66,11 +67,13 @@ private:
 	// エクセレントタイマー
 	float ExcellentTimer;
 
+
 public:
 
 	bool ExcellentModeInitFlag = false;
 
 	int ExcellentModeCount = 0;
+
 
 	GameData();
 
@@ -85,6 +88,7 @@ public:
 	void UpdateExcellentMode(vector <ActionPointAnime*> actionpoint);
 
 	void DrawExcellentMode();
+
 
 	void Action_Point_Update(int value);
 
@@ -117,6 +121,7 @@ public:
 	bool GetExcellentMode();
 
 	float GetExcellentTimer();
+
 };
 
 

@@ -25,6 +25,7 @@
     <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="BatonTouch.cpp" />
     <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="EffectGame.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameClear.cpp" />
     <ClCompile Include="GameData.cpp" />
@@ -36,11 +37,13 @@
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="myDirect3D.cpp" />
     <ClCompile Include="Result.cpp" />
+    <ClCompile Include="ResultScore.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Staminagauge.cpp" />
     <ClCompile Include="title.cpp" />
+    <ClCompile Include="Tutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionAffect.h" />
@@ -49,6 +52,7 @@
     <ClInclude Include="BackGround.h" />
     <ClInclude Include="BatonTouch.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="EffectGame.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameClear.h" />
     <ClInclude Include="GameData.h" />
@@ -60,11 +64,13 @@
     <ClInclude Include="Menu.h" />
     <ClInclude Include="myDirect3D.h" />
     <ClInclude Include="Result.h" />
+    <ClInclude Include="ResultScore.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Staminagauge.h" />
     <ClInclude Include="title.h" />
+    <ClInclude Include="Tutorial.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -118,12 +124,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Users\Noa\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\81808\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Users\81901\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Noa\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Users\81901\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\81901\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>C:\Users\81808\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;$(LibraryPath)</LibraryPath>
@@ -138,7 +144,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\katsu\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\81901\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -150,7 +156,7 @@
       <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;C:\Users\81901\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -166,7 +172,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Users\81808\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;C:\Users\81808\Desktop\DirectX\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\81808\source\repos\katsurakanade\HEW-Project\HEW Project\HEW Project\DXLIB;C:\Users\81808\Desktop\DirectX\Lib\x86</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
