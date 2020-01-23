@@ -33,7 +33,7 @@ public:
 
 	void Init();
 
-	void Update(ActionUI target);
+	void Update(ActionUI &target);
 
 	void Draw();
 

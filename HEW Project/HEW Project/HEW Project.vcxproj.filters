@@ -21,7 +21,6 @@
     <ClCompile Include="Result.cpp" />
     <ClCompile Include="ResultScore.cpp" />
     <ClCompile Include="scene.cpp" />
-    <ClCompile Include="sound.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Staminagauge.cpp" />
     <ClCompile Include="title.cpp" />
@@ -48,7 +47,6 @@
     <ClInclude Include="Result.h" />
     <ClInclude Include="ResultScore.h" />
     <ClInclude Include="scene.h" />
-    <ClInclude Include="sound.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Staminagauge.h" />
     <ClInclude Include="title.h" />

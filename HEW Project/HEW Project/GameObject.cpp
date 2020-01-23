@@ -28,7 +28,7 @@ map <const char*, const char*> TextureDict = {
 	{"pink","asset/texture/pink.png"},
 	{"Progressbar","asset/texture/progressbar.png"},
 	{"Bar_frame","asset/texture/bar_frame.png"},
-	{"Batontouch_test","asset/texture/Batontouch_test.png"},
+	{"Batontouch_ActionBoard","asset/texture/Batontouch_ActionBoard.png"},
 	{"Stamina_frame","asset/texture/stamina_frame.png"},
 	{"Over","asset/texture/OVER.png"},
 	{"Great","asset/texture/GREAT.png"},
@@ -39,6 +39,8 @@ map <const char*, const char*> TextureDict = {
 	{"alpha","asset/texture/alpha.png"},
 	{"excellent","asset/texture/excellent.png"},
 	{"alphabg","asset/texture/alphabg.png"},
+	{"all","asset/texture/all.png"},
+	{"board","asset/texture/board.png"},
 };
 
 // 画像パスベクトル
@@ -63,7 +65,7 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/pink.png",
 	"asset/texture/progressbar.png",
 	"asset/texture/bar_frame.png",
-	"asset/texture/Batontouch_test.png",
+	"asset/texture/Batontouch_ActionBoard.png",
 	"asset/texture/stamina_frame.png",
 	"asset/texture/OVER.png",
 	"asset/texture/GREAT.png",
@@ -77,16 +79,10 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/result.png",
 	"asset/texture/Game_Clear.png",
 	"asset/texture/push_plus_title.png",
-	"asset/texture/num.png",
-	"asset/texture/tutorial_logo.png",
-	"asset/texture/left_arrow.png",
-	"asset/texture/result_bg.png",
-	"asset/texture/ranking_borad.png",
-	"asset/texture/kyori.png",
-	"asset/texture/no1.png",
-	"asset/texture/no2.png",
-	"asset/texture/no3.png",
-
+	"asset/texture/handdown.png",
+	"asset/texture/handup.png",
+	"asset/texture/keep.png",
+	"asset/texture/rotate.png",
 };
 
 GameObject::GameObject() {

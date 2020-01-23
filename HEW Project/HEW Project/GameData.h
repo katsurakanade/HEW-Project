@@ -124,5 +124,4 @@ public:
 
 };
 
-
 extern GameData gamedata;

@@ -4,20 +4,23 @@
 #include "DxLib.h"
 #include "main.h"
 #include "GameObject.h"
+#include <time.h>
 #include <vector>
+
+
 
 using namespace std;
 
 typedef enum {
 
+
+	ACTION_STATE_LONGJUMP,
 	// トランポリン
 	ACTION_STATE_TRAMPOLINING,
 	// バランスボード
 	ACTION_STATE_BALANCEBOARD,
 	// ハードル
-	ACTION_STATE_HURDLE,
-
-	ACTION_STATE_LONGJUMP,
+	//ACTION_STATE_HURDLE,
 
 	ACTION_STATE_WEIGHT,
 
@@ -34,15 +37,14 @@ private:
 
 	GameObject onetime[8];
 
-	int State;
-
 	bool State_Switch;
-
-	bool Finish_Flag;
 
 	int progress;
 
 	float State_Switch_Timer;
+
+
+	bool Finish_Flag;
 
 	vector <GameObject> Action_vector;
 
@@ -50,8 +52,11 @@ private:
 	int UNEVENBARS_progress = 0;
 	int UNEVENBARS_rnd = -1;
 
+	int* getRandNR(int min, int max, int num);
+
 public:
 
+	int State;
 
 	D3DXVECTOR2 Pos;
 
@@ -82,5 +87,7 @@ public:
 	bool GetFinishFlag();
 
 	int GetActionAmount();
+
+	void ResetAll();
 };
 

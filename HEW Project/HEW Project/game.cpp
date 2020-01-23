@@ -64,11 +64,14 @@ GameClear *gameclear;
 // ゲームエフェクト
 EGManager *egmanager;
 
+GameObject ActionBoard;
+
 // アクションエフェクト用
 std::vector<ActionAffect*> ActionEffectVector;
 
 std::vector <ActionPointAnime*> ActionPointVector;
 
+int sehandle;
 
 typedef void(*GameStateFunc)(void);
 
@@ -102,7 +105,6 @@ void Init_Game() {
 	g_GameStateNextIndex = GAME_STATE_GAME;
 	// とりあえずGameを動かしてみる
 
-
 	//スタミナゲージ初期化
 	stamina->Init();
 
@@ -110,11 +112,11 @@ void Init_Game() {
 
 	Action.Init();
 
-	Action.Pos.x = 700;
+	Action.Pos.x = 600;
 
-	Action.Pos.y = 200;
+	Action.Pos.y = 250;
 
-	Action.Interval.x = 150;
+	Action.Interval.x = 190;
 
 	Action.Interval.y = 0;
 
@@ -122,13 +124,13 @@ void Init_Game() {
 
 	Actionslot.Load();
 
-	Actionslot.Pos.x = 330;
+	Actionslot.Pos.x = 210;
 
-	Actionslot.Pos.y = 450;
+	Actionslot.Pos.y = 480;
 
 	// キャラクター初期化
 
-	Character.LoadModel(Live2D_Dict["HIYORI"]);
+	Character.LoadModel(Live2D_Dict["KYARA"]);
 
 	Character.Zoom.x = 1.0f;
 
@@ -137,6 +139,8 @@ void Init_Game() {
 	Character.Pos.x = -400;
 
 	Character.Pos.y = -150;
+
+	Character.SetMontionIndex(0);
 
 	// アクション失敗初期化
 
@@ -161,7 +165,6 @@ void Init_Game() {
 
 	Init_GameClear();
 
-
 	ExcellentFrame.LoadTexture(TextureDict["alpha"]);
 	ExcellentFrame.Object.Pos.x = SCREEN_WIDTH / 2;
 	ExcellentFrame.Object.Pos.y = SCREEN_HEIGHT / 2;
@@ -182,6 +185,15 @@ void Init_Game() {
 	//エフェクト初期化処理
 	egmanager->Init();
 
+	PlaySoundFile("asset/sound/BGM_ActionBoard.mp3", DX_PLAYTYPE_LOOP);
+
+	sehandle = LoadSoundMem("asset/sound/SE_ActionBoard.mp3");
+
+	ActionBoard.LoadTexture(TextureDict["board"]);
+	ActionBoard.Object.Pos.x = Action.Pos.x + 270;
+	ActionBoard.Object.Pos.y = Action.Pos.y;
+	ActionBoard.Object.Scale.x = 0.8;
+	ActionBoard.Object.Scale.y = 0.5;
 }
 
 
@@ -251,12 +263,14 @@ void Update_Game() {
 		//スタミナゲージ更新処理
 		stamina->Update();
 
-		Character.SetMontionIndex(GetRand(8));
+		//Character.SetMontionIndex(GetRand(8));
 
 		// アクションUI更新
 		Action.Update();
 		// アクションゲージ更新
-		Actionslot.Update(stamina->GetStaminaScale_x());
+
+		Actionslot.Update(stamina->GetStaminaScale_x(),gamedata.GetExcellentMode());
+
 		// スビート更新
 		gamedata.UpdateSpeed();
 
@@ -271,7 +285,6 @@ void Update_Game() {
 		CharacterMove();
 
 		gameover->Update();
-
 
 		if (gamedata.ExcellentModeCount >= 5) {
 			gamedata.InitExcellentMode();
@@ -385,7 +398,10 @@ void Update_Game() {
 	}
 
 	if (keyboard.IsPress(DIK_E)) {
-		Actionslot.AddValue(0.5);
+		if (Actionslot.GetValue() <= 70.0) {
+			Actionslot.AddValue(0.5);
+			PlaySoundMem(sehandle, DX_PLAYTYPE_BACK, TRUE);
+		}
 	}
 
 	if (keyboard.IsPress(DIK_P)) {
@@ -394,8 +410,8 @@ void Update_Game() {
 		}
 	}
 
-	if (keyboard.IsRelease(DIK_O)) {
-		gamedata.ExcellentModeInitFlag = false;
+	if (keyboard.IsPress(DIK_1)) {
+		Character.SetMontionIndex(1);
 	}
 
 
@@ -420,12 +436,7 @@ void Draw_Game() {
 
 		background.Draw();
 
-
-		if (gamedata.GetExcellentMode()) {
-			Alphabg.Draw();
-			ExcellentFrame.Draw();
-			ExcellentImg.Draw();
-		}
+		ActionBoard.Draw();
 
 
 		//スタミナゲージ描画
@@ -433,6 +444,13 @@ void Draw_Game() {
 
 		// アクションUI描画
 		Action.Draw();
+
+		if (gamedata.GetExcellentMode()) {
+			Alphabg.Draw();
+			ExcellentFrame.Draw();
+			ExcellentImg.Draw();
+		}
+
 		// アクションゲージ描画
 		Actionslot.Draw();
 
@@ -441,7 +459,32 @@ void Draw_Game() {
 		// アクション完成判定
 		if (Action.GetFinishFlag()) {
 			if (Action.GetProgress() == Action.GetActionAmount()) {
-				Actionslot.AddValue(0.5);
+
+				switch (Action.GetState())
+				{
+				case ACTION_STATE_LONGJUMP:
+					// change
+					Actionslot.AddValue(0.152 * 9);
+					break;
+				case ACTION_STATE_TRAMPOLINING:
+					// change
+					Actionslot.AddValue(0.132 * 9);
+					break;
+				case ACTION_STATE_BALANCEBOARD:
+					// change
+					Actionslot.AddValue(0.068 * 9);
+					break;
+				case ACTION_STATE_WEIGHT:
+					// change
+					Actionslot.AddValue(0.16 * 9);
+					break;
+				case ACTION_STATE_UNEVENBARS:
+					// change
+					Actionslot.AddValue(0.152 * 9);
+					break;
+				default:
+					break;
+				}
 			}
 			else {
 
@@ -464,6 +507,8 @@ void Draw_Game() {
 		egmanager->Draw();
 
 		Character.Draw();
+
+		//ActionBoard.Draw();
 
 		break;
 
@@ -494,7 +539,9 @@ void Draw_Game() {
 		// アクション完成判定
 		if (Action.GetFinishFlag()) {
 			if (Action.GetProgress() == Action.GetActionAmount()) {
-				Actionslot.AddValue(0.5);
+				if (Actionslot.GetValue() <= 90.0) {
+					Actionslot.AddValue(0.5);
+				}
 			}
 			else {
 
@@ -533,7 +580,7 @@ void Draw_Game() {
 
 
 #ifdef DEBUG
-	Debug_Panel();
+	//Debug_Panel();
 #endif // DEBUG
 
 }
@@ -598,6 +645,7 @@ void Running() {
 			break;
 		case ACTIONSLOT_GREAT:
 			obj->Create(120);
+			gamedata.ExcellentModeCount++;
 			break;
 		case ACTIONSLOT_GOOD:
 			obj->Create(50);
@@ -632,9 +680,9 @@ void CharacterMove() {
 
 		Character.Pos.y -= 0.75f;
 
-		Actionslot.Pos.x += 5.0f;
+		Actionslot.Pos.x += 5.2f;
 
-		Actionslot.Pos.y += 0.75f;
+		Actionslot.Pos.y += 0.70f;
 
 		Actionslot.Scale += D3DXVECTOR2(0.0025f, 0.0025f);
 
@@ -655,9 +703,9 @@ void CharacterMove() {
 
 		Character.Pos.y += 0.75f;
 
-		Actionslot.Pos.x -= 5.0f;
+		Actionslot.Pos.x -= 5.2f;
 
-		Actionslot.Pos.y -= 0.75f;
+		Actionslot.Pos.y -= 0.70f;
 
 		Actionslot.Scale -= D3DXVECTOR2(0.0025f, 0.0025f);
 
@@ -691,22 +739,27 @@ void Debug_Running() {
 		switch (Actionslot.GetState())
 		{
 		case ACTIONSLOT_OVER:
+			gamedata.ExcellentModeCount = 0;
 			obj->Create(150);
 			break;
 		case ACTIONSLOT_GREAT:
 			obj->Create(120);
+			if (!gamedata.GetExcellentMode()) {
+				gamedata.ExcellentModeCount++;
+			}
 			break;
 		case ACTIONSLOT_GOOD:
+			gamedata.ExcellentModeCount = 0;
 			obj->Create(50);
 			break;
 		case ACTIONSLOT_BAD:
+			gamedata.ExcellentModeCount = 0;
 			break;
 		}
 
 		ActionEffectVector.push_back(tmp);
 
 		ActionPointVector.push_back(obj);
-
 
 	}
 
@@ -740,5 +793,5 @@ void Debug_Panel() {
 
 	DrawFormatString(0, 210, GetColor(255, 255, 255), "経過:%f秒", gameprogress->stime / 60);
 
-
+	DrawFormatString(0, 240, GetColor(255, 255, 255), "%d", gamedata.ExcellentModeCount);
 }

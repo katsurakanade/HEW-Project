@@ -23,7 +23,7 @@ void Init_GameStart()
 void Init_BatonTouch()
 {
 	//StateBaton = false;
-	Baton[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATON_TEST]);
+	Baton[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATON_ActionBoard]);
 	Baton[0].Object.Pos.x = 500.0f;
 	Baton[0].Object.Pos.y = 500.0f;
 	Baton[0].Object.Scale.x = 1.0f;
