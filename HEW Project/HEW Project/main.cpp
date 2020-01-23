@@ -194,7 +194,7 @@ bool Initialize(HINSTANCE hInst)
 		return false;
 	}
 	// DirectInputの初期化（ゲームパッド）
-	/*
+	
 	if (!joycon[0].Initialize(hInst, g_hWnd)){
 		return false;
 	}
@@ -202,7 +202,7 @@ bool Initialize(HINSTANCE hInst)
 	if (!joycon[1].Initialize(hInst, g_hWnd)) {
 		return false;
 	}
-*/
+
 
 	
 
@@ -254,7 +254,7 @@ void Update(void)
 	keyboard.Update();
 
 	//ゲームパッド更新
-/*
+
 	if (joycon[0].Device != nullptr) {
 		joycon[0].Update();
 	}
@@ -262,7 +262,7 @@ void Update(void)
 	if (joycon[1].Device != nullptr) {
 		joycon[1].Update();
 	}
-	*/
+	
 	Scene_Update();
 
 }

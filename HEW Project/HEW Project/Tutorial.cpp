@@ -358,7 +358,7 @@ void Update_Tutorial()
 
 	case TUTO_STATE_BATONTOUCH:     // BattonTouchのバトンタッチ処理--------------------------------------------------
 
-		batonTouch.Update();
+		batonTouch.Update(BT_BatonTouch);
 
 		break;
 
@@ -499,7 +499,7 @@ void Draw_Tutorial()
 
 	case TUTO_STATE_BATONTOUCH:     // BattonTouchのバトンタッチ処理--------------------------------------------------
 
-		batonTouch.Draw();
+		batonTouch.Draw(BT_BatonTouch);
 
 		break;
 
