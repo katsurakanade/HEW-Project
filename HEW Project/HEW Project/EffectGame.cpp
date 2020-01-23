@@ -16,9 +16,26 @@ void EGManager::Uninit()
 }
 void EGManager::Update()
 {
+	bool flag = false;     // deleteでズレが出た時のフラグ
+
 	for (int i = 0; i < EG->MaxEffectNum; i++)
 	{
-		EGStorage[i]->Update();
+		EGStorage[i]->Update();     //各エフェクトの更新処理
+		if (EGStorage[i]->DeleteFlag)
+		{
+			// アニメーションが終わったものを削除
+			EffectGame *wark = EGStorage[i];     // 消したいアニメーションのアドレス保存
+
+			EG->MaxEffectNum--;
+			EGStorage.erase(EGStorage.begin() + EGStorage[i]->MyEffectNum);
+			delete wark;     // メモリ削除
+			flag = true;
+		}
+		if (flag && i < EGStorage[i]->MaxEffectNum)
+		{
+			EGStorage[i]->MyEffectNum--;
+		}
+		
 	}
 }
 void EGManager::Draw()
@@ -39,6 +56,7 @@ EffectGame::EffectGame(void (EffectGame::*fp_CallFunc)())
 	{
 		eft[i] = new Effect(this);
 	}
+	MyEffectNum = MaxEffectNum;
 	MaxEffectNum++;
 	// 自分のポインタ格納
 	EGStorage.push_back(this);
@@ -47,11 +65,12 @@ EffectGame::EffectGame(void (EffectGame::*fp_CallFunc)())
 }
 EffectGame::~EffectGame()
 {
-	MaxEffectNum--;
-	// 自分のポインタを削除
-	EGStorage.erase(EGStorage.begin() + MaxEffectNum);
-	// メモリ解放
-	///delete[] eft;     // エラー出る
+	for (int i = 0; i < MaxParticleNum; i++)
+	{
+		eft[i]->obj.Destroy();    // パーティクル画像のメモリ解放
+	}
+	delete[] *eft;     // パーティクルのメモリ解放
+
 }
 void EffectGame::Init()
 {
@@ -85,7 +104,7 @@ void EffectGame::E_end()
 	}
 	if (SNCnt == MaxAryNum)     //アニメーション終了
 	{
-		delete this;     //自分を消す
+		DeleteFlag = true;     // デリートフラグを立てる
 	}
 }
 // EffectManager------------------------------------------------------AA
@@ -176,7 +195,13 @@ void EffectGame::E_game_ActionSucsess()
 	{
 		//// ※----- エフェクトの初期設定 -----※ ////
 
-
+		eft[0]->obj.LoadTexture(TexturePassDict[TEXTURE_INDEX_A]);     // エフェクトパーティクル[0]のテクスチャロード
+		eft[0]->obj.Object.Pos.x = 600.0f;     // エフェクトパーティクル[0]の初期X座標
+		eft[0]->obj.Object.Pos.y = 350.0f;     // エフェクトパーティクル[0]の初期Y座標
+		
+		eft[1]->obj.LoadTexture(TexturePassDict[TEXTURE_INDEX_AIROU]);     // エフェクトパーティクル[1]のテクスチャロード
+		eft[1]->obj.Object.Pos.x = 800.0f;     // エフェクトパーティクル[0]の初期X座標
+		eft[1]->obj.Object.Pos.y = 250.0f;     // エフェクトパーティクル[0]の初期X座標
 
 		//// ※----- エフェクトの初期設定 -----※ ////
 		DoOnce = false;     // 消さない!!
@@ -184,6 +209,24 @@ void EffectGame::E_game_ActionSucsess()
 
 	//// ※-----------------------↓ここから下にエフェクトアニメーションを書く ↓-----------------------※ ////
 
+
+	// 1個目のアニメーション
+	eft[0]->Zoom(2.0f, 0.5f);
+	eft[0]->Sleep(4.0f);
+	eft[1]->Curve(true, 3.0, 2.0, 300, 100);
+	eft[1]->Sleep(2.0);
+
+	// 2個目のアニメーション
+	eft[0]->Zoom(2.0f, 0.5f);
+	eft[0]->Sleep(2.0001);
+	eft[1]->Curve(false, 3.0, 2.4, -300, -100);
+	eft[1]->Sleep(3.0);
+	eft[1]->LastSleep(0.0001f);
+
+	// 3個目のアニメーション
+	eft[0]->Curve(false, 3.0, 5.0, -100, -200);
+	eft[0]->Sleep(5.0f);
+	eft[0]->LastSleep(0.0001f);
 
 
 	//// ※-----------------------↑ ここから上にエフェクトアニメーションを書く ↑-----------------------※ ////
@@ -195,6 +238,38 @@ void call_E_game_ActionSucsess()
 	new EffectGame(&EffectGame::E_game_ActionSucsess);
 }
 
+
+// バトンタッチ1000Pゲット
+void EffectGame::E_game_Baton1000P()
+{
+	if (DoOnce)
+	{
+		//// ※----- エフェクトの初期設定 -----※ ////
+
+		eft[0]->obj.LoadTexture(TexturePassDict[TEXTURE_INDEX_BATON_1000P]);     // エフェクトパーティクル[0]のテクスチャロード
+		eft[0]->obj.Object.Pos.x = 640.0f;     // エフェクトパーティクル[0]の初期X座標
+		eft[0]->obj.Object.Pos.y = 360.0f;     // エフェクトパーティクル[0]の初期Y座標
+		eft[0]->obj.Object.Scale.x = 0.5f;
+		eft[0]->obj.Object.Scale.y = 0.5f;
+
+		//// ※----- エフェクトの初期設定 -----※ ////
+		DoOnce = false;     // 消さない!!
+	}
+
+	//// ※-----------------------↓ここから下にエフェクトアニメーションを書く ↓-----------------------※ ////
+
+	eft[0]->Zoom(0.5f, 1.7f);
+	eft[0]->Sleep(2.3f);
+	eft[0]->LastSleep(0.0001f);
+
+	//// ※-----------------------↑ ここから上にエフェクトアニメーションを書く ↑-----------------------※ ////
+	E_end();     // 必ずコピー！ //
+}
+// 上(↑)のエフェクト関数に書いた関数名の頭に「call_」を付ける。
+void call_E_game_Baton1000P()
+{
+	new EffectGame(&EffectGame::E_game_Baton1000P);
+}
 
 
 ////////////////////////////////////////////////////// ゲーム(game) //////////////////////////////////////////////////////

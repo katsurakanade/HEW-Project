@@ -1,19 +1,26 @@
 #include "game.h"
 #include "input.h"
 #include "GameObject.h"
+#include "GameData.h"
 #include "scene.h"
 #include "gameprogress.h"
 #include "BatonTouch.h"
 #include "DxLib.h"
 #include "Live2D.h"
+#include "EffectGame.h"
 
-GameObject Baton[1];
+GameObject Baton[10];
 GameProgress Progress;
 
 //ゲームスタート処理(SL+SR+Lでスタート)=====================================
 void Init_GameStart()
 {
-
+	// 「SL+SR+L」を押せ！画像
+	Baton[6].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATON_CHARENGE]);     ///←修正ポイント	
+	Baton[6].Object.Pos.x = 740.0f;
+	Baton[6].Object.Pos.y = 360.0f;
+	Baton[6].Object.Scale.x = 0.7f;
+	Baton[6].Object.Scale.y = 0.7f;
 }
 
 
@@ -23,42 +30,180 @@ void Init_GameStart()
 void Init_BatonTouch()
 {
 	//StateBaton = false;
-	Baton[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATON_TEST]);
-	Baton[0].Object.Pos.x = 500.0f;
-	Baton[0].Object.Pos.y = 500.0f;
-	Baton[0].Object.Scale.x = 1.0f;
+	
+
+	// 「SL+SR+L+振れ！」画像
+	Baton[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATON_CHARENGE]);
+	Baton[0].Object.Pos.x = 740.0f;
+	Baton[0].Object.Pos.y = 360.0f;
+	Baton[0].Object.Scale.x = 0.7f;
+	Baton[0].Object.Scale.y = 0.7f;
+
+
+	// 「バトンタッチ中...」画像
+	// 背景アルファ値100%
+	Baton[1].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATONTATTCH_BG]);
+	Baton[1].Object.Pos.x = 1920.0f;
+	Baton[1].Object.Pos.y = 360.0f;
+	Baton[1].Object.Scale.x = 1.0f;
+
+	///-----------------------↓未実装↓--------------------------- ///
+
+	// 背景アルファ値80%
+	Baton[2].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATONTATTCH_BG]);
+	Baton[2].Object.Pos.x = 640.0f;
+	Baton[2].Object.Pos.y = 360.0f;
+	Baton[2].Object.Scale.x = 1.0f;
+
+	// 背景アルファ値60%
+	Baton[3].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATONTATTCH_BG]);
+	Baton[3].Object.Pos.x = 640.0f;
+	Baton[3].Object.Pos.y = 360.0f;
+	Baton[3].Object.Scale.x = 1.0f;
+
+	// 背景アルファ値40%
+	Baton[4].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATONTATTCH_BG]);
+	Baton[4].Object.Pos.x = 640.0f;
+	Baton[4].Object.Pos.y = 360.0f;
+	Baton[4].Object.Scale.x = 1.0f;
+
+	// 背景アルファ値20%
+	Baton[5].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATONTATTCH_BG]);
+	Baton[5].Object.Pos.x = 640.0f;
+	Baton[5].Object.Pos.y = 360.0f;
+	Baton[5].Object.Scale.x = 1.0f;
 
 }
 
 
 BatonTouch::BatonTouch()
 {
-
 }
-
 BatonTouch::~BatonTouch()
 {
-
 }
 void BatonTouch::Init()
 {
 }
+
+
 void BatonTouch::Uninit()
 {
 
 }
-void BatonTouch::Update()
-{
 
-	if (keyboard.IsTrigger(DIK_RETURN)) {
-		GameState_Change(GAME_STATE_GAME);     //ゲームステートに戻る
-		//StateBaton = false;
-	}
-	
-}
-void BatonTouch::Draw()
+// バトンタッチ更新処理(BTState:ゲームスタート処理か否か)
+void BatonTouch::Update(int BTState)
 {
-	Baton[0].Draw();
+	Timer += SECONDS;     // 時間計測
+
+
+	// ゲームスタート処理(ゲーム初回処理)==================================
+	if (BTState == BT_GameStart)
+	{
+		// 「SL+SR+L」を押したらゲームステートに遷移
+		if (keyboard.IsTrigger(DIK_RETURN)) {
+			GameState_Change(GAME_STATE_GAME);     //ゲームステートに遷移
+		}
+	}
+	// =======================================================
+
+
+	// バトンタッチ処理(背景右から差し込む)==================================
+	else if(BTState == BT_BatonTouch)
+	{
+		
+		if (Timer <= 3.0f)
+		{
+			// 3秒以内に「SL+SR+L+振る」をしたら1000P獲得
+			if (!CharengeFlag && keyboard.IsTrigger(DIK_RETURN)) {
+				gamedata.AddActionPoint(1000.0);
+				CharengeFlag = true;
+				call_E_game_Baton1000P();     // 1000Pアニメーション
+			}
+		}
+		else
+		{     // 3秒経過したらバトンタッチ処理
+
+			// 右から背景を差し込む
+			if (Baton[1].Object.Pos.x > 640.0f)
+			{
+				Baton[1].Object.Pos.x -= 50.0f;
+			}
+			else
+			{
+				Baton[1].Object.Pos.x = 640.0f;
+				Baton[1].Object.Pos.y = 360.0f;
+			}
+
+
+
+			// 「20秒経過」したらゲームステートに遷移
+			if ((Timer - 3.0f) >= 20.0f)
+			{     // 次の区間スタート
+				GameState_Change(GAME_STATE_GAME);     //ゲームステートに遷移
+			}
+
+		}
+		
+
+		
+	}
+	// =======================================================
+
+}
+void BatonTouch::Draw(int BTState)
+{
+	
+	// ゲームスタート処理
+	if (BTState == BT_GameStart)
+	{
+
+		// 「SL+SR+L」を押せ！　表示
+		Baton[6].Draw();
+
+	}
+
+	// バトンタッチ処理
+	else if (BTState == BT_BatonTouch)
+	{
+		
+		if (Timer <= 3.0f)
+		{
+			// 「SL+SR+L+振る」画像表示
+			Baton[0].Draw();
+		}
+		else
+		{
+			// 背景表示
+			Baton[1].Draw();
+
+			// 「20秒経過」したらゲームステートに遷移
+			if ((Timer - 3.0f) >= 15.0f && (Timer - 3.0f) < 16.0f)
+			{     // 残り５秒
+				Baton[1].Draw();     // いらん気がする
+			}
+			else if ((Timer - 3.0f) >= 16.0f && (Timer - 3.0f) < 17.0f)
+			{     // 残り４秒
+				Baton[2].Draw();
+			}
+			else if ((Timer - 3.0f) >= 17.0f && (Timer - 3.0f) < 18.0f)
+			{     // 残り３秒
+				Baton[3].Draw();
+			}
+			else if ((Timer - 3.0f) >= 18.0f && (Timer - 3.0f) < 19.0f)
+			{     // 残り２秒
+				Baton[4].Draw();
+			}
+			else if ((Timer - 3.0f) >= 19.0f && (Timer - 3.0f) < 20.0f)
+			{     // 残り１秒
+				Baton[5].Draw();
+			}
+
+		}
+		
+	}
+
 }
 
 bool BatonTouch::GetBatonState()

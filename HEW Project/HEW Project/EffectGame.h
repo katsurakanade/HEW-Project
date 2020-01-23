@@ -11,13 +11,18 @@ class EffectGame:public Effect
 public:
 	// メモリを取得したエフェクトの数
 	static int MaxEffectNum;
+	// 自分のvector型の配列番号
+	int MyEffectNum;
 	// Effectの最大配列数(使ってるパーティクルの最大数)
 	int MaxAryNum = 0;
 	// 実行しているパーティクルの最大配列番号
 	int IsUseMaxAryNum = -1;
+	// アニメーション終了した時のdeleteフラグ
+	bool DeleteFlag = false;
+
 
 	EffectGame(void(EffectGame::*)());
-	virtual ~EffectGame();
+	~EffectGame();
 	void Init();
 	void Uninit();
 	void Update();
@@ -44,6 +49,7 @@ public:
 
 ////////////////////////////////////////////////////// ゲーム(game) //////////////////////////////////////////////////////
 	void E_game_ActionSucsess();
+	void E_game_Baton1000P();
 ////////////////////////////////////////////////////// ゲーム(game) //////////////////////////////////////////////////////
 
 
@@ -77,6 +83,7 @@ void call_E_game_Sample();     // エフェクト再生関数(呼び出し用)
 
 ////////////////////////////////////////////////////// ゲーム(game) //////////////////////////////////////////////////////
 void call_E_game_ActionSucsess();
+void call_E_game_Baton1000P();
 ////////////////////////////////////////////////////// ゲーム(game) //////////////////////////////////////////////////////
 
 

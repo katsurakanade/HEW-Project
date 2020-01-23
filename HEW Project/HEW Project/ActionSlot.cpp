@@ -7,9 +7,9 @@ static const float VALUE_MAX = 90.0;
 static const float VALUE_MIN = -30.0;
 
 // アクションゲージ状態値
-static const float VALUE_OVER = VALUE_MAX * 0.75;
-static const float VALUE_GREAT = VALUE_MAX * 0.3;
-static const float VALUE_BAD = ((VALUE_MAX - VALUE_MIN) * 0.2) + VALUE_MIN;
+static const float VALUE_OVER = VALUE_MAX * 0.9;
+static const float VALUE_GREAT = VALUE_MAX * 0.75;
+static const float VALUE_BAD = ((VALUE_MAX - VALUE_MIN) * 0.1) + VALUE_MIN;
 
 // 常に減らす
 static const float VALUE_DOWNSEC = 0.1f;
@@ -51,7 +51,7 @@ void ActionSlot::Update(double stamina) {
 
 	StaminaTimer += SECONDS;
 
-	if (StaminaTimer >= 0.44) {
+	if (StaminaTimer >= 0.7) {
 		Value -= (1 / stamina);
 		StaminaTimer = 0.0f;
 	}
@@ -88,7 +88,7 @@ void ActionSlot::Update(double stamina) {
 	// BAD処理
 	if (State == ACTIONSLOT_BAD) {
 		gamedata.Addhp(-1);
-		Value = 10;
+		Value = VALUE_DEFAULT;
 	}
 
 
