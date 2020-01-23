@@ -105,7 +105,7 @@ void ResultScore::Draw()
 	}
 	if (DrawFlag == true)
 	{
-		//+ボタンでタイトルに戻る
+		//+ボタンでタイトルに戻るの描画
 		UI[0].Draw();
 	}
 
@@ -118,7 +118,7 @@ void ResultScore::ScoreCreate(int value,float posX,float posY)
 	ValueData = value;
 
 	for (int i = 0; i < NUMBER_OF_DIGITS; i++) {
-		score[i].LoadTexture(TexturePassDict[TEXTURE_INDEX_NUMBER], 10, 4, 4, 300 / 4, 300 / 4);
+		score[i].LoadTexture(TexturePassDict[TEXTURE_INDEX_OK_NUMBER], 10, 4, 3, 280 / 4, 280 / 4);
 		score[i].Object.Pos = D3DXVECTOR2(posX + (i*(300 / 4)), posY);
 	}
 }

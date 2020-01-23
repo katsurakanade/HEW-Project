@@ -168,8 +168,8 @@ void ActionPointAnime::Create(int value) {
 	ValueData = value;
 
 	for (int i = 0; i < 3; i++) {
-		self[i].LoadTexture(TexturePassDict[TEXTURE_INDEX_NUMBER], 10, 4, 4, 300 / 4, 300 / 4);
-		self[i].Object.Pos = D3DXVECTOR2(PosX + (i * (300 / 4) * self[i].Object.Scale.x), PosY);
+		self[i].LoadTexture(TexturePassDict[TEXTURE_INDEX_NUMBER], 10, 4, 3, 193 / 4, 150 / 3);
+		self[i].Object.Pos = D3DXVECTOR2(PosX + (i * (193 / 4) * self[i].Object.Scale.x), PosY);
 	}
 }
 

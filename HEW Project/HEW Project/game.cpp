@@ -15,25 +15,12 @@
 #include "GameOver.h"
 #include "BatonTouch.h"
 #include "GameClear.h"
-
 #include "EffectGame.h"
 
 
 // Debug Mode
 #define DEBUG
 
-/*
-プロトタイプ宣言
-*/
-
-// 走る処理
-void Running();
-// Debugパネル
-void Debug_Panel();
-// キャラクター処理
-void CharacterMove();
-// Debug走る (キーボード)
-void Debug_Running();
 
 /*
 グローバル変数
@@ -257,6 +244,7 @@ void Update_Game() {
 
 	case GAME_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
 
+
 		//エフェクト更新処理
 		egmanager->Update();
 
@@ -342,6 +330,7 @@ void Update_Game() {
 			if (DoOnce)
 			{
 				call_E_game_Sample();     //エフェクト再生
+				call_E_tutorial_AAA();
 				//call_E_game_ActionSucsess();
 
 				DoOnce = false;     // 消さない！

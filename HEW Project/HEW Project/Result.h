@@ -1,8 +1,8 @@
 #pragma once
 
 #define RANKING_MAX		(5)
-#define NUMBER_WIDTH  (300)
-#define NUMBER_HEIGHT (300)
+#define NUMBER_WIDTH  (200)
+#define NUMBER_HEIGHT (150)
 
 
 void Init_Result();

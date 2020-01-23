@@ -23,19 +23,19 @@ static ActionUI actionui;
 
 void GameProgress::Init() 
 {
-		ProgressBar[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BAR_FRAME]);
+		//ProgressBar[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BAR_FRAME]);
 		ProgressBar[1].LoadTexture(TexturePassDict[TEXTURE_INDEX_PROGRESS_BAR]);
 		ProgressBar[2].LoadTexture(TexturePassDict[TEXTURE_INDEX_AIROU]);
 
-		ProgressBar[0].Object.Pos.x = SCREEN_WIDTH / 2;
-		ProgressBar[0].Object.Pos.y = 100.0f;
-		ProgressBar[0].Object.Scale.x = 1.0f;
-		ProgressBar[0].Object.Scale.y = 1.0f;
+		//ProgressBar[0].Object.Pos.x = SCREEN_WIDTH / 2;
+		//ProgressBar[0].Object.Pos.y = 100.0f;
+		//ProgressBar[0].Object.Scale.x = 1.0f;
+		//ProgressBar[0].Object.Scale.y = 1.0f;
 
 		ProgressBar[1].Object.Pos.x = SCREEN_WIDTH / 2;
 		ProgressBar[1].Object.Pos.y = 100.0f;
-		ProgressBar[1].Object.Scale.x = 1.0f;
-		ProgressBar[1].Object.Scale.y = 1.0f;
+		ProgressBar[1].Object.Scale.x = 0.6f;
+		ProgressBar[1].Object.Scale.y = 0.6f;
 
 
 		ProgressBar[2].Object.Pos.x = 200.0f;

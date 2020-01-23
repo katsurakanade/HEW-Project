@@ -7,7 +7,7 @@
 #include <DxLib.h>
 #include "ResultScore.h"
 
-static GameObject obj[1];
+static GameObject obj[2];
 static ResultScore score[6];
 static ResultScore ui;
 static int g_TotalScore;
@@ -37,8 +37,15 @@ void Init_Result()
 	obj[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BACKGROUND]);
 	obj[0].Object.Pos.x = SCREEN_WIDTH / 2;
 	obj[0].Object.Pos.y = SCREEN_HEIGHT / 2;
-	obj[0].Object.Scale.x = 1.0f;
-	obj[0].Object.Scale.y = 1.0f;
+	obj[0].Object.Scale.x = 1.00f;
+	obj[0].Object.Scale.y = 1.00f;
+
+	obj[1].LoadTexture(TexturePassDict[TEXTURE_INDEX_RESULT_BG]);
+	obj[1].Object.Pos.x = 400.0f;
+	obj[1].Object.Pos.y = 460.0f;
+	obj[1].Object.Scale.x = 0.75f;
+	obj[1].Object.Scale.y = 0.75f;
+
 
 	ui.Init();
 	
@@ -73,6 +80,8 @@ void Draw_Result()
 {
 
 	obj[0].Draw();
+	obj[1].Draw();
+
 
 	for (int i = 0; i < RANKING_MAX; i++)
 	{
