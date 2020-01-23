@@ -75,7 +75,7 @@ bool D3D_Initialize(HWND hWnd)
 	//	g_pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
 	//	g_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);
 
-	//	g_pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	//	g_pD3DDevice->SetRenderState(D3DRS_ALPHAActionBoardENABLE, TRUE);
 	//	g_pD3DDevice->SetRenderState(D3DRS_ALPHAREF, 0x80);
 	//	g_pD3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 
@@ -83,7 +83,7 @@ bool D3D_Initialize(HWND hWnd)
 	// アルファブレンドの設定
 	g_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
 	g_pD3DDevice->SetRenderState(D3DRS_ZENABLE, false);
-	g_pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, false);
+	//g_pD3DDevice->SetRenderState(D3DRS_SCISSORActionBoardENABLE, false);
 	g_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	g_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 

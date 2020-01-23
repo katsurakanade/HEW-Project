@@ -21,21 +21,25 @@ static GameObject ProgressBar[3];
 static BatonTouch batontouch;
 static ActionUI actionui;
 
+int p1[2] = { 0,0 };
+int p2[2] = {0,0};
+int p3[2] = {0,0};
+
 void GameProgress::Init() 
 {
-		ProgressBar[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BAR_FRAME]);
+		//ProgressBar[0].LoadTexture(TexturePassDict[TEXTURE_INDEX_BAR_FRAME]);
 		ProgressBar[1].LoadTexture(TexturePassDict[TEXTURE_INDEX_PROGRESS_BAR]);
 		ProgressBar[2].LoadTexture(TexturePassDict[TEXTURE_INDEX_AIROU]);
 
-		ProgressBar[0].Object.Pos.x = SCREEN_WIDTH / 2;
-		ProgressBar[0].Object.Pos.y = 100.0f;
-		ProgressBar[0].Object.Scale.x = 1.0f;
-		ProgressBar[0].Object.Scale.y = 1.0f;
+		//ProgressBar[0].Object.Pos.x = SCREEN_WIDTH / 2;
+		//ProgressBar[0].Object.Pos.y = 100.0f;
+		//ProgressBar[0].Object.Scale.x = 1.0f;
+		//ProgressBar[0].Object.Scale.y = 1.0f;
 
 		ProgressBar[1].Object.Pos.x = SCREEN_WIDTH / 2;
 		ProgressBar[1].Object.Pos.y = 100.0f;
-		ProgressBar[1].Object.Scale.x = 1.0f;
-		ProgressBar[1].Object.Scale.y = 1.0f;
+		ProgressBar[1].Object.Scale.x = 0.6f;
+		ProgressBar[1].Object.Scale.y = 0.6f;
 
 
 		ProgressBar[2].Object.Pos.x = 200.0f;
@@ -52,6 +56,23 @@ void GameProgress::Init()
 		GameFinish = false;
 		MeasureFlag = false;
 
+
+		p1[0] = (rand() % 4) + 1;
+	
+
+		p2[0] = (rand() % 5);
+		p2[1] = (rand() % 5);
+
+		while (p2[0] == p2[1]) {
+			p2[1] = (rand() % 5);
+		}
+
+		p3[0] = (rand() % 5);
+		p3[1] = (rand() % 5);
+
+		while (p3[0] == p3[1]) {
+			p3[1] = (rand() % 5);
+		}
 }
 
 
@@ -65,7 +86,7 @@ GameProgress::~GameProgress()
 
 }
 
-void GameProgress::Update(ActionUI target)
+void GameProgress::Update(ActionUI &target)
 {
 	//フレームでゲージを増やす処理
 	if (MeasureFlag == false)
@@ -95,6 +116,8 @@ void GameProgress::Update(ActionUI target)
 		DrawFormatString(300, 400, GetColor(255, 255, 255), "残り10m!!");
 		//距離で計測する処理に切り替え
 		MeasureFlag = true;
+
+		
 	}
 	//距離で計測する処理
 	ChangeMeasure(600.0f,900.0f);
@@ -107,8 +130,9 @@ void GameProgress::Update(ActionUI target)
 		MeasureFlag = false;
 
 		//アクションが変わる処理
-		target.SetState(ACTION_STATE_LONGJUMP);
-
+		target.ResetAll();
+		target.State = p1[0];
+		
 	}
 
 	//25秒経ったら(1秒＝60)
@@ -134,7 +158,8 @@ void GameProgress::Update(ActionUI target)
 			Section = 1;
 
 			//アクションが変わる処理
-			target.SetState(ACTION_STATE_LONGJUMP);
+			target.ResetAll();
+			target.State = p2[0];
 
 		}
 	}
@@ -147,6 +172,7 @@ void GameProgress::Update(ActionUI target)
 		//距離で計測する処理に切り替え
 		MeasureFlag = true;
 
+		
 	}
 	//距離で計測する処理
 	ChangeMeasure(2400.0f,2700.0f);
@@ -158,7 +184,8 @@ void GameProgress::Update(ActionUI target)
 		MeasureFlag = false;
 
 		//アクションが変わる処理
-		target.SetState(ACTION_STATE_LONGJUMP);
+		target.ResetAll();
+		target.State = p2[1];
 
 	}
 
@@ -184,7 +211,8 @@ void GameProgress::Update(ActionUI target)
 			Section = 2;
 
 			//アクションが変わる処理
-			target.SetState(ACTION_STATE_LONGJUMP);
+			target.ResetAll();
+			target.State = p3[0];
 
 		}
 	}
@@ -198,6 +226,7 @@ void GameProgress::Update(ActionUI target)
 		//距離で計測する処理に切り替え
 		MeasureFlag = true;
 
+		
 	}
 	//距離で計測する処理
 	ChangeMeasure(4200.0f,4500.0f);
@@ -209,7 +238,8 @@ void GameProgress::Update(ActionUI target)
 		MeasureFlag = false;
 
 		//アクションが変わる処理
-		target.SetState(ACTION_STATE_LONGJUMP);
+		target.ResetAll();
+		target.State = p3[1];
 
 	}
 

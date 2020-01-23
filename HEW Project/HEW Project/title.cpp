@@ -12,10 +12,10 @@
 #include "ActionUI.h"
 #include "ActionSlot.h"
 #include "GameData.h"
-
 #define DEBUG
 
 using namespace std;
+static bool g_bEnd = false;
 
 Live2D Hiyori;
 
@@ -44,6 +44,8 @@ void Init_Title() {
 	Background.Object.Pos.y = 360.0f;
 	Background.LoadTexture(TextureDict["Title"]);
 
+	g_bEnd = false;
+
 }
 
 void Uninit_Title() {
@@ -55,6 +57,7 @@ void Uninit_Title() {
 void Update_Title() {
 
 	Hiyori.SetMontionIndex(GetRand(8));
+
 
 	/*
 	TitleMenu.Update();
@@ -89,9 +92,8 @@ void Update_Title() {
 	}
 
 #ifdef DEBUG
-
 	if (keyboard.IsTrigger(DIK_Z)) {
-		Scene_Change(SCENE_INDEX_GAME);
+		Scene_Change(SCENE_INDEX_TUTORIAL);
 		gamedata.SetGameMode(GAMEMODE_MATCH);
 	}
 

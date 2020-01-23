@@ -48,7 +48,7 @@ public:
 	
 	void Load();
 
-	void Update(double stamina);
+	void Update(double stamina,bool flag);
 
 	void Draw();
 
