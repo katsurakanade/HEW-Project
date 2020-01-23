@@ -2,7 +2,6 @@
 #include "myDirect3D.h"
 #include <time.h>
 #include "input.h"
-#include "sound.h"
 #include "scene.h"
 #include "DxLib.h"
 #include <Windows.h>
@@ -36,6 +35,7 @@ static void Update(void);
 static void Draw(void);
 
 int GetMemoryUsage();
+
 
 /*------------------------------------------------------------------------------
 ÉÅÉCÉì
@@ -203,9 +203,8 @@ bool Initialize(HINSTANCE hInst)
 		return false;
 	}
 */
-	if (!InitSound(g_hWnd)) {
-		return false;
-	}
+
+	
 
 	ChangeWindowMode(TRUE);
 	SetUserWindow(g_hWnd);
@@ -226,13 +225,19 @@ bool Initialize(HINSTANCE hInst)
 
 	Scene_Initialize(SCENE_INDEX_TITLE);
 
+	//shand = LoadSoundMem("asset/sound/BGM_ActionBoard.mp3 ");
+
+	//PlaySoundMem(shand,DX_PLAYTYPE_LOOP);
+
+	
+
 	return true;
 }
 
 void Finalize(void)
 {
 
-	UninitSound();
+
 
 	DxLib_End();
 	

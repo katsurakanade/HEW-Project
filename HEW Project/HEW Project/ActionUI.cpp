@@ -16,7 +16,7 @@ vector <const char *> TRAMPOLINING_PASS;
 // バランスボード
 vector <const char*>	 BALANCEBOARD_PASS;
 // ハードル
-vector <const char*> HURDLE_PASS;
+//vector <const char*> HURDLE_PASS;
 
 vector <const char*>  LONG_JUMP_PASS;
 // 重量挙げ
@@ -35,9 +35,29 @@ ActionUI::~ActionUI()
 	vector<GameObject>().swap(Action_vector);
 }
 
+int* ActionUI::getRandNR(int min, int max, int num) {
+	int tol = max - min + 1;
+	int a[30000];
+	static int b[30000];
+	int i, j;
+	for (i = 0; i < tol; i++) {
+		*(a + i) = min + i;
+	}
+	srand(time(0));
+	int ctr;
+	for (i = 0; i < num; i++) {
+		ctr = rand() % (tol - i);
+		b[i] = a[ctr];
+		for (j = ctr; j < (tol - 1 - i); j++) {
+			a[j] = a[j + 1];
+		}
+	}
+	return b;
+}
+
 void ActionUI::Init() {
 
-	State = ACTION_STATE_UNEVENBARS;
+	//State = ACTION_STATE_LONGJUMP;
 	State_Switch = true;
 	progress = 0;
 	Finish_Flag = false;
@@ -46,32 +66,34 @@ void ActionUI::Init() {
 	// トランポリン
 	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SL]);
 	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SR]);
-	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_HANDUP]);
 
 	// バランスボード
 	BALANCEBOARD_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SL]);
 	BALANCEBOARD_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SR]);
 
 	// ハードル
-	HURDLE_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
-	HURDLE_PASS.push_back(TexturePassDict[TEXTURE_INDEX_ZL]);
+	//HURDLE_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+	//HURDLE_PASS.push_back(TexturePassDict[TEXTURE_INDEX_ZL]);
 
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
-	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_HANDUP]);
 
 	// 重量挙げ
-	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_HANDUP]);
 	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_LEFT]);
 	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
+	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_HANDDOWN]);
 
 	// 段違い平行棒
-	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_AIROU]);
+	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_ROTATE]);
 	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_LEFT]);
 	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 
 	Action_vector.clear();
+
 }
 
 void ActionUI::Update() {
@@ -80,6 +102,14 @@ void ActionUI::Update() {
 
 		switch (State)
 		{
+
+		case ACTION_STATE_LONGJUMP:
+			for (int i = 0; i < 4; i++) {
+				onetime[i].LoadTexture(LONG_JUMP_PASS[i]);
+				Action_vector.push_back(onetime[i]);
+			}
+			break;
+
 			// トランポリン
 		case ACTION_STATE_TRAMPOLINING:
 			for (int i = 0; i < 3; i++) {
@@ -95,23 +125,18 @@ void ActionUI::Update() {
 			}
 			break;
 			// ハードル
+			/*
 		case ACTION_STATE_HURDLE:
 			for (int i = 0; i < 2; i++) {
 				onetime[i].LoadTexture(HURDLE_PASS[i]);
 				Action_vector.push_back(onetime[i]);
 			}
 			break;
-
-		case ACTION_STATE_LONGJUMP:
-			for (int i = 0; i < 4; i++) {
-				onetime[i].LoadTexture(LONG_JUMP_PASS[i]);
-				Action_vector.push_back(onetime[i]);
-			}
-			break;
-
+			*/
+		
 			// 重量挙げ
 		case ACTION_STATE_WEIGHT:
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < 4; i++) {
 				onetime[i].LoadTexture(WEIGHT_PASS[i]);
 				Action_vector.push_back(onetime[i]);
 			}
@@ -177,6 +202,7 @@ void ActionUI::Update() {
 			break;
 
 			// ハードル
+			/*
 		case ACTION_STATE_HURDLE:
 
 			if (progress == 0 && joycon[LEFT_JOYCON].GetGyro_X() < ACTION_UP_JUDGE) {
@@ -195,6 +221,7 @@ void ActionUI::Update() {
 			}
 
 			break;
+			*/
 
 		case ACTION_STATE_LONGJUMP:
 			switch (progress)
@@ -343,16 +370,8 @@ void ActionUI::Update() {
 		State_Switch_Timer += SECONDS;
 	}
 
-	if (State_Switch_Timer  >= 0.7f) {
-		progress = 0;
-		for (int i = 0; i < 4; i++) {
-			UNEVENBARS_Array[i] = false;
-		}
-		UNEVENBARS_rnd = GetRand(1);
-		State_Switch = true;
-		State_Switch_Timer = 0.0f;
-		Finish_Flag = false;
-		Reset_Vector();
+	if (State_Switch_Timer  >= 0.2f) {
+		ResetAll();
 	}
 
 }
@@ -399,4 +418,16 @@ bool ActionUI::GetFinishFlag() {
 
 int ActionUI::GetActionAmount() {
 	return Action_vector.size();
+}
+
+void ActionUI::ResetAll() {
+	progress = 0;
+	for (int i = 0; i < 4; i++) {
+		UNEVENBARS_Array[i] = false;
+	}
+	UNEVENBARS_rnd = GetRand(1);
+	State_Switch = true;
+	State_Switch_Timer = 0.0f;
+	Finish_Flag = false;
+	Reset_Vector();
 }

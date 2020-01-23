@@ -4,7 +4,9 @@
 #include <algorithm>
 
 map<const char *, const char *> Live2D_Dict = {
-	{"HIYORI","asset/Live2D/Hiyori/Hiyori.model3.json"}
+	{"HIYORI","asset/Live2D/Hiyori/Hiyori.model3.json"},
+	{"KYARA","asset/Live2D/kyara/kyara1.model3.json"}
+
 };
 
 Live2D::Live2D() {
