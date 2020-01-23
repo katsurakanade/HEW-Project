@@ -270,7 +270,7 @@ void Update_Tutorial()
 		// アクションUI更新
 		Action->Update();
 		// アクションゲージ更新
-		Actionslot.Update(stamina->GetStaminaScale_x());
+		Actionslot.Update(stamina->GetStaminaScale_x(), gamedata.GetExcellentMode());
 		// スビート更新
 		gamedata.UpdateSpeed();
 
