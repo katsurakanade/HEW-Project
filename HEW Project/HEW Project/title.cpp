@@ -17,21 +17,24 @@
 using namespace std;
 static bool g_bEnd = false;
 
-Live2D Hiyori;
+///Live2D Hiyori;
 
 Menu TitleMenu(3);
 
 GameObject Background;
+GameObject Alpha;
+static GameObject Logo;
+static GameObject GameStart;
 
 void Init_Title() {
 
-	Hiyori.LoadModel(Live2D_Dict["HIYORI"]);
+	///Hiyori.LoadModel(Live2D_Dict["HIYORI"]);
 
-	Hiyori.Zoom.x = 3.0f;
-	Hiyori.Zoom.y = 3.0f;
-	Hiyori.Pos.x = -300.0f;
-	Hiyori.Pos.y = -450.0f;
-	
+	///Hiyori.Zoom.x = 3.0f;
+	///Hiyori.Zoom.y = 3.0f;
+	///Hiyori.Pos.x = -300.0f;
+	///Hiyori.Pos.y = -450.0f;
+	///////////////////////////////////////////////////////////////////
 	TitleMenu.Pos.x = 700.0f;
 	TitleMenu.Pos.y = 100.0f;
 	TitleMenu.FontSize = 64.0f;
@@ -39,10 +42,31 @@ void Init_Title() {
 	TitleMenu.SelectText.push_back("スタート");
 	TitleMenu.SelectText.push_back("チュートリアル");
 	TitleMenu.SelectText.push_back("終了");
-	
+	///////////////////////////////////////////////////////////////////
+
+	// 背景テクスチャロード
 	Background.Object.Pos.x = 640.0f;
 	Background.Object.Pos.y = 360.0f;
-	Background.LoadTexture(TextureDict["Title"]);
+	Background.Object.Scale = { 0.7f, 0.7f };
+	Background.LoadTexture(TextureDict["Title_BG"]);
+
+	// エクセレントモードの半透明のテクスチャを挟む
+	Alpha.Object.Pos = {640.0f, 360.0f};
+	Alpha.Object.Scale = {1.0f, 1.0f};
+	Alpha.LoadTexture(TextureDict["alphabg"]);
+
+	// タイトルロゴテクスチャロード
+	Logo.Object.Pos.x = 620.0f;
+	Logo.Object.Pos.y = 360.0f;
+	Logo.Object.Scale = { 0.3f, 0.3f };
+	Logo.LoadTexture(TextureDict["Title_Logo"]);
+	
+	// ゲームスタートテクスチャロード
+	GameStart.Object.Pos.x = 640.0f;
+	GameStart.Object.Pos.y = 640.0f;
+	GameStart.Object.Scale = { 0.23f, 0.23f };
+	GameStart.LoadTexture(TextureDict["Title_GameStart"]);
+
 
 	g_bEnd = false;
 
@@ -50,13 +74,13 @@ void Init_Title() {
 
 void Uninit_Title() {
 
-	Hiyori.~Live2D();
+	///Hiyori.~Live2D();
 
 }
 
 void Update_Title() {
 
-	Hiyori.SetMontionIndex(GetRand(8));
+	///Hiyori.SetMontionIndex(GetRand(8));
 
 
 	/*
@@ -110,6 +134,12 @@ void Update_Title() {
 void Draw_Title() {
 
 	Background.Draw();
+
+	Alpha.Draw();
+
+	Logo.Draw();
+
+	GameStart.Draw();
 
 	//Hiyori.Draw();
 

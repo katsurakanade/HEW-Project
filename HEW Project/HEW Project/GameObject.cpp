@@ -35,7 +35,9 @@ map <const char*, const char*> TextureDict = {
 	{"Good","asset/texture/GOOD.png"},
 	{"Bad","asset/texture/BAD.png"},
 	{"Number","asset/texture/Number.png"},
-	{"Title","asset/texture/Title.jpg"},
+	{"Title_BG","asset/texture/BackGround.png"},
+	{"Title_Logo","asset/texture/logo.png"},
+	{"Title_GameStart","asset/texture/Title_GameStart.png"},
 	{"alpha","asset/texture/alpha.png"},
 	{"excellent","asset/texture/excellent.png"},
 	{"alphabg","asset/texture/alphabg.png"},
@@ -66,7 +68,7 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/progressbar.png",
 	"asset/texture/bar_frame.png",
 	"asset/texture/Batontouch_ActionBoard.png",
-	"asset/texture/stamina_frame.png",
+	"asset/texture/stamina.png",
 	"asset/texture/OVER.png",
 	"asset/texture/GREAT.png",
 	"asset/texture/GOOD.png",
@@ -89,6 +91,13 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/BatontattchBG.png",
 	"asset/texture/BatonCharenge.png",
 	"asset/texture/Baton1000P.png",
+	"asset/texture/GameStart.png",
+	"asset/texture/OKBatonTouchi_BG.png",
+	"asset/texture/OKBatonTouchi_BG_1.png",
+	"asset/texture/OKBatonTouchi_BG_2.png",
+	"asset/texture/OKBatonTouchi_BG_3.png",
+	"asset/texture/OKBatonTouchi_BG_4.png",
+	"asset/texture/OKBatonTouchi_BG_5.png",
 
 };
 

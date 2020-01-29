@@ -381,7 +381,7 @@ void Update_Game() {
 		//聖火が消えたらGAME OVER
 		if (gamedata.Gethp() == 0)
 		{
-			///GameState_Change(GAME_STATE_GAME_OVER);
+			//GameState_Change(GAME_STATE_GAME_OVER);
 		}
 
 		Debug_Running();
@@ -547,6 +547,13 @@ void Draw_Game() {
 		// ゲーム進行ゲージ描画
 		gameprogress->Draw();
 
+		//エフェクト描画処理
+		egmanager->Draw();
+
+		// アクションUI+背景描画
+		ActionBoard.Draw();
+		Action.Draw();
+
 		// エクセレントモード描画
 		if (gamedata.GetExcellentMode()) {
 			Alphabg.Draw();
@@ -565,13 +572,6 @@ void Draw_Game() {
 				ActionEffectVector[i]->Draw_Affect();
 			}
 		}
-
-		//エフェクト描画処理
-		egmanager->Draw();
-
-		// アクションUI+背景描画
-		ActionBoard.Draw();
-		Action.Draw();
 
 		// キャラクター+アクションゲージ(腕)描画
 		Actionslot.Draw(); 

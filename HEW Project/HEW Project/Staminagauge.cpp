@@ -62,10 +62,19 @@ void StaminaGauge::Draw()
 
 void StaminaGauge::SetStaminaGauge(double scale_x, double scale_y)
 {
-	staminagauge[0].Object.Scale.x = scale_x;
 	StaminaScale_x = scale_x;
-	staminagauge[0].Object.Scale.y = scale_y;
 	StaminaScale_y = scale_y;
+
+	if (scale_x > 1.0f && scale_y > 1.0f)
+	{
+		staminagauge[0].Object.Scale.x = scale_x;
+		staminagauge[0].Object.Scale.y = scale_y;
+	}
+	else
+	{     // è¨Ç≥Ç≠Ç»ÇÈÇÃÇ™é~Ç‹ÇÁÇÀÇ•
+		staminagauge[0].Object.Scale.x = 0.0f;
+		staminagauge[0].Object.Scale.y = 0.0f;
+	}
 }
 
 double StaminaGauge::GetStaminaScale_x()
