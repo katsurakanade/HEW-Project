@@ -103,12 +103,13 @@ void ResultScore::Draw()
 		score[0].Draw_Anime(ValueData / 10);
 		score[1].Draw_Anime(ValueData % 10);
 	}
+
+
 	if (DrawFlag == true)
 	{
 		//+ボタンでタイトルに戻るの描画
 		UI[0].Draw();
 	}
-
 
 }
 
