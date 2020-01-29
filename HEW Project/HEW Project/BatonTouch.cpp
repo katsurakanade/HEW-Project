@@ -107,7 +107,7 @@ void BatonTouch::Update(int BTState)
 	if (BTState == BT_GameStart)
 	{
 		// 「SL+SR+L」を押したらゲームステートに遷移
-		if (keyboard.IsTrigger(DIK_RETURN)) {               ///←修正箇所
+		if (keyboard.IsTrigger(DIK_RETURN) || joycon[0].GetOldState() == JOYCON_L + JOYCON_SL_LEFT + JOYCON_SR_LEFT) {               ///←修正箇所
 			GameState_Change(GAME_STATE_GAME);     //ゲームステートに遷移
 		}
 	}
@@ -121,10 +121,17 @@ void BatonTouch::Update(int BTState)
 		if (Timer <= 3.0f)
 		{
 			// 3秒以内に「SL+SR+L+振る」をしたら1000P獲得
-			if (!CharengeFlag && keyboard.IsTrigger(DIK_RETURN)) {               ///←修正箇所
-				gamedata.AddActionPoint(1000.0);
-				CharengeFlag = true;
-				call_E_game_Baton1000P();     // 1000Pアニメーション
+			if (!CharengeFlag) {  ///←修正箇所
+				if (keyboard.IsTrigger(DIK_RETURN)){
+					gamedata.AddActionPoint(1000.0);
+						CharengeFlag = true;
+						call_E_game_Baton1000P();     // 1000Pアニメーション
+				}
+				else if (joycon[0].GetOldState() == JOYCON_L + JOYCON_SL_LEFT + JOYCON_SR_LEFT && joycon[0].GetGyro_Y() >= 200) {
+					gamedata.AddActionPoint(1000.0);
+					CharengeFlag = true;
+					call_E_game_Baton1000P();     // 1000Pアニメーション
+				}
 			}
 		}
 		else
