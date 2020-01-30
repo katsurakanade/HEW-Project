@@ -113,6 +113,11 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/OKBatonTouchi_BG_3.png",
 	"asset/texture/OKBatonTouchi_BG_4.png",
 	"asset/texture/OKBatonTouchi_BG_5.png",
+	"asset/texture/star.png",
+	"asset/texture/cross.png",
+	"asset/texture/ase.png",
+	"asset/texture/joycon.png",
+	"asset/texture/hanabi.png",
 
 };
 
