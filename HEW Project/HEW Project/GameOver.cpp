@@ -13,8 +13,9 @@
 #include "gameprogress.h"
 
 static GameOver gameOver;
-static GameObject obj[2];
+static GameObject obj[1];
 
+static int seSystemHandle;     // システムSEハンドル
 
 static GameProgress progress;
 
@@ -42,16 +43,13 @@ void GameOver::Init()
 	obj[0].Object.Scale.x = 1.5;
 	obj[0].Object.Scale.y = 1.5;
 
-	obj[1].LoadTexture(TextureDict["push_minus_title"]);
-	obj[1].Object.Pos.x = SCREEN_WIDTH / 2;
-	obj[1].Object.Pos.y = SCREEN_HEIGHT / 2 + 200;
-	obj[1].Object.Scale.x = 1.0f;
-	obj[1].Object.Scale.y = 1.0f;
-
 
 	titleflag = false;
 	TimeCount = SECONDS;
 	objflag = false;
+
+	seSystemHandle = LoadSoundMem("asset/sound/SE/UI-systemSE.mp3");
+
 }
 
 
@@ -66,17 +64,12 @@ void GameOver::Update()
 
 void GameOver::Draw() 
 {
-	if (TimeCount >= 1.0f)
+	if (objflag == true)
 	{
 		obj[0].Draw();
 
 	}
-	//タイトルへ戻るの表示
-	if (objflag == true)
-	{
-		obj[1].Draw();
 
-	}
 }
 
 /*
@@ -93,24 +86,20 @@ void GameOver::GameOverisUse()
 	{
 		//ゲームオーバーステートに入る
 		TimeCount++;
-		titleflag = true;
+		objflag = true;
 
 		//ゲームオーバーテクスチャの表示
 
-		if (TimeCount >= 120.0f)
+		if (TimeCount > 120.0f)
 		{
-			objflag = true;
+			titleflag = true;
 
-			if (TimeCount >= 170.0f)
-			{
-				TimeCount = 70.0f;
-				objflag = false;
-			}
+			//タイトルへ戻るの表示
 
 		}
-		if (titleflag == true && keyboard.IsTrigger(DIK_Z)|| titleflag == true && joycon[0].IsPress(JOYCON_MIN)) {
+		if (titleflag == true && keyboard.IsTrigger(DIK_Z)) {
+			PlaySoundMem(seSystemHandle, DX_PLAYTYPE_BACK);     // SE再生
 			Scene_Change(SCENE_INDEX_TITLE);
-
 		}
 
 	}

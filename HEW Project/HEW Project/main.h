@@ -13,7 +13,7 @@
 #define CLASS_NAME  "GameWindow"
 
 // ウィンドウの名前
-#define WINDOW_CAPTION "聖火リレー" 
+#define WINDOW_CAPTION "ランビク Connect for Olinppic" 
 
 // FPSロック
 #define FPS_LOCK 60.0f

@@ -1,12 +1,15 @@
 #include "GameData.h"
 #include "main.h"
 #include <vector>
+#include "DxLib.h"
 
 const int speed1 = 360;     //futuu
 const int speed2 = 315;     //osoi
 const int speed3 = 405;     //hayai
 
 static const float InitPosY = 600;
+
+static int seHandle = -1;     // SEÉnÉìÉhÉã
 
 GameData gamedata;
 
@@ -30,6 +33,9 @@ void GameData::Init() {
 	ExcellentMode = false;
 	ExcellentModeInitFlag = false;
 	ExcellentTimer = 0.0f;
+
+	seHandle = LoadSoundMem("asset/sound/SE/excellent.mp3");
+
 }
 
 void GameData::UpdateSpeed() {
@@ -38,11 +44,14 @@ void GameData::UpdateSpeed() {
 }
 
 void GameData::InitExcellentMode() {
-
+	
 	ExcellentMode = true;
 }
 
 void GameData::UpdateExcellentMode(vector <ActionPointAnime*> actionpoint) {
+	static bool DoOnce = true;
+
+	if (DoOnce) { PlaySoundMem(seHandle, DX_PLAYTYPE_BACK); DoOnce = false; }     // SEçƒê∂
 
 	ExcellentTimer += SECONDS;
 
@@ -51,6 +60,7 @@ void GameData::UpdateExcellentMode(vector <ActionPointAnime*> actionpoint) {
 		ExcellentMode = false;
 		ExcellentTimer = 0.0f;
 		ExcellentModeCount = 0;
+		DoOnce = true;
 	}
 
 }

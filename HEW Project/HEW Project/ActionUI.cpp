@@ -24,6 +24,9 @@ vector <const char*>  WEIGHT_PASS;
 // 段違い平行棒
 vector <const char*>  UNEVENBARS_PASS;
 
+// 成功時SEハンドル(-1:エラー)
+static int seHandle = -1;
+
 ActionUI::ActionUI()
 {
 	
@@ -93,6 +96,8 @@ void ActionUI::Init() {
 	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 
 	Action_vector.clear();
+
+	seHandle = LoadSoundMem("asset/sound/SE/actionclear.mp3");
 
 }
 
@@ -177,6 +182,8 @@ void ActionUI::Update() {
 					joycon[LEFT_JOYCON].GetOldState() == (JOYCON_SL_LEFT + JOYCON_SR_LEFT + JOYCON_L)) {
 					Action_vector[2].Gauss_Filter(500);
 					progress = 3;
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 			}
@@ -185,6 +192,8 @@ void ActionUI::Update() {
 		case ACTION_STATE_BALANCEBOARD:
 			// Failed
 			if (joycon[LEFT_JOYCON].GetGyro_Y() < ACTION_UP_JUDGE || joycon[LEFT_JOYCON].GetGyro_Y() > -ACTION_UP_JUDGE) {
+				//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+				PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 				Finish_Flag = true;
 			}
 			if (joycon[LEFT_JOYCON].IsTrigger(JOYCON_SL_LEFT)) {
@@ -196,6 +205,8 @@ void ActionUI::Update() {
 				progress++;
 			}
 			if (progress >= 2) {
+				//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+				PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 				Finish_Flag = true;
 			}
 
@@ -227,51 +238,67 @@ void ActionUI::Update() {
 			switch (progress)
 			{
 			case 0:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
+				if (joycon[0].IsTrigger(JOYCON_DOWN) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[0].Gauss_Filter(500);
 				}
 				else if (joycon[0].GetTrigger() != NULL && !joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				else if (joycon[0].GetGyro_Y() > 300) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				break;
 			case 1:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
+				if (joycon[0].IsTrigger(JOYCON_DOWN) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[1].Gauss_Filter(500);
 				}
 				else if (joycon[0].GetTrigger() != NULL && !joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				else if (joycon[0].GetGyro_Y() > 300) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				break;
 			case 2:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
+				if (joycon[0].IsTrigger(JOYCON_DOWN) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[2].Gauss_Filter(500);
 				}
 				else if (joycon[0].GetTrigger() != NULL && !joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				else if (joycon[0].GetGyro_Y() > 300) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				break;
 			case 3:
-				if (joycon[0].GetGyro_Y() > 300 || keyboard.IsTrigger(DIK_UPARROW)) {
+				if (joycon[0].GetGyro_X() > 300 || keyboard.IsTrigger(DIK_UPARROW)) {
 					progress++;
 					Action_vector[3].Gauss_Filter(500);
 				}
 				else if (joycon[0].GetTrigger() != NULL) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				break;
 			case 4:
+				//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+				PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 				Finish_Flag = true;
 				break;
 			
@@ -297,11 +324,15 @@ void ActionUI::Update() {
 
 			if (progress == 2 && joycon[0].GetGyro_X() > 300) {
 				progress++;
+				//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+				PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 				Finish_Flag = true;
 			}
 
 			if (progress == 1) {
 				if (joycon[0].GetGyro_X() > 300) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 			}
@@ -340,10 +371,14 @@ void ActionUI::Update() {
 					if (joycon[0].IsPress(JOYCON_UP)) {
 						progress++;
 						Action_vector[1].Gauss_Filter(500);
+						//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+						PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 						Finish_Flag = true;
 					}
 
 					else if (joycon[0].IsPress(JOYCON_DOWN)) {
+						//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+						PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 						Finish_Flag = true;
 					}
 				}
@@ -352,10 +387,14 @@ void ActionUI::Update() {
 					if (joycon[0].IsPress(JOYCON_DOWN)) {
 						progress++;
 						Action_vector[1].Gauss_Filter(500);
+						//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+						PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 						Finish_Flag = true;
 					}
 
 					else if (joycon[0].IsPress(JOYCON_UP)) {
+						//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+						PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 						Finish_Flag = true;
 					}
 				}

@@ -8,6 +8,7 @@
 #include "ActionUI.h"
 #include "GameData.h"
 #include "Live2D.h"
+#include "DxLib.h"
 #include "gameprogress.h"
 #include "Staminagauge.h"
 #include "ActionAffect.h"
@@ -71,7 +72,8 @@ std::vector<ActionAffect*> ActionEffectVector;
 
 std::vector <ActionPointAnime*> ActionPointVector;
 
-int sehandle;
+//static int sehandle;
+static int seHandle;     // SEハンドル
 
 typedef void(*GameStateFunc)(void);
 
@@ -186,15 +188,22 @@ void Init_Game() {
 	//エフェクト初期化処理
 	egmanager->Init();
 
-	PlaySoundFile("asset/sound/BGM_ActionBoard.mp3", DX_PLAYTYPE_LOOP);
-
-	sehandle = LoadSoundMem("asset/sound/SE_ActionBoard.mp3");
+	//PlaySoundFile("asset/sound/BGM_ActionBoard.mp3", DX_PLAYTYPE_LOOP);
+	//sehandle = LoadSoundMem("asset/sound/SE_ActionBoard.mp3");
 
 	ActionBoard.LoadTexture(TextureDict["board"]);
 	ActionBoard.Object.Pos.x = Action.Pos.x + 270;
 	ActionBoard.Object.Pos.y = Action.Pos.y;
 	ActionBoard.Object.Scale.x = 0.8;
 	ActionBoard.Object.Scale.y = 0.5;
+
+
+	// BGM再生
+	PlaySoundFile("asset/sound/BGM/gameplay.mp3", DX_PLAYTYPE_LOOP);
+
+	// SEロード
+	seHandle = LoadSoundMem("asset/sound/SE/running.mp3");
+
 }
 
 
@@ -204,6 +213,10 @@ void Init_GameState()
 	stamina->SetStaminaGauge(2.0, 2.0);
 	batonTouch.Timer = 0;
 	batonTouch.Uninit_DoOnce = true;
+	// SE再生
+	PlaySoundFile("asset/sound/SE/touch-start.mp3", DX_PLAYTYPE_BACK);
+	// BGM再生
+	PlaySoundFile("asset/sound/BGM/gameplay.mp3", DX_PLAYTYPE_LOOP);
 }
 
 
@@ -244,6 +257,8 @@ void Uninit_Game() {
 
 	batonTouch.Uninit();
 
+	// BGMを止める
+	StopSoundFile();
 
 }
 
@@ -381,7 +396,13 @@ void Update_Game() {
 		//聖火が消えたらGAME OVER
 		if (gamedata.Gethp() == 0)
 		{
-			///GameState_Change(GAME_STATE_GAME_OVER);
+			// BGMを止める
+			StopSoundFile();
+
+			// BGM再生
+			PlaySoundFile("asset/sound/BGM/gameover.mp3", DX_PLAYTYPE_LOOP);
+
+			GameState_Change(GAME_STATE_GAME_OVER);
 		}
 
 		Debug_Running();
@@ -391,7 +412,7 @@ void Update_Game() {
 		if (keyboard.IsTrigger(DIK_RETURN))
 		{
 
-			call_E_game_Sample();     //エフェクト再生
+			//call_E_game_Sample();     //エフェクト再生
 			
 		}
 		///////////////////////////////////////
@@ -404,6 +425,9 @@ void Update_Game() {
 			// 区間間の初期化処理
 		if (batonTouch.Uninit_DoOnce)
 		{
+			// SE再生
+			PlaySoundFile("asset/sound/SE/touch-start.mp3", DX_PLAYTYPE_BACK);
+
 			//スタミナゲージ初期化
 			stamina->Init();
 
@@ -492,7 +516,7 @@ void Update_Game() {
 	if (keyboard.IsPress(DIK_E)) {
 		if (Actionslot.GetValue() <= 70.0) {
 			Actionslot.AddValue(0.5);
-			PlaySoundMem(sehandle, DX_PLAYTYPE_BACK, TRUE);
+			//PlaySoundMem(sehandle, DX_PLAYTYPE_BACK, TRUE);
 		}
 	}
 
@@ -547,6 +571,13 @@ void Draw_Game() {
 		// ゲーム進行ゲージ描画
 		gameprogress->Draw();
 
+		//エフェクト描画処理
+		egmanager->Draw();
+
+		// アクションUI+背景描画
+		ActionBoard.Draw();
+		Action.Draw();
+
 		// エクセレントモード描画
 		if (gamedata.GetExcellentMode()) {
 			Alphabg.Draw();
@@ -565,13 +596,6 @@ void Draw_Game() {
 				ActionEffectVector[i]->Draw_Affect();
 			}
 		}
-
-		//エフェクト描画処理
-		egmanager->Draw();
-
-		// アクションUI+背景描画
-		ActionBoard.Draw();
-		Action.Draw();
 
 		// キャラクター+アクションゲージ(腕)描画
 		Actionslot.Draw(); 
@@ -707,6 +731,7 @@ void Running() {
 		if (Judge_Count > 1000) {
 			gamedata.AddRunningDistance(gamedata.GetRunningSpeed());
 			Judge_Count = 0;
+			PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 		}
 
 		gamedata.SetRunningSpeed(405);
@@ -743,7 +768,7 @@ void Running() {
 		gamedata.AddRunningSpeed(-15);
 	}
 
-	gamedata.AddRunningDistance(gamedata.GetRunningSpeed());
+	//gamedata.AddRunningDistance(gamedata.GetRunningSpeed());
 }
 
 void CharacterMove() {
@@ -841,6 +866,7 @@ void Debug_Running() {
 
 		ActionPointVector.push_back(obj);
 
+		PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 	}
 
 	if (gamedata.GetRunningSpeed() > 0) {
@@ -849,7 +875,7 @@ void Debug_Running() {
 
 	}
 
-	gamedata.AddRunningDistance(gamedata.GetRunningSpeed());
+	//gamedata.AddRunningDistance(gamedata.GetRunningSpeed());
 
 }
 
