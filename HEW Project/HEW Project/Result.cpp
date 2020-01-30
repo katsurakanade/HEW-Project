@@ -3,15 +3,19 @@
 #include "input.h"
 #include "scene.h"
 #include "GameData.h"
-#include "GameObject.h"
+#include "GameObject.h"]
+#include "DxLib.h"
 #include <DxLib.h>
+#include <string>
 #include "ResultScore.h"
 
 static GameObject obj[3];
 static ResultScore score[6];
 static ResultScore ui;
 static int g_TotalScore;
-double ranking[RANKING_MAX] = { 0 ,0,0 };
+double ranking[RANKING_MAX] = { 0,0,0,0,0 };
+double Runranking[RANKING_MAX] = { 0,0,0,0,0 };
+static int seSystemHandle;     // システムSEハンドル
 
 
 void Init_Result()
@@ -56,7 +60,7 @@ void Init_Result()
 
 	
 	//ランキングの表示
-	for (int i = 0; i < RANKING_MAX; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		score[i].ScoreCreate(ranking[i], SCREEN_WIDTH - 380, 200 + 200 * i);
 
@@ -71,10 +75,18 @@ void Init_Result()
 	//合計スコアの表示
 	score[5].ScoreCreate(g_TotalScore, 220, 100, 1.2f, 1.2f);
 
+	// BGM再生
+	PlaySoundFile("asset/sound/BGM/gameclear.mp3", DX_PLAYTYPE_LOOP);
+
+	// システムSEハンドル
+	seSystemHandle = LoadSoundMem("asset/sound/SE/UI-systemSE.mp3");
+
 }
 
 void Uninit_Result()
 {
+	// BGMを止める
+	StopSoundFile();
 
 }
 
@@ -83,6 +95,7 @@ void Update_Result()
 	ui.Update();
 
 	if (keyboard.IsTrigger(DIK_R)|| joycon[0].IsPress(JOYCON_MIN)) {
+		PlaySoundMem(seSystemHandle, DX_PLAYTYPE_BACK);     // SE再生
 		Scene_Change(SCENE_INDEX_TITLE);
 	}
 
@@ -158,6 +171,22 @@ void Ranking_Sort(double score) {
 	fwrite(ranking, sizeof(ranking), 5, fp);
 
 	fclose(fp);
+
+	// ソートしたランキングを.txtで保存
+	std::string tmp[RANKING_MAX] = { "0","0","0","0","0" };     // .txtに保存する用の変数
+	FILE* fp_Filetxt;
+	const char* FileNametxt = "file.txt";
+	fopen_s(&fp_Filetxt, FileNametxt, "w");
+	if (fp_Filetxt == NULL) { printf_s("%s ファイルが開けませんでした。", FileNametxt); exit(1); }
+	for (int n = 0; n < RANKING_MAX; n++)
+	{
+		tmp[n] = std::to_string((int)ranking[n]);
+		fprintf(fp_Filetxt, "%s\n", tmp[n].c_str());     // ランキングの保存
+	}
+	fclose(fp_Filetxt);
+
+
+
 }
 
 void Ranking_Read() {
@@ -176,3 +205,54 @@ void Ranking_Read() {
 	fclose(fp);
 }
 
+// 走ったキョリランキング(今回の走ったキョリ)
+void RunningRanking_Wright(double RunningDistans)
+{
+	FILE* fp_Running;     // ファイルポインタ
+	const char* FileName = "RunningRunkingFile.bin";     // バイナリのファイルネーム
+	const char* FileNametxt = "RunningRunkingFile.txt";     // .txtのファイルネーム
+
+	//================= ランキングファイル読み取り =================// ※コメントアウトでランキングリセット
+	fopen_s(&fp_Running, FileName, "rb");
+	if (fp_Running == NULL) { printf_s("%s ファイルが開けませんでした。", FileName); exit(1); }
+	fread(Runranking, sizeof(Runranking), RANKING_MAX, fp_Running);     // 走ったキョリランキングに上位５個を読み取り
+	fclose(fp_Running);
+	//================= ランキングファイル読み取り =================//
+
+
+
+	//================= ランキングソート =================//
+	fopen_s(&fp_Running, FileName, "wb");
+	if (fp_Running == NULL) { printf_s("%s ファイルが開けませんでした。", FileName); exit(1); }
+	//// ランキングの降順処理 ////
+	int i, j;
+	for (i = 0; i < RANKING_MAX; i++) {//1位から比較
+		//今の順位よりも高ければそれが今回の順位となる
+		//(1位より高ければ1位、1位より低く2位より高ければ2位、…)
+		if (RunningDistans > Runranking[i]) {
+			for (j = RANKING_MAX - 1; j > i; j--) {//今回の順位以降のスコアをずらす
+				Runranking[j] = Runranking[j - 1];
+			}
+			Runranking[i] = RunningDistans;//今回のスコアを記憶
+			break;//以降の順位は調べない
+		}
+	}
+	fwrite(Runranking, sizeof(Runranking), RANKING_MAX, fp_Running);     // ランキングの保存
+	fclose(fp_Running);
+	//================= ランキングソート =================//
+
+
+
+	// ソートしたランキングを.txtで保存
+	std::string tmp[RANKING_MAX] = { "0","0","0","0","0" };     // .txtに保存する用の変数
+	FILE* fp_Runningtxt;
+	fopen_s(&fp_Runningtxt, FileNametxt, "w");
+	if (fp_Runningtxt == NULL) { printf_s("%s ファイルが開けませんでした。", FileNametxt); exit(1); }
+	for (int n = 0; n < RANKING_MAX; n++)
+	{
+		tmp[n] = std::to_string((int)Runranking[n]);
+		fprintf(fp_Runningtxt, "%s\n", tmp[n].c_str());     // ランキングの保存
+	}
+	fclose(fp_Runningtxt);
+
+}
