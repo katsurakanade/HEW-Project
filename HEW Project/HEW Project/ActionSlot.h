@@ -3,6 +3,8 @@
 #include "main.h"
 #include "input.h"
 
+#define VALUE_DEFAULT 30
+
 // アクションゲージ状態
 typedef enum {
 

@@ -95,15 +95,16 @@ void GameState_Initialize(GAME_STATE index)
 
 void Init_Game() {
 
+	GameState_Initialize(GAME_STATE_START);
+
 	gameprogress = new GameProgress;
 	stamina = new StaminaGauge;
 	gameover = new GameOver;
 	gameclear = new GameClear;
 
-	// とりあえずGameを動かしてみる----------------------------------------------------------------ゲームスタート処理(バトンタッチ)を作る時に変更
-	g_GameStateIndex = GAME_STATE_GAME;
-	g_GameStateNextIndex = GAME_STATE_GAME;
-	// とりあえずGameを動かしてみる
+	g_GameStateIndex = GAME_STATE_START;
+	g_GameStateNextIndex = GAME_STATE_START;
+
 
 	//スタミナゲージ初期化
 	stamina->Init();
@@ -200,7 +201,9 @@ void Init_Game() {
 // ２区間, ３区間用Init(関数名は気にしないで)
 void Init_GameState()
 {
-
+	stamina->SetStaminaGauge(2.0, 2.0);
+	batonTouch.Timer = 0;
+	batonTouch.Uninit_DoOnce = true;
 }
 
 
@@ -251,6 +254,19 @@ void Update_Game() {
 
 	case GAME_STATE_START:     // BattonTouchのゲームスタート処理--------------------------------------------------------
 
+		// アクションゲージ初期化
+		Actionslot.AddValue(VALUE_DEFAULT - Actionslot.GetValue());     //Valueがデフォルト値になる
+		Actionslot.Pos.x = 210;
+		Actionslot.Pos.y = 480;
+		if (batonTouch.Uninit_DoOnce)
+		{     //一回だけ更新
+			Actionslot.Update(stamina->GetStaminaScale_x(), gamedata.GetExcellentMode());
+			batonTouch.Uninit_DoOnce = false;
+		}
+
+		batonTouch.Update(BT_GameStart);
+
+
 		break;
 
 
@@ -267,9 +283,45 @@ void Update_Game() {
 
 		// アクションUI更新
 		Action.Update();
-		// アクションゲージ更新
 
+		// アクションゲージ更新
 		Actionslot.Update(stamina->GetStaminaScale_x(),gamedata.GetExcellentMode());
+
+		// アクション完成判定
+		if (Action.GetFinishFlag()) {
+			if (Action.GetProgress() == Action.GetActionAmount()) {
+
+				switch (Action.GetState())
+				{
+				case ACTION_STATE_LONGJUMP:
+					// change
+					Actionslot.AddValue(0.152 * 9);
+					break;
+				case ACTION_STATE_TRAMPOLINING:
+					// change
+					Actionslot.AddValue(0.132 * 9);
+					break;
+				case ACTION_STATE_BALANCEBOARD:
+					// change
+					Actionslot.AddValue(0.068 * 9);
+					break;
+				case ACTION_STATE_WEIGHT:
+					// change
+					Actionslot.AddValue(0.16 * 9);
+					break;
+				case ACTION_STATE_UNEVENBARS:
+					// change
+					Actionslot.AddValue(0.152 * 9);
+					break;
+				default:
+					break;
+				}
+			}
+			else {
+
+			}
+		}
+
 
 		// スビート更新
 		gamedata.UpdateSpeed();
@@ -281,7 +333,6 @@ void Update_Game() {
 		gameprogress->Update(Action);
 
 		// キャラクター処理
-
 		CharacterMove();
 
 		gameover->Update();
@@ -339,15 +390,9 @@ void Update_Game() {
 		// エフェクト実験用（Enterを押したらエフェクト再生）
 		if (keyboard.IsTrigger(DIK_RETURN))
 		{
-			static bool DoOnce = true;
-			if (DoOnce)
-			{
-				call_E_game_Sample();     //エフェクト再生
-				call_E_tutorial_AAA();
-				//call_E_game_ActionSucsess();
 
-				DoOnce = false;     // 消さない！
-			}
+			call_E_game_Sample();     //エフェクト再生
+			
 		}
 		///////////////////////////////////////
 
@@ -356,7 +401,54 @@ void Update_Game() {
 
 	case GAME_STATE_BATONTOUCH:     // BattonTouchのバトンタッチ処理--------------------------------------------------
 
-		batonTouch.Update();
+			// 区間間の初期化処理
+		if (batonTouch.Uninit_DoOnce)
+		{
+			//スタミナゲージ初期化
+			stamina->Init();
+
+			// アクションゲージ初期化
+			Actionslot.AddValue(VALUE_DEFAULT - Actionslot.GetValue());     //Valueがデフォルト値になる
+			Actionslot.Pos.x = 210;
+			Actionslot.Pos.y = 480;
+			Actionslot.Update(stamina->GetStaminaScale_x(), gamedata.GetExcellentMode());
+
+			// キャラクター初期化
+
+			Character.Zoom.x = 1.0f;
+
+			Character.Zoom.y = 1.0f;
+
+			Character.Pos.x = -400;
+
+			Character.Pos.y = -150;
+
+			batonTouch.Uninit_DoOnce = false;
+			batonTouch.CharengeFlag = false;
+		}
+
+
+		//エフェクト更新処理
+		egmanager->Update();
+
+
+		batonTouch.Update(BT_BatonTouch);
+
+		// アクションエフェクト処理
+		for (int i = 0; i < ActionEffectVector.size(); i++) {
+			if (ActionEffectVector[i] != NULL) {
+				ActionEffectVector[i]->Update();
+			}
+		}
+
+
+		for (int i = 0; i < ActionPointVector.size(); i++) {
+			if (ActionPointVector[i]->OutFlag) {
+				continue;
+			}
+			ActionPointVector[i]->Update();
+		}
+
 
 		break;
 
@@ -429,68 +521,43 @@ void Draw_Game() {
 	{
 
 	case GAME_STATE_START:     // BattonTouchのゲームスタート処理--------------------------------------------------------
-		
-		break;
-
-	case GAME_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
 
 		background.Draw();
 
-		ActionBoard.Draw();
+		gameprogress->Draw();
 
+		// アクションゲージ描画
+		Actionslot.Draw();
+
+		Character.Draw();
+
+		batonTouch.Draw(BT_GameStart);
+
+		break;
+
+
+	case GAME_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
+
+		// 背景描画
+		background.Draw();
 
 		//スタミナゲージ描画
 		stamina->Draw();
 
-		// アクションUI描画
-		Action.Draw();
+		// ゲーム進行ゲージ描画
+		gameprogress->Draw();
 
+		// エクセレントモード描画
 		if (gamedata.GetExcellentMode()) {
 			Alphabg.Draw();
 			ExcellentFrame.Draw();
 			ExcellentImg.Draw();
 		}
 
-		// アクションゲージ描画
-		Actionslot.Draw();
-
-		gameprogress->Draw();
-
-		// アクション完成判定
-		if (Action.GetFinishFlag()) {
-			if (Action.GetProgress() == Action.GetActionAmount()) {
-
-				switch (Action.GetState())
-				{
-				case ACTION_STATE_LONGJUMP:
-					// change
-					Actionslot.AddValue(0.152 * 9);
-					break;
-				case ACTION_STATE_TRAMPOLINING:
-					// change
-					Actionslot.AddValue(0.132 * 9);
-					break;
-				case ACTION_STATE_BALANCEBOARD:
-					// change
-					Actionslot.AddValue(0.068 * 9);
-					break;
-				case ACTION_STATE_WEIGHT:
-					// change
-					Actionslot.AddValue(0.16 * 9);
-					break;
-				case ACTION_STATE_UNEVENBARS:
-					// change
-					Actionslot.AddValue(0.152 * 9);
-					break;
-				default:
-					break;
-				}
-			}
-			else {
-
-			}
+		// 流れるアクションポイント描画
+		for (int i = 0; i < ActionPointVector.size(); i++) {
+			ActionPointVector[i]->Draw();
 		}
-
 
 		// アクションエフェクト描画
 		for (int i = 0; i < ActionEffectVector.size(); i++) {
@@ -499,23 +566,36 @@ void Draw_Game() {
 			}
 		}
 
-		for (int i = 0; i < ActionPointVector.size(); i++) {
-			ActionPointVector[i]->Draw();
-		}
-
 		//エフェクト描画処理
 		egmanager->Draw();
 
+		// アクションUI+背景描画
+		ActionBoard.Draw();
+		Action.Draw();
+
+		// キャラクター+アクションゲージ(腕)描画
+		Actionslot.Draw(); 
 		Character.Draw();
 
-		//ActionBoard.Draw();
 
 		break;
 
 
 	case GAME_STATE_BATONTOUCH:     // BattonTouchのバトンタッチ処理--------------------------------------------------
 
-		batonTouch.Draw();
+		background.Draw();
+
+		gameprogress->Draw();
+
+		// アクションゲージ描画
+		Actionslot.Draw();
+
+		Character.Draw();
+
+		batonTouch.Draw(BT_BatonTouch);
+
+		//エフェクト描画処理
+		egmanager->Draw();
 
 		break;
 
