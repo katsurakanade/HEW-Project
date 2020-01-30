@@ -341,9 +341,13 @@ void Update_Game() {
 			static bool DoOnce = true;
 			if (DoOnce)
 			{
-				call_E_game_Sample();     //エフェクト再生
-				//call_E_game_ActionSucsess();
-
+				///call_E_game_Sample();     //エフェクト再生
+				///call_E_game_ActionSucsess();
+				call_E_game_GreatEffect();
+				///call_E_game_BadEffect();
+				///call_E_game_OverEffect();
+				///call_E_game_RunEffect();
+				///call_E_game_JoyconEffect();
 				DoOnce = false;     // 消さない！
 			}
 		}

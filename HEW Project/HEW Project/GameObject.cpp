@@ -77,6 +77,12 @@ vector <const char *>TexturePassDict = {
 	"asset/texture/result.png",
 	"asset/texture/Game_Clear.png",
 	"asset/texture/push_plus_title.png",
+	"asset/texture/star.png",
+	"asset/texture/cross.png",
+	"asset/texture/ase.png",
+	"asset/texture/joycon.png",
+	"asset/texture/hanabi.png",
+
 };
 
 GameObject::GameObject() {
