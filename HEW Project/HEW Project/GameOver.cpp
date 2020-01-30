@@ -15,6 +15,7 @@
 static GameOver gameOver;
 static GameObject obj[1];
 
+static int seSystemHandle;     // システムSEハンドル
 
 static GameProgress progress;
 
@@ -46,6 +47,9 @@ void GameOver::Init()
 	titleflag = false;
 	TimeCount = SECONDS;
 	objflag = false;
+
+	seSystemHandle = LoadSoundMem("asset/sound/SE/UI-systemSE.mp3");
+
 }
 
 
@@ -94,8 +98,8 @@ void GameOver::GameOverisUse()
 
 		}
 		if (titleflag == true && keyboard.IsTrigger(DIK_Z)) {
+			PlaySoundMem(seSystemHandle, DX_PLAYTYPE_BACK);     // SE再生
 			Scene_Change(SCENE_INDEX_TITLE);
-
 		}
 
 	}

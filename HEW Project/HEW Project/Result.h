@@ -14,4 +14,4 @@ void Ranking_Sort(double score);
 void Ranking_Read();
 
 // 走ったキョリランキング(今回の走ったキョリ)
-void RunningRanking_Wright(double RunningDistans)
+void RunningRanking_Wright(double RunningDistans);

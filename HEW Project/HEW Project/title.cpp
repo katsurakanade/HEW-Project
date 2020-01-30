@@ -1,4 +1,3 @@
-
 #include <algorithm>
 #include <vector>
 #include "title.h"
@@ -16,6 +15,7 @@
 
 using namespace std;
 static bool g_bEnd = false;
+static int seSystemHandle;     // システムSEハンドル
 
 ///Live2D Hiyori;
 
@@ -67,14 +67,21 @@ void Init_Title() {
 	GameStart.Object.Scale = { 0.23f, 0.23f };
 	GameStart.LoadTexture(TextureDict["Title_GameStart"]);
 
+	// BGM再生
+	PlaySoundFile("asset/sound/BGM/title.mp3", DX_PLAYTYPE_LOOP);
 
 	g_bEnd = false;
+
+	seSystemHandle = LoadSoundMem("asset/sound/SE/UI-systemSE.mp3");
 
 }
 
 void Uninit_Title() {
 
 	///Hiyori.~Live2D();
+
+	// BGMを止める
+	StopSoundFile();
 
 }
 
@@ -107,17 +114,20 @@ void Update_Title() {
 
 	if (joycon[0].IsPress(JOYCON_MIN)) {
 		Scene_Change(SCENE_INDEX_GAME);
+		PlaySoundMem(seSystemHandle, DX_PLAYTYPE_BACK);     // SE再生
 		gamedata.SetGameMode(GAMEMODE_MATCH);
 	}
 
 	if (joycon[1].IsPress(JOYCON_PLUS)) {
 		Scene_Change(SCENE_INDEX_GAME);
+		PlaySoundMem(seSystemHandle, DX_PLAYTYPE_BACK);     // SE再生
 		gamedata.SetGameMode(GAMEMODE_SINGLE);
 	}
 
 #ifdef DEBUG
 	if (keyboard.IsTrigger(DIK_Z)) {
 		Scene_Change(SCENE_INDEX_TUTORIAL);
+		PlaySoundMem(seSystemHandle, DX_PLAYTYPE_BACK);     // SE再生
 		gamedata.SetGameMode(GAMEMODE_MATCH);
 	}
 

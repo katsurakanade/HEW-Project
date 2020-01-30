@@ -185,6 +185,8 @@ void Init_Tutorial()
 	egmanager->Init();
 
 
+	// BGMçƒê∂
+	PlaySoundFile("asset/sound/BGM/title.mp3", DX_PLAYTYPE_LOOP);
 
 }
 
@@ -233,6 +235,9 @@ void Uninit_Tutorial()
 
 
 	batonTouch.Uninit();
+
+	// BGMÇé~ÇﬂÇÈ
+	StopSoundFile();
 
 }
 

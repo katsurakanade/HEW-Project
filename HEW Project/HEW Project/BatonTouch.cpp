@@ -78,6 +78,8 @@ void Init_BatonTouch()
 	Baton[7].Object.Pos.y = 360.0f;
 	Baton[7].Object.Scale.x = 1.0f;
 
+
+
 }
 
 
@@ -118,6 +120,8 @@ void BatonTouch::Update(int BTState)
 	else if (BTState == BT_BatonTouch)
 	{
 
+		static bool DoOnce = true;
+
 		if (Timer <= 3.0f)
 		{
 			// 3•bˆÈ“à‚ÉuSL+SR+L+U‚év‚ð‚µ‚½‚ç1000PŠl“¾
@@ -137,6 +141,8 @@ void BatonTouch::Update(int BTState)
 		else
 		{     // 3•bŒo‰ß‚µ‚½‚çƒoƒgƒ“ƒ^ƒbƒ`ˆ—
 
+			if (DoOnce) { PlaySoundFile("asset/sound/BGM/title.mp3", DX_PLAYTYPE_BACK); DoOnce = false; }
+
 			// ‰E‚©‚ç”wŒi‚ð·‚µž‚Þ
 			if (Baton[1].Object.Pos.x > 640.0f)
 			{
@@ -153,6 +159,8 @@ void BatonTouch::Update(int BTState)
 			// u20•bŒo‰ßv‚µ‚½‚çƒQ[ƒ€ƒXƒe[ƒg‚É‘JˆÚ
 			if ((Timer - 3.0f) >= 20.0f)
 			{     // ŽŸ‚Ì‹æŠÔƒXƒ^[ƒg
+				StopSoundFile();     // BGM‚ðŽ~‚ß‚é
+				DoOnce = true;     // DoOnceƒŠƒZƒbƒg
 				GameState_Change(GAME_STATE_GAME);     //ƒQ[ƒ€ƒXƒe[ƒg‚É‘JˆÚ
 			}
 
@@ -204,7 +212,7 @@ void BatonTouch::Draw(int BTState)
 			{     // Žc‚è‚Q•b
 				Baton[5].Draw();
 			}
-			else if ((Timer - 3.0f) >= 19.0f && (Timer - 3.0f) < 20.0f)
+			else if ((Timer - 3.0f) >= 19.0f && (Timer - 3.0f) <= 21.0f)
 			{     // Žc‚è‚P•b
 				Baton[7].Draw();
 			}
