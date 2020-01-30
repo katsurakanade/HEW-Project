@@ -11,6 +11,7 @@ static SCENE_INDEX g_SceneNextIndex;
 static BatonTouch baton;
 typedef void (*SceneFunc)(void);
 
+
 static const SceneFunc Initialize[] = {
 	Init_Title,
 	Init_Tutorial,

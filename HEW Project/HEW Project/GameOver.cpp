@@ -15,6 +15,7 @@
 static GameOver gameOver;
 static GameObject obj[1];
 
+static int seSystemHandle;     // システムSEハンドル
 
 static GameProgress progress;
 
@@ -42,10 +43,20 @@ void GameOver::Init()
 	obj[0].Object.Scale.x = 1.5;
 	obj[0].Object.Scale.y = 1.5;
 
+	obj[1].LoadTexture(TextureDict["push_minus_title"]);
+	obj[1].Object.Pos.x = SCREEN_WIDTH / 2;
+	obj[1].Object.Pos.y = SCREEN_HEIGHT / 2 + 200;
+	obj[1].Object.Scale.x = 1.0f;
+	obj[1].Object.Scale.y = 1.0f;
+
+
 
 	titleflag = false;
 	TimeCount = SECONDS;
 	objflag = false;
+
+	seSystemHandle = LoadSoundMem("asset/sound/SE/UI-systemSE.mp3");
+
 }
 
 
@@ -60,12 +71,17 @@ void GameOver::Update()
 
 void GameOver::Draw() 
 {
-	if (objflag == true)
+	if (TimeCount >= 1.0f)
 	{
 		obj[0].Draw();
 
 	}
+	//タイトルへ戻るの表示
+	if (objflag == true)
+	{
+		obj[1].Draw();
 
+	}
 }
 
 /*
@@ -80,24 +96,32 @@ void GameOver::GameOverisUse()
 
 	if (gamedata.Gethp() == 0)
 	{
-		//ゲームオーバーステートに入る
-		TimeCount++;
-		objflag = true;
 
-		//ゲームオーバーテクスチャの表示
-
-		if (TimeCount > 120.0f)
+		if (gamedata.Gethp() == 0)
 		{
+			//ゲームオーバーステートに入る
+			TimeCount++;
 			titleflag = true;
 
-			//タイトルへ戻るの表示
+			//ゲームオーバーテクスチャの表示
 
-		}
-		if (titleflag == true && keyboard.IsTrigger(DIK_Z)) {
-			Scene_Change(SCENE_INDEX_TITLE);
+			if (TimeCount >= 120.0f)
+			{
+				objflag = true;
+
+				if (TimeCount >= 170.0f)
+				{
+					TimeCount = 70.0f;
+					objflag = false;
+				}
+
+			}
+			if (titleflag == true && keyboard.IsTrigger(DIK_Z) || titleflag == true && joycon[0].IsPress(JOYCON_MIN)) {
+				Scene_Change(SCENE_INDEX_TITLE);
+
+			}
 
 		}
 
 	}
-
 }

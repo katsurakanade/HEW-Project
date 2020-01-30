@@ -10,10 +10,10 @@
 #define SCREEN_HEIGHT 720
 
 // ウインドウクラスの名前
-#define CLASS_NAME     "GameWindow"
+#define CLASS_NAME  "GameWindow"
 
 // ウィンドウの名前
-#define WINDOW_CAPTION "聖火リレー" 
+#define WINDOW_CAPTION "ランビク Connect for Olinppic" 
 
 // FPSロック
 #define FPS_LOCK 60.0f

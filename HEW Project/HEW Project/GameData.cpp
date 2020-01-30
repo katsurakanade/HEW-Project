@@ -1,12 +1,15 @@
 #include "GameData.h"
 #include "main.h"
 #include <vector>
+#include "DxLib.h"
 
 const int speed1 = 360;     //futuu
 const int speed2 = 315;     //osoi
 const int speed3 = 405;     //hayai
 
 static const float InitPosY = 600;
+
+static int seHandle = -1;     // SEÉnÉìÉhÉã
 
 GameData gamedata;
 
@@ -30,6 +33,9 @@ void GameData::Init() {
 	ExcellentMode = false;
 	ExcellentModeInitFlag = false;
 	ExcellentTimer = 0.0f;
+
+	seHandle = LoadSoundMem("asset/sound/SE/excellent.mp3");
+
 }
 
 void GameData::UpdateSpeed() {
@@ -38,11 +44,14 @@ void GameData::UpdateSpeed() {
 }
 
 void GameData::InitExcellentMode() {
-
+	
 	ExcellentMode = true;
 }
 
 void GameData::UpdateExcellentMode(vector <ActionPointAnime*> actionpoint) {
+	static bool DoOnce = true;
+
+	if (DoOnce) { PlaySoundMem(seHandle, DX_PLAYTYPE_BACK); DoOnce = false; }     // SEçƒê∂
 
 	ExcellentTimer += SECONDS;
 
@@ -51,6 +60,7 @@ void GameData::UpdateExcellentMode(vector <ActionPointAnime*> actionpoint) {
 		ExcellentMode = false;
 		ExcellentTimer = 0.0f;
 		ExcellentModeCount = 0;
+		DoOnce = true;
 	}
 
 }
@@ -167,9 +177,24 @@ void ActionPointAnime::Create(int value) {
 
 	ValueData = value;
 
-	for (int i = 0; i < 3; i++) {
-		self[i].LoadTexture(TexturePassDict[TEXTURE_INDEX_NUMBER], 10, 4, 4, 300 / 4, 300 / 4);
-		self[i].Object.Pos = D3DXVECTOR2(PosX + (i * (300 / 4) * self[i].Object.Scale.x), PosY);
+	if (ValueData >= 100) {
+
+		self[0].LoadTexture(TextureDict["all"], 10, 4, 4, 280 / 4, 280 / 4);
+		self[1].LoadTexture(TextureDict["all"], 10, 4, 4, 280 / 4, 280 / 4);
+		self[2].LoadTexture(TextureDict["all"], 10, 4, 4, 280 / 4, 280 / 4);
+
+		self[0].Object.Pos = D3DXVECTOR2(PosX + (0 * (280 / 4) * self[0].Object.Scale.x), PosY);
+		self[1].Object.Pos = D3DXVECTOR2(PosX + (1 * (280 / 4) * self[1].Object.Scale.x), PosY);
+		self[2].Object.Pos = D3DXVECTOR2(PosX + (2 * (280 / 4) * self[2].Object.Scale.x), PosY);
+	}
+
+	else if (ValueData <= 100) {
+
+		for (int i = 0; i < 2; i++) {
+			self[i].LoadTexture(TextureDict["all"], 10, 4, 4, 280 / 4, 280 / 4);
+			self[i].Object.Pos = D3DXVECTOR2(PosX + (i * (300 / 4) * self[i].Object.Scale.x), PosY);
+
+		}
 	}
 }
 
@@ -203,7 +228,7 @@ void ActionPointAnime::Draw() {
 		if (ValueData >= 100) {
 			self[0].Draw_Anime(ValueData / 100);
 			self[1].Draw_Anime((ValueData / 10) / 10);
-			self[2].Draw_Anime(ValueData % 100);
+			self[2].Draw_Anime(0);
 		}
 
 		else if (ValueData <= 99) {

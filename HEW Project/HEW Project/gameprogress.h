@@ -26,6 +26,8 @@ public:
 
 	bool MeasureFlag;
 
+	bool Tutoflag;
+
 	float RunDistance;
 
 
@@ -33,7 +35,7 @@ public:
 
 	void Init();
 
-	void Update(ActionUI target);
+	void Update(ActionUI &target);
 
 	void Draw();
 

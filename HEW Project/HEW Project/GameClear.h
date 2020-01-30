@@ -5,6 +5,8 @@ class GameClear
 {
 private:
 
+
+
 	float TimeCount = SECONDS;
 
 	bool objflag;

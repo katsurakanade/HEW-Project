@@ -62,9 +62,19 @@ void StaminaGauge::Draw()
 
 void StaminaGauge::SetStaminaGauge(double scale_x, double scale_y)
 {
-	staminagauge[0].Object.Scale.x = scale_x;
-	staminagauge[0].Object.Scale.y = scale_y;
+	StaminaScale_x = scale_x;
+	StaminaScale_y = scale_y;
 
+	if (scale_x > 1.0f && scale_y > 1.0f)
+	{
+		staminagauge[0].Object.Scale.x = scale_x;
+		staminagauge[0].Object.Scale.y = scale_y;
+	}
+	else
+	{     // ¬‚³‚­‚È‚é‚Ì‚ªŽ~‚Ü‚ç‚Ë‚¥
+		staminagauge[0].Object.Scale.x = 0.0f;
+		staminagauge[0].Object.Scale.y = 0.0f;
+	}
 }
 
 double StaminaGauge::GetStaminaScale_x()
@@ -98,8 +108,8 @@ void StaminaGauge::StaminaState(int state)
 
 void StaminaGauge::StaminaReduce(double s_count)
 {
-	FlameCount++;
-	if (FlameCount > 60.0f)
+	FlameCount += SECONDS;
+	if (FlameCount > 0.7f)
 	{
 		StaminaScale_x -= s_count;
 		StaminaScale_y -= s_count;

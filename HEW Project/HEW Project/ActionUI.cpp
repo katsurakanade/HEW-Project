@@ -16,13 +16,16 @@ vector <const char *> TRAMPOLINING_PASS;
 // バランスボード
 vector <const char*>	 BALANCEBOARD_PASS;
 // ハードル
-vector <const char*> HURDLE_PASS;
+//vector <const char*> HURDLE_PASS;
 
 vector <const char*>  LONG_JUMP_PASS;
 // 重量挙げ
 vector <const char*>  WEIGHT_PASS;
 // 段違い平行棒
 vector <const char*>  UNEVENBARS_PASS;
+
+// 成功時SEハンドル(-1:エラー)
+static int seHandle = -1;
 
 ActionUI::ActionUI()
 {
@@ -35,9 +38,29 @@ ActionUI::~ActionUI()
 	vector<GameObject>().swap(Action_vector);
 }
 
+int* ActionUI::getRandNR(int min, int max, int num) {
+	int tol = max - min + 1;
+	int a[30000];
+	static int b[30000];
+	int i, j;
+	for (i = 0; i < tol; i++) {
+		*(a + i) = min + i;
+	}
+	srand(time(0));
+	int ctr;
+	for (i = 0; i < num; i++) {
+		ctr = rand() % (tol - i);
+		b[i] = a[ctr];
+		for (j = ctr; j < (tol - 1 - i); j++) {
+			a[j] = a[j + 1];
+		}
+	}
+	return b;
+}
+
 void ActionUI::Init() {
 
-	State = ACTION_STATE_UNEVENBARS;
+	//State = ACTION_STATE_LONGJUMP;
 	State_Switch = true;
 	progress = 0;
 	Finish_Flag = false;
@@ -46,32 +69,36 @@ void ActionUI::Init() {
 	// トランポリン
 	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SL]);
 	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SR]);
-	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+	TRAMPOLINING_PASS.push_back(TexturePassDict[TEXTURE_INDEX_HANDUP]);
 
 	// バランスボード
 	BALANCEBOARD_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SL]);
 	BALANCEBOARD_PASS.push_back(TexturePassDict[TEXTURE_INDEX_SR]);
 
 	// ハードル
-	HURDLE_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
-	HURDLE_PASS.push_back(TexturePassDict[TEXTURE_INDEX_ZL]);
+	//HURDLE_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+	//HURDLE_PASS.push_back(TexturePassDict[TEXTURE_INDEX_ZL]);
 
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
-	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+	LONG_JUMP_PASS.push_back(TexturePassDict[TEXTURE_INDEX_HANDUP]);
 
 	// 重量挙げ
-	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_UP]);
+	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_HANDUP]);
 	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_LEFT]);
 	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
+	WEIGHT_PASS.push_back(TexturePassDict[TEXTURE_INDEX_HANDDOWN]);
 
 	// 段違い平行棒
-	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_AIROU]);
+	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_ROTATE]);
 	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_LEFT]);
 	UNEVENBARS_PASS.push_back(TexturePassDict[TEXTURE_INDEX_RIGHT]);
 
 	Action_vector.clear();
+
+	seHandle = LoadSoundMem("asset/sound/SE/actionclear.mp3");
+
 }
 
 void ActionUI::Update() {
@@ -80,6 +107,14 @@ void ActionUI::Update() {
 
 		switch (State)
 		{
+
+		case ACTION_STATE_LONGJUMP:
+			for (int i = 0; i < 4; i++) {
+				onetime[i].LoadTexture(LONG_JUMP_PASS[i]);
+				Action_vector.push_back(onetime[i]);
+			}
+			break;
+
 			// トランポリン
 		case ACTION_STATE_TRAMPOLINING:
 			for (int i = 0; i < 3; i++) {
@@ -95,23 +130,18 @@ void ActionUI::Update() {
 			}
 			break;
 			// ハードル
+			/*
 		case ACTION_STATE_HURDLE:
 			for (int i = 0; i < 2; i++) {
 				onetime[i].LoadTexture(HURDLE_PASS[i]);
 				Action_vector.push_back(onetime[i]);
 			}
 			break;
-
-		case ACTION_STATE_LONGJUMP:
-			for (int i = 0; i < 4; i++) {
-				onetime[i].LoadTexture(LONG_JUMP_PASS[i]);
-				Action_vector.push_back(onetime[i]);
-			}
-			break;
-
+			*/
+		
 			// 重量挙げ
 		case ACTION_STATE_WEIGHT:
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < 4; i++) {
 				onetime[i].LoadTexture(WEIGHT_PASS[i]);
 				Action_vector.push_back(onetime[i]);
 			}
@@ -152,6 +182,8 @@ void ActionUI::Update() {
 					joycon[LEFT_JOYCON].GetOldState() == (JOYCON_SL_LEFT + JOYCON_SR_LEFT + JOYCON_L)) {
 					Action_vector[2].Gauss_Filter(500);
 					progress = 3;
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 			}
@@ -160,6 +192,8 @@ void ActionUI::Update() {
 		case ACTION_STATE_BALANCEBOARD:
 			// Failed
 			if (joycon[LEFT_JOYCON].GetGyro_Y() < ACTION_UP_JUDGE || joycon[LEFT_JOYCON].GetGyro_Y() > -ACTION_UP_JUDGE) {
+				//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+				PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 				Finish_Flag = true;
 			}
 			if (joycon[LEFT_JOYCON].IsTrigger(JOYCON_SL_LEFT)) {
@@ -171,12 +205,15 @@ void ActionUI::Update() {
 				progress++;
 			}
 			if (progress >= 2) {
+				//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+				PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 				Finish_Flag = true;
 			}
 
 			break;
 
 			// ハードル
+			/*
 		case ACTION_STATE_HURDLE:
 
 			if (progress == 0 && joycon[LEFT_JOYCON].GetGyro_X() < ACTION_UP_JUDGE) {
@@ -195,56 +232,73 @@ void ActionUI::Update() {
 			}
 
 			break;
+			*/
 
 		case ACTION_STATE_LONGJUMP:
 			switch (progress)
 			{
 			case 0:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
+				if (joycon[0].IsTrigger(JOYCON_DOWN) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[0].Gauss_Filter(500);
 				}
 				else if (joycon[0].GetTrigger() != NULL && !joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				else if (joycon[0].GetGyro_Y() > 300) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				break;
 			case 1:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
+				if (joycon[0].IsTrigger(JOYCON_DOWN) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[1].Gauss_Filter(500);
 				}
 				else if (joycon[0].GetTrigger() != NULL && !joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				else if (joycon[0].GetGyro_Y() > 300) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				break;
 			case 2:
-				if (joycon[0].IsTrigger(JOYCON_RIGHT) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
+				if (joycon[0].IsTrigger(JOYCON_DOWN) || keyboard.IsTrigger(DIK_RIGHTARROW)) {
 					progress++;
 					Action_vector[2].Gauss_Filter(500);
 				}
 				else if (joycon[0].GetTrigger() != NULL && !joycon[0].IsTrigger(JOYCON_RIGHT)) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				else if (joycon[0].GetGyro_Y() > 300) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				break;
 			case 3:
-				if (joycon[0].GetGyro_Y() > 300 || keyboard.IsTrigger(DIK_UPARROW)) {
+				if (joycon[0].GetGyro_X() > 300 || keyboard.IsTrigger(DIK_UPARROW)) {
 					progress++;
 					Action_vector[3].Gauss_Filter(500);
 				}
 				else if (joycon[0].GetTrigger() != NULL) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 				break;
 			case 4:
+				//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+				PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 				Finish_Flag = true;
 				break;
 			
@@ -270,11 +324,15 @@ void ActionUI::Update() {
 
 			if (progress == 2 && joycon[0].GetGyro_X() > 300) {
 				progress++;
+				//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+				PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 				Finish_Flag = true;
 			}
 
 			if (progress == 1) {
 				if (joycon[0].GetGyro_X() > 300) {
+					//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+					PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 					Finish_Flag = true;
 				}
 			}
@@ -313,10 +371,14 @@ void ActionUI::Update() {
 					if (joycon[0].IsPress(JOYCON_UP)) {
 						progress++;
 						Action_vector[1].Gauss_Filter(500);
+						//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+						PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 						Finish_Flag = true;
 					}
 
 					else if (joycon[0].IsPress(JOYCON_DOWN)) {
+						//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+						PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 						Finish_Flag = true;
 					}
 				}
@@ -325,10 +387,14 @@ void ActionUI::Update() {
 					if (joycon[0].IsPress(JOYCON_DOWN)) {
 						progress++;
 						Action_vector[1].Gauss_Filter(500);
+						//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+						PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 						Finish_Flag = true;
 					}
 
 					else if (joycon[0].IsPress(JOYCON_UP)) {
+						//PlaySoundFile("asset/sound/SE/actionclear.mp3", DX_PLAYTYPE_BACK);     // SE再生
+						PlaySoundMem(seHandle, DX_PLAYTYPE_BACK);     // SE再生
 						Finish_Flag = true;
 					}
 				}
@@ -343,16 +409,8 @@ void ActionUI::Update() {
 		State_Switch_Timer += SECONDS;
 	}
 
-	if (State_Switch_Timer  >= 0.7f) {
-		progress = 0;
-		for (int i = 0; i < 4; i++) {
-			UNEVENBARS_Array[i] = false;
-		}
-		UNEVENBARS_rnd = GetRand(1);
-		State_Switch = true;
-		State_Switch_Timer = 0.0f;
-		Finish_Flag = false;
-		Reset_Vector();
+	if (State_Switch_Timer  >= 0.2f) {
+		ResetAll();
 	}
 
 }
@@ -399,4 +457,16 @@ bool ActionUI::GetFinishFlag() {
 
 int ActionUI::GetActionAmount() {
 	return Action_vector.size();
+}
+
+void ActionUI::ResetAll() {
+	progress = 0;
+	for (int i = 0; i < 4; i++) {
+		UNEVENBARS_Array[i] = false;
+	}
+	UNEVENBARS_rnd = GetRand(1);
+	State_Switch = true;
+	State_Switch_Timer = 0.0f;
+	Finish_Flag = false;
+	Reset_Vector();
 }
