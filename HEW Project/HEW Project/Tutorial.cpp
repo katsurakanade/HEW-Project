@@ -30,7 +30,7 @@ static int Judge_Count;
 // アクションUI
 static ActionUI *Action;
 // アクションゲージ
-static ActionSlot Actionslot;
+static ActionSlot Action_s;
 // アクション失敗画像
 static GameObject Failed;
 // Live2Dキャラクター
@@ -48,7 +48,7 @@ static GameObject ExcellentImg;
 
 static GameObject Alphabg;
 
-static GameObject obj[2];
+static GameObject obj[4];
 
 //バトンタッチ
 static BatonTouch batonTouch;
@@ -65,11 +65,21 @@ static std::vector <ActionPointAnime*> ActionPointVector;
 // ゲームエフェクト
 static EGManager *egmanager;
 
+static GameObject ActionBoard;
+
+static int sehandle;
+
+static bool uiflag;
+
 typedef void(*TutoStateFunc)(void);
+
+static bool ASE_DoOnce = true;     // アクション成功時DoOnce
+
+
 
 static const TutoStateFunc Initialize[] = {
 	Init_GameStart,     //バトンタッチのゲームスタート処理のInit
-	Init_GameState,     //2区間, ３区間用Init
+	Init_TutoState,     //2区間, ３区間用Init
 	Init_BatonTouch,
 };
 
@@ -84,6 +94,8 @@ void TutoState_Initialize(TUTO_STATE index)
 
 void Init_Tutorial()
 {
+	TutoState_Initialize(TUTO_STATE_START);
+
 	gameprogress = new GameProgress;
 	stamina = new StaminaGauge;
 	gameover = new GameOver;
@@ -99,39 +111,54 @@ void Init_Tutorial()
 	obj[0].Object.Scale.x = 1.0f;
 	obj[0].Object.Scale.y = 1.0f;
 
-	obj[1].LoadTexture(TexturePassDict[TEXTURE_INDEX_TUTORIAL_LOGO]);
-	obj[1].Object.Pos.x = SCREEN_WIDTH / 2;
-	obj[1].Object.Pos.y = SCREEN_HEIGHT / 2;
-	obj[1].Object.Scale.x = 1.0f;
-	obj[1].Object.Scale.y = 1.0f;
+	// 「SL+SR+L」を押せ！画像
+	obj[1].LoadTexture(TexturePassDict[TEXTURE_INDEX_BATON_CHARENGE]);
+	obj[1].Object.Pos.x = SCREEN_WIDTH/2;
+	obj[1].Object.Pos.y = SCREEN_HEIGHT/2;
+	obj[1].Object.Scale.x = 0.7f;
+	obj[1].Object.Scale.y = 0.7f;
+
+	obj[2].LoadTexture(TexturePassDict[TEXTURE_INDEX_TUTORIAL_LOGO]);
+	obj[2].Object.Pos.x = SCREEN_WIDTH / 2;
+	obj[2].Object.Pos.y = 100;
+	obj[2].Object.Scale.x = 1.0f;
+	obj[2].Object.Scale.y = 1.0f;
+
+	obj[3].LoadTexture(TextureDict["skip"]);
+	obj[3].Object.Pos.x = SCREEN_WIDTH-100 ;
+	obj[3].Object.Pos.y = 50;
+	obj[3].Object.Scale.x = 0.3f;
+	obj[3].Object.Scale.y = 0.3f;
+
 
 
 	//スタミナゲージ初期化
 	stamina->Init();
 
+
 	// アクションUI初期化	
 
 	Action->Init();
 
-	Action->Pos.x = 700;
+	Action->Pos.x = 600;
 
-	Action->Pos.y = 200;
+	Action->Pos.y = 250;
 
-	Action->Interval.x = 150;
+	Action->Interval.x = 190;
 
 	Action->Interval.y = 0;
 
 	// アクションゲージ初期化
 
-	Actionslot.Load();
+	Action_s.Load();
 
-	Actionslot.Pos.x = 330;
+	Action_s.Pos.x = 210;
 
-	Actionslot.Pos.y = 450;
+	Action_s.Pos.y = 480;
 
 	// キャラクター初期化
 
-	Character.LoadModel(Live2D_Dict["HIYORI"]);
+	Character.LoadModel(Live2D_Dict["KYARA"]);
 
 	Character.Zoom.x = 1.0f;
 
@@ -140,6 +167,8 @@ void Init_Tutorial()
 	Character.Pos.x = -400;
 
 	Character.Pos.y = -150;
+
+	Character.SetMontionIndex(0);
 
 	// アクション失敗初期化
 
@@ -155,6 +184,7 @@ void Init_Tutorial()
 
 	//ゲーム進行バー初期化
 	gameprogress->Init();
+	gameprogress->Tutoflag = true;
 
 	background.Init();
 
@@ -184,9 +214,27 @@ void Init_Tutorial()
 	//エフェクト初期化処理
 	egmanager->Init();
 
+	PlaySoundFile("asset/sound/BGM_ActionBoard.mp3", DX_PLAYTYPE_LOOP);
 
+	sehandle = LoadSoundMem("asset/sound/SE_ActionBoard.mp3");
+
+	ActionBoard.LoadTexture(TextureDict["board"]);
+	ActionBoard.Object.Pos.x = Action->Pos.x + 270;
+	ActionBoard.Object.Pos.y = Action->Pos.y;
+	ActionBoard.Object.Scale.x = 0.8;
+	ActionBoard.Object.Scale.y = 0.5;
+
+	uiflag = false;
 
 }
+
+void Init_TutoState()
+{
+	stamina->SetStaminaGauge(2.0, 2.0);
+	batonTouch.Timer = 0;
+	batonTouch.Uninit_DoOnce = true;
+}
+
 
 void Uninit_Tutorial()
 {
@@ -214,9 +262,13 @@ void Uninit_Tutorial()
 
 	obj[0].Destroy();
 	obj[1].Destroy();
+	obj[2].Destroy();
+
 
 	obj[0].~GameObject();
 	obj[1].~GameObject();
+	obj[2].~GameObject();
+
 
 
 	ActionEffectVector.~vector();
@@ -246,11 +298,15 @@ void Update_Tutorial()
 	case TUTO_STATE_START:     // BattonTouchのチュートリアルスタート処理--------------------------------------------------------
 
 		background.Update();
-		Character.SetMontionIndex(GetRand(8));
+		//Character.SetMontionIndex(GetRand(8));
 
 		if (keyboard.IsTrigger(DIK_A)) {
 			TutoState_Change(TUTO_STATE_GAME);
+			uiflag = true;
+
 		}
+
+		batonTouch.Update(BT_GameStart);
 
 
 		break;
@@ -258,19 +314,93 @@ void Update_Tutorial()
 
 	case TUTO_STATE_GAME:      //ゲーム内処理------------------------------------------------------------------------------
 
-
 		//エフェクト更新処理
 		egmanager->Update();
+
+		if (uiflag == true)
+		{
+			static float timer = 0.0f;
+
+			timer += SECONDS;
+
+			if (timer >= 0.58f)
+			{
+				call_E_tutorial_AAA();
+				timer = 0.0f;
+				//uiflag = false;
+
+			}
+		}
+
 
 		//スタミナゲージ更新処理
 		stamina->Update();
 
-		Character.SetMontionIndex(GetRand(8));
+		//Character.SetMontionIndex(GetRand(8));
 
 		// アクションUI更新
 		Action->Update();
 		// アクションゲージ更新
-		Actionslot.Update(stamina->GetStaminaScale_x(), gamedata.GetExcellentMode());
+		Action_s.Update(stamina->GetStaminaScale_x(), gamedata.GetExcellentMode());
+		
+		// アクション完成判定
+		if (Action->GetFinishFlag()) {
+			static float timer = 0.0f;
+			
+
+			timer += SECONDS;
+/*
+			if (timer == 0.20f)
+			{
+				call_E_tutorial_up();
+				timer = 0.0f;
+
+			}
+*/
+			if (ASE_DoOnce)
+			{
+				call_E_tutorial_up();
+				ASE_DoOnce = false;
+			}
+
+
+			if (Action->GetProgress() == Action->GetActionAmount()) {
+
+				switch (Action->GetState())
+				{
+				case ACTION_STATE_LONGJUMP:
+					// change
+					Action_s.AddValue(0.152 * 9);
+					break;
+				case ACTION_STATE_TRAMPOLINING:
+					// change
+					Action_s.AddValue(0.132 * 9);
+					break;
+				case ACTION_STATE_BALANCEBOARD:
+					// change
+					Action_s.AddValue(0.068 * 9);
+					break;
+				case ACTION_STATE_WEIGHT:
+					// change
+					Action_s.AddValue(0.16 * 9);
+					break;
+				case ACTION_STATE_UNEVENBARS:
+					// change
+					Action_s.AddValue(0.152 * 9);
+					break;
+				default:
+					break;
+				}
+			}
+			else {
+
+			}
+		}
+		else
+		{
+			ASE_DoOnce = true;
+		}
+		
 		// スビート更新
 		gamedata.UpdateSpeed();
 
@@ -282,9 +412,7 @@ void Update_Tutorial()
 
 		// キャラクター処理
 
-		TutoCharacterMove();
-
-		gameover->Update();
+		//TutoCharacterMove();
 
 
 		if (gamedata.ExcellentModeCount >= 5) {
@@ -345,7 +473,6 @@ void Update_Tutorial()
 			if (DoOnce)
 			{
 				//call_E_game_Sample();     //エフェクト再生
-				call_E_tutorial_AAA();
 				//call_E_game_ActionSucsess();
 
 				DoOnce = false;     // 消さない！
@@ -358,7 +485,55 @@ void Update_Tutorial()
 
 	case TUTO_STATE_BATONTOUCH:     // BattonTouchのバトンタッチ処理--------------------------------------------------
 
+			// 区間間の初期化処理
+		if (batonTouch.Uninit_DoOnce)
+		{
+			//スタミナゲージ初期化
+			stamina->Init();
+
+			// アクションゲージ初期化
+			Action_s.AddValue(VALUE_DEFAULT - Action_s.GetValue());     //Valueがデフォルト値になる
+			Action_s.Pos.x = 210;
+			Action_s.Pos.y = 480;
+			Action_s.Update(stamina->GetStaminaScale_x(), gamedata.GetExcellentMode());
+
+			// キャラクター初期化
+
+			Character.Zoom.x = 1.0f;
+
+			Character.Zoom.y = 1.0f;
+
+			Character.Pos.x = -400;
+
+			Character.Pos.y = -150;
+
+			batonTouch.Uninit_DoOnce = false;
+			batonTouch.CharengeFlag = false;
+		}
+
+
+		//エフェクト更新処理
+		egmanager->Update();
+
+
 		batonTouch.Update(BT_BatonTouch);
+
+		// アクションエフェクト処理
+		for (int i = 0; i < ActionEffectVector.size(); i++) {
+			if (ActionEffectVector[i] != NULL) {
+				ActionEffectVector[i]->Update();
+			}
+		}
+
+
+		for (int i = 0; i < ActionPointVector.size(); i++) {
+			if (ActionPointVector[i]->OutFlag) {
+				continue;
+			}
+			ActionPointVector[i]->Update();
+		}
+
+
 
 		break;
 
@@ -367,16 +542,10 @@ void Update_Tutorial()
 
 
 
-#ifdef DEBUG
 
 	// Go Title
 	if (keyboard.IsTrigger(DIK_R)) {
 		Scene_Change(SCENE_INDEX_TITLE);
-	}
-
-	// Go Result
-	if (keyboard.IsTrigger(DIK_ESCAPE)) {
-		Scene_Change(SCENE_INDEX_RESULT);
 	}
 
 	// Remove Trash
@@ -387,7 +556,7 @@ void Update_Tutorial()
 	}
 
 	if (keyboard.IsPress(DIK_E)) {
-		Actionslot.AddValue(0.5);
+		Action_s.AddValue(0.5);
 	}
 
 	if (keyboard.IsPress(DIK_P)) {
@@ -403,24 +572,7 @@ void Update_Tutorial()
 
 
 
-#endif // DEBUG
 
-	/*
-	///////////////////////////////////////
-	// エフェクト実験用（Enterを押したらエフェクト再生）
-	if (keyboard.IsTrigger(DIK_RETURN))
-	{
-		static bool DoOnce = true;
-		if (DoOnce)
-		{
-			call_E_game_Sample();     //エフェクト再生
-			//call_E_tutorial_AAA();
-
-			DoOnce = false;     // 消さない！
-		}
-	}
-	///////////////////////////////////////
-	*/
 
 	//スキップ
 	if (keyboard.IsTrigger(DIK_Z)|| joycon[0].IsPress(JOYCON_MIN)) {
@@ -440,6 +592,11 @@ void Draw_Tutorial()
 		//background.Draw();
 		obj[0].Draw();
 		obj[1].Draw();
+		obj[2].Draw();
+
+		//スキップ
+		obj[3].Draw();
+
 
 		Character.Draw();
 
@@ -449,34 +606,26 @@ void Draw_Tutorial()
 
 		background.Draw();
 
+		//スタミナゲージ描画
+		stamina->Draw();
 
+		//スキップ
+		obj[3].Draw();
+
+		// ゲーム進行ゲージ描画
+		gameprogress->Draw();
+
+		// エクセレントモード描画
 		if (gamedata.GetExcellentMode()) {
 			Alphabg.Draw();
 			ExcellentFrame.Draw();
 			ExcellentImg.Draw();
 		}
 
-
-		//スタミナゲージ描画
-		stamina->Draw();
-
-		// アクションUI描画
-		Action->Draw();
-		// アクションゲージ描画
-		Actionslot.Draw();
-
-		gameprogress->Draw();
-
-		// アクション完成判定
-		if (Action->GetFinishFlag()) {
-			if (Action->GetProgress() == Action->GetActionAmount()) {
-				Actionslot.AddValue(0.5);
-			}
-			else {
-
-			}
+		// 流れるアクションポイント描画
+		for (int i = 0; i < ActionPointVector.size(); i++) {
+			ActionPointVector[i]->Draw();
 		}
-
 
 		// アクションエフェクト描画
 		for (int i = 0; i < ActionEffectVector.size(); i++) {
@@ -485,12 +634,29 @@ void Draw_Tutorial()
 			}
 		}
 
-		for (int i = 0; i < ActionPointVector.size(); i++) {
-			ActionPointVector[i]->Draw();
-		}
-
 		//エフェクト描画処理
 		egmanager->Draw();
+
+		// アクションUI+背景描画
+		ActionBoard.Draw();
+		Action->Draw();
+		// アクションゲージ描画
+		Action_s.Draw();
+
+		
+		// アクション完成判定
+		if (Action->GetFinishFlag()) {
+			if (Action->GetProgress() == Action->GetActionAmount()) {
+				if (Action_s.GetValue() <= 90.0) {
+					Action_s.AddValue(0.5);
+				}
+			}
+			else {
+
+			}
+		}
+
+
 
 		Character.Draw();
 
@@ -499,7 +665,19 @@ void Draw_Tutorial()
 
 	case TUTO_STATE_BATONTOUCH:     // BattonTouchのバトンタッチ処理--------------------------------------------------
 
+		background.Draw();
+
+		gameprogress->Draw();
+
+		// アクションゲージ描画
+		Action_s.Draw();
+
+		Character.Draw();
+
 		batonTouch.Draw(BT_BatonTouch);
+
+		//エフェクト描画処理
+		egmanager->Draw();
 
 		break;
 
@@ -567,9 +745,9 @@ void TutoRunning() {
 
 		ActionPointAnime *obj = new ActionPointAnime();
 
-		ActionAffect *tmp = new ActionAffect(Actionslot.GetState());
+		ActionAffect *tmp = new ActionAffect(Action_s.GetState());
 
-		switch (Actionslot.GetState())
+		switch (Action_s.GetState())
 		{
 		case ACTIONSLOT_OVER:
 			obj->Create(150);
@@ -610,15 +788,15 @@ void TutoCharacterMove() {
 
 		Character.Pos.y -= 0.75f;
 
-		Actionslot.Pos.x += 5.0f;
+		Action_s.Pos.x += 5.0f;
 
-		Actionslot.Pos.y += 0.75f;
+		Action_s.Pos.y += 0.75f;
 
-		Actionslot.Scale += D3DXVECTOR2(0.0025f, 0.0025f);
+		Action_s.Scale += D3DXVECTOR2(0.0025f, 0.0025f);
 
-		Actionslot.Fire_Offset += D3DXVECTOR2(0.75f, 0.15f);
+		Action_s.Fire_Offset += D3DXVECTOR2(0.75f, 0.15f);
 
-		Actionslot.offsect_dis += 0.03;
+		Action_s.offsect_dis += 0.03;
 	}
 
 	// 左
@@ -633,15 +811,15 @@ void TutoCharacterMove() {
 
 		Character.Pos.y += 0.75f;
 
-		Actionslot.Pos.x -= 5.0f;
+		Action_s.Pos.x -= 5.0f;
 
-		Actionslot.Pos.y -= 0.75f;
+		Action_s.Pos.y -= 0.75f;
 
-		Actionslot.Scale -= D3DXVECTOR2(0.0025f, 0.0025f);
+		Action_s.Scale -= D3DXVECTOR2(0.0025f, 0.0025f);
 
-		Actionslot.Fire_Offset -= D3DXVECTOR2(0.75f, 0.15f);
+		Action_s.Fire_Offset -= D3DXVECTOR2(0.75f, 0.15f);
 
-		Actionslot.offsect_dis -= 0.03;
+		Action_s.offsect_dis -= 0.03;
 	}
 
 }
@@ -660,13 +838,13 @@ void Debug_TutoRunning() {
 
 		Judge_Count = 0;
 
-		gamedata.Action_Point_Update(Actionslot.GetState());
+		gamedata.Action_Point_Update(Action_s.GetState());
 
 		ActionPointAnime *obj = new ActionPointAnime();
 
-		ActionAffect *tmp = new ActionAffect(Actionslot.GetState());
+		ActionAffect *tmp = new ActionAffect(Action_s.GetState());
 
-		switch (Actionslot.GetState())
+		switch (Action_s.GetState())
 		{
 		case ACTIONSLOT_OVER:
 			obj->Create(150);
@@ -697,3 +875,4 @@ void Debug_TutoRunning() {
 	gamedata.AddRunningDistance(gamedata.GetRunningSpeed());
 
 }
+

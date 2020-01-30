@@ -143,7 +143,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 #ifdef DEBUG
 			//FpsTimeFanction();
 			SetFontSize(24);
-			DrawFormatString(900, 0, GetColor(255, 255, 255), "メモリ使用量 : %d", GetMemoryUsage());
+			//DrawFormatString(900, 0, GetColor(255, 255, 255), "メモリ使用量 : %d", GetMemoryUsage());
 #endif // DEBUG
 
 			ScreenCopy();

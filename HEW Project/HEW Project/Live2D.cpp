@@ -79,3 +79,4 @@ int Live2D::GetMotionIndex() {
 const char * Live2D::GetMontionGroup() {
 	return MotionGroup;
 }
+

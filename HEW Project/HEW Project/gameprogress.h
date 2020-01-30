@@ -26,6 +26,8 @@ public:
 
 	bool MeasureFlag;
 
+	bool Tutoflag;
+
 	float RunDistance;
 
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#define NUMBER_OF_DIGITS	(8)
+#define NUMBER_OF_DIGITS	(8)		//数字の最高桁数
 
 class ResultScore
 {
@@ -14,7 +14,7 @@ private:
 public:
 
 	GameObject score[8];
-	GameObject UI[1];
+	GameObject UI[8];
 
 	ResultScore();	//コンストラクタ
 
@@ -32,5 +32,7 @@ public:
 	void Draw();
 
 	void ScoreCreate(int value,float posX,float posY);
+	void ScoreCreate(int value, float posX, float posY, float ScaleX, float ScaleY);
+	void ScoreCreate(int value, float posX, float posY, float ScaleX, float ScaleY, double Rotate);
 };
 

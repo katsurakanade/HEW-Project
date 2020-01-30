@@ -7,11 +7,11 @@
 #include <DxLib.h>
 #include "ResultScore.h"
 
-static GameObject obj[2];
+static GameObject obj[3];
 static ResultScore score[6];
 static ResultScore ui;
 static int g_TotalScore;
-double ranking[RANKING_MAX] = { 0 ,0,0,0,0 };
+double ranking[RANKING_MAX] = { 0 ,0,0 };
 
 
 void Init_Result()
@@ -46,18 +46,30 @@ void Init_Result()
 	obj[1].Object.Scale.x = 0.75f;
 	obj[1].Object.Scale.y = 0.75f;
 
+	obj[2].LoadTexture(TextureDict["board"]);
+	obj[2].Object.Pos.x = 300;
+	obj[2].Object.Pos.y = 125;
+	obj[2].Object.Scale.x = 1.0f;
+	obj[2].Object.Scale.y = 0.7f;
 
 	ui.Init();
+
 	
 	//ランキングの表示
 	for (int i = 0; i < RANKING_MAX; i++)
 	{
-		score[i].ScoreCreate(ranking[i], SCREEN_WIDTH / 2 - 200, 100*i);
+		score[i].ScoreCreate(ranking[i], SCREEN_WIDTH - 380, 200 + 200 * i);
 
 	}
 
+	//走った距離の表示
+	score[3].ScoreCreate(Distance_p, SCREEN_WIDTH / 2 - 170, SCREEN_HEIGHT / 2 );
+
+	//アクションポイントの表示
+	score[4].ScoreCreate(Action_p, SCREEN_WIDTH / 2 - 490, SCREEN_HEIGHT / 2 + 100);
+
 	//合計スコアの表示
-	score[5].ScoreCreate(g_TotalScore, SCREEN_WIDTH / 2 - 200, 600);
+	score[5].ScoreCreate(g_TotalScore, 220, 100, 1.2f, 1.2f);
 
 }
 
@@ -70,7 +82,7 @@ void Update_Result()
 {
 	ui.Update();
 
-	if (keyboard.IsTrigger(DIK_R)) {
+	if (keyboard.IsTrigger(DIK_R)|| joycon[0].IsPress(JOYCON_MIN)) {
 		Scene_Change(SCENE_INDEX_TITLE);
 	}
 
@@ -81,23 +93,28 @@ void Draw_Result()
 
 	obj[0].Draw();
 	obj[1].Draw();
+	obj[2].Draw();
 
 
+	ui.Draw();
+
+
+	//デバック用
+	/*
 	for (int i = 0; i < RANKING_MAX; i++)
 	{
 		DrawFormatString(0, i*30, GetColor(255, 255, 255), "%d 位", i + 1);
 
 		DrawFormatString(100, i*30, GetColor(255, 255, 255), "%f \n", ranking[i]);
 
-	}
+	}*/
 
 
 	//DrawFormatString(0, 0, GetColor(255, 255, 255), "走った距離:%d", gamedata.GetRunningDistance());
 
 	//DrawFormatString(0, 30, GetColor(255, 255, 255), "アクションポイント:%d", gamedata.GetActionPoint());
 
-
-	DrawFormatString(500, 0, GetColor(255, 255, 255), "合計:%d", g_TotalScore);
+	//DrawFormatString(500, 0, GetColor(255, 255, 255), "合計:%d", g_TotalScore);
 
 	score[0].Draw();
 	score[1].Draw();
@@ -106,7 +123,6 @@ void Draw_Result()
 	score[4].Draw();
 	score[5].Draw();
 
-	ui.Draw();
 }
 
 

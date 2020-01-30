@@ -1,6 +1,6 @@
 #pragma once
 
-#define RANKING_MAX		(5)
+#define RANKING_MAX		(3)
 #define NUMBER_WIDTH  (200)
 #define NUMBER_HEIGHT (150)
 

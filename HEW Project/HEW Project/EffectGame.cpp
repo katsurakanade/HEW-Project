@@ -1,7 +1,9 @@
 #include "EffectGame.h"
 #include "Effect.h"
 #include <vector>
-
+#include "Live2D.h"
+#include "ActionSlot.h"
+#include "Tutorial.h"
 
 static EffectGame *EG;
 static std::vector<EffectGame*> EGStorage;     // EffectGameをnewした時のポインタ格納先
@@ -126,8 +128,6 @@ void EffectGame::E_game_Sample()
 	if (DoOnce)
 	{
 		//// ※----- エフェクトの初期設定 -----※ ////
-
-
 		eft[0]->obj.LoadTexture(TexturePassDict[TEXTURE_INDEX_AIROU]);     // エフェクトパーティクル[0]のテクスチャロード
 		eft[0]->obj.Object.Pos.x = 600.0f;     // エフェクトパーティクル[0]の初期X座標
 		eft[0]->obj.Object.Pos.y = 350.0f;     // エフェクトパーティクル[0]の初期Y座標
@@ -189,14 +189,11 @@ void EffectGame::E_tutorial_AAA()
 	{
 		//// ※----- エフェクトの初期設定 -----※ ////
 
-		eft[0]->obj.LoadTexture(TexturePassDict[TEXTURE_INDEX_LEFT_ARROW]);     // エフェクトパーティクル[0]のテクスチャロード
-		eft[0]->obj.Object.Pos.x = 600.0f;     // エフェクトパーティクル[0]の初期X座標
-		eft[0]->obj.Object.Pos.y = 350.0f;     // エフェクトパーティクル[0]の初期Y座標
-
-		eft[1]->obj.LoadTexture(TexturePassDict[TEXTURE_INDEX_A]);     // エフェクトパーティクル[1]のテクスチャロード
-		eft[1]->obj.Object.Pos.x = 800.0f;     // エフェクトパーティクル[0]の初期X座標
-		eft[1]->obj.Object.Pos.y = 250.0f;     // エフェクトパーティクル[0]の初期X座標
-
+		eft[0]->obj.LoadTexture(TextureDict["gaze"]);     // エフェクトパーティクル[0]のテクスチャロード
+		eft[0]->obj.Object.Pos.x = 870.0f;     // エフェクトパーティクル[0]の初期X座標
+		eft[0]->obj.Object.Pos.y = 250.0f;     // エフェクトパーティクル[0]の初期Y座標
+		eft[0]->obj.Object.Scale.x = 3.95f;
+		eft[0]->obj.Object.Scale.y = 1.0f;
 
 		//// ※----- エフェクトの初期設定 -----※ ////
 		DoOnce = false;     // 消さない!!
@@ -205,9 +202,12 @@ void EffectGame::E_tutorial_AAA()
 	//// ※-----------------------↓ここから下にエフェクトアニメーションを書く ↓-----------------------※ ////
 
 		// 1個目のアニメーション
-	eft[0]->Zoom(2.0f, 0.5f);
-	eft[0]->Move(3.0f, 100.0f, 200.0f);
-	eft[0]->Sleep(2.000f);
+	eft[0]->Zoom(0.3f, 0.2f);
+	eft[0]->Sleep(0.300f);
+	eft[0]->Zoom(0.3f, -0.2f);
+	eft[0]->Sleep(0.301f);
+
+	eft[0]->LastSleep(0.0001f);
 
 
 	//// ※-----------------------↑ ここから上にエフェクトアニメーションを書く ↑-----------------------※ ////
@@ -218,6 +218,50 @@ void call_E_tutorial_AAA()
 {
 	new EffectGame(&EffectGame::E_tutorial_AAA);
 }
+
+void EffectGame::E_tutorial_up()
+{
+	if (DoOnce)
+	{
+		//// ※----- エフェクトの初期設定 -----※ ////
+
+		eft[0]->obj.LoadTexture(TextureDict["up_arrow"]);     // エフェクトパーティクル[0]のテクスチャロード
+
+		eft[0]->obj.Object.Pos.x = 500.0f;     // エフェクトパーティクル[0]の初期X座標
+		eft[0]->obj.Object.Pos.y = 550.0f;   // エフェクトパーティクル[0]の初期Y座標
+
+		//eft[0]->obj.Object.Pos.x = (GetActionSlot()->Pos.x + 0.0f);     // エフェクトパーティクル[0]の初期X座標
+		//eft[0]->obj.Object.Pos.y = (GetActionSlot()->Pos.y + 0.0f);     // エフェクトパーティクル[0]の初期Y座標
+
+		eft[0]->obj.Object.Scale.x = 0.8f;
+		eft[0]->obj.Object.Scale.y = 0.8f;
+
+
+		//// ※----- エフェクトの初期設定 -----※ ////
+		DoOnce = false;     // 消さない!!
+	}
+
+	//// ※-----------------------↓ここから下にエフェクトアニメーションを書く ↓-----------------------※ ////
+
+		// 1個目のアニメーション
+	eft[0]->Curve(true, 2.0, 0.5, 10, -100);
+	eft[0]->Sleep(0.50f);
+	//eft[0]->Zoom(0.3f, -0.2f);
+	//eft[0]->Sleep(0.301f);
+
+
+	eft[0]->LastSleep(0.0001f);
+
+
+	//// ※-----------------------↑ ここから上にエフェクトアニメーションを書く ↑-----------------------※ ////
+	E_end();     // 必ずコピー！ //
+}
+// 上(↑)のエフェクト関数に書いた関数名の頭に「call_」を付ける。
+void call_E_tutorial_up()
+{
+	new EffectGame(&EffectGame::E_tutorial_up);
+}
+
 ////////////////////////////////////////////////////// チュートリアル(tutorial) //////////////////////////////////////////////////////
 
 

@@ -17,8 +17,11 @@ void Draw_Tutorial();
 
 //ゲームステート用
 void TutoState_Initialize(TUTO_STATE index);
+void Init_TutoState();     // ２区間, ３区間用Init
 void TutoState_Check(void);
 void TutoState_Change(TUTO_STATE index);
 void TutoRunning();
 void TutoCharacterMove();
 void Debug_TutoRunning();
+
+

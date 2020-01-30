@@ -41,6 +41,21 @@ map <const char*, const char*> TextureDict = {
 	{"alphabg","asset/texture/alphabg.png"},
 	{"all","asset/texture/all.png"},
 	{"board","asset/texture/board.png"},
+	{"no1","asset/texture/no1.png"},
+	{"no2","asset/texture/no2.png"},
+	{"no3","asset/texture/no3.png"},
+	{"ranking_board","asset/texture/ranking_board.png"},
+	{"push_minus_title","asset/texture/push_minus_title.png"},
+	{"kyori","asset/texture/kyori.png"},
+	{"logo_AP","asset/texture/logo_AP.png"},
+	{"10m","asset/texture/10m.png"},
+	{"total_score","asset/texture/total_score.png"},
+	{"push_minus_title","asset/texture/push_minus_title.png"},
+	{"right_arrow","asset/texture/right_arrow.png"},
+	{"up_arrow","asset/texture/up_arrow.png"},
+	{"gaze","asset/texture/gaze.png"},
+	{"boom","asset/texture/boom.png"},
+	{"skip","asset/texture/skip.png"},
 };
 
 // 画像パスベクトル
