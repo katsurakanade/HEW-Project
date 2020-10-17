@@ -14,3 +14,5 @@ Joycon２本（左右）使って、実際に走りながらアクションを�
 運動しながら楽し体験をしましょう。  
 
 アピールポイント：複数のアクション、Joyconの体感操作  
+
+https://katsurakanade.myportfolio.com/15f2146aa5539b  
